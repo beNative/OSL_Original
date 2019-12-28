@@ -2,12 +2,12 @@
 // THIS IS WHERE YOU DETERMINE THE SETTINGS FOR YOUR LIGHTS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 
-    // SETUP INSTRUCTIONS 
+    // SETUP INSTRUCTIONS
 
     // EXPLANATION OF STATES
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
-    // Each light can respond to 14 different conditions, or states. These are: 
-    // - Channel 3 - Position 1    
+    // Each light can respond to 14 different conditions, or states. These are:
+    // - Channel 3 - Position 1
     // - Channel 3 - Position 2
     // - Channel 3 - Position 3    (This is the middle position if using a 3-position switch)
     // - Channel 3 - Position 4
@@ -22,7 +22,7 @@
     // - Accelerating - this is a subset of the Forward state, and occurs during heavy acceleration (defined in UserConfig)
     // - Decelerating - this is a subset of the Forward state, and occurs during deceleration (defined in UserConfig)
     //
-    // State Notes: 
+    // State Notes:
     // - At the very least, you must plug in the Throttle channel. Steering and Channel 3 are optional
     // - If you do not plug in a steering channel, then obviously you will never encounter the Right Turn & Left Turn States
     // - If you do not plug in a third channel, the program will only use the values specified in Position 1 as the default. In other words, it acts
@@ -34,41 +34,41 @@
 
     // EXPLANATION OF SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
-    // For each light, you need to specify what will happen in each state - this is called the setting. The possible settings are: 
+    // For each light, you need to specify what will happen in each state - this is called the setting. The possible settings are:
     // - ON
     // - OFF
     // - FADEOFF        * Fades off slowly
     // - NA
     // - BLINK            Will blink at the rate set in UserConfig.h (BlinkInterval)
-    // - SOFTBLINK        Will blink at the rate set in UserConfig.h (BlinkInterval), but the light will fade-in and fade-out. The timing of the fade can be adjusted, see UserConfig 
+    // - SOFTBLINK        Will blink at the rate set in UserConfig.h (BlinkInterval), but the light will fade-in and fade-out. The timing of the fade can be adjusted, see UserConfig
     // - FASTBLINK        Will blink at the fast rate set in UserConfig.h
     // - DIM            * Will dim to the level set in UserConfig.h
     // - XENON          * Turns a light on but with a special effect that looks like a xenon bulb turning on
     // - BACKFIRE         Special effect that blinks a light randomly for a short period of time (only works under Decelerating state - use for tailpipe LEDs)
     //
-    // Settings Notes: 
-    // - For the positions determined by Channel 3, it is best to specify an explicit setting, in other words, you probably don't want any of them to be NA - 
-    //   they should be ON, OFF, whatever. 
-    // - The opposite is true for the other states - if you don't want anything to happen during the Forward state for example, set it to NA, not OFF. 
-    //   Otherwise, your light will turn off when going forward. 
-    // * Some settings require a special feature known as PWM. These are marked above with an asterisks (*). Not all of the lights on the board are capable of implementing PWM, 
+    // Settings Notes:
+    // - For the positions determined by Channel 3, it is best to specify an explicit setting, in other words, you probably don't want any of them to be NA -
+    //   they should be ON, OFF, whatever.
+    // - The opposite is true for the other states - if you don't want anything to happen during the Forward state for example, set it to NA, not OFF.
+    //   Otherwise, your light will turn off when going forward.
+    // * Some settings require a special feature known as PWM. These are marked above with an asterisks (*). Not all of the lights on the board are capable of implementing PWM,
     //   only the first 6 sockets. If you look at the underside of the physical board, these lights are marked with an asterisks (*). If you want to use these special settings,
-    //   they must be on lights 1-6. Otherwise if you specify one of these settings on lights 7 or 8, the program will simply turn them OFF isntead. 
-   
+    //   they must be on lights 1-6. Otherwise if you specify one of these settings on lights 7 or 8, the program will simply turn them OFF isntead.
+
     // EXPLANATION OF SCHEMES
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
-    // A Scheme defines every setting for every light in every state. You may have as many Schemes as code space allows. Two are provided below to start, 
-    // if you want more, add them below, but remember to also update the NumSchemes variable in AA_UserConfig.h.     
-   
+    // A Scheme defines every setting for every light in every state. You may have as many Schemes as code space allows. Two are provided below to start,
+    // if you want more, add them below, but remember to also update the NumSchemes variable in AA_UserConfig.h.
+
     // HOW TO SETUP YOUR LIGHTS
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
     // Below you will see the lighting schemes. Each Scheme has a single row for each of the eight lights. The columns represent the states. The values
-    // in the individual tables represent the settings for that light at that state. 
-    // 
-    // OK, YOU'RE READY. TRY NOT TO MESS UP THE LAYOUT. JUST CHANGE THE SETTINGS. REMEMBER THE POSSIBLE VALUES: 
+    // in the individual tables represent the settings for that light at that state.
+    //
+    // OK, YOU'RE READY. TRY NOT TO MESS UP THE LAYOUT. JUST CHANGE THE SETTINGS. REMEMBER THE POSSIBLE VALUES:
     // ON, OFF, FADEOFF, BLINK, FASTBLINK, DIM, XENON, FADEOFF, NA
 
-    const PROGMEM uint16_t Schemes[NumSchemes][NumLights][NumStates] =
+    const int PROGMEM Schemes[NumSchemes][NumLights][NumStates] =
     {
         {
         //                                     IF CHANNEL 3 is only 3-position switch, values in Pos2 and Pos4 will be ignored (just use Pos1, Pos3, Pos5)
@@ -88,17 +88,13 @@
         //     SCHEME TWO - BLANK
         //     Pos 1      Pos 2      Pos 3      Pos 4       Pos 5     Forward     Reverse     Stop      StopDelay   Brake     Right Turn     Left Turn      Accelerating   Decelerating
         // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 1    -- 
-            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 2    -- 
-            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 3    -- 
-            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 4    -- 
-            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 5    --             
-            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 6    -- 
-            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 7    -- 
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 1    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 2    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 3    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 4    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 5    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 6    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 7    --
             {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       }   // Light 8    --
         },
     };
-
-
-
-
