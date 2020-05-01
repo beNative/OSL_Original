@@ -1,5 +1,4 @@
-
-
+///
 void PrintSpaceDash()
 {
     Serial.print(F(" - "));
@@ -8,7 +7,7 @@ void PrintSpaceDash()
 void PrintSpace()
 {
     Serial.print(F("  "));
-}    
+}
 
 void PrintHorizontalLine()
 {
