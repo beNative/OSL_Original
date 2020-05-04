@@ -67,6 +67,7 @@
     // OK, YOU'RE READY. TRY NOT TO MESS UP THE LAYOUT. JUST CHANGE THE SETTINGS. REMEMBER THE POSSIBLE VALUES:
     // ON, OFF, FADEOFF, BLINK, FASTBLINK, DIM, XENON, FADEOFF, NA
     #include <Arduino.h>
+    #include "AA_UserConfig.h"
 
     const PROGMEM uint16_t Schemes[NumSchemes][NumLights][NumStates] =
     {

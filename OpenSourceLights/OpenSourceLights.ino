@@ -54,9 +54,9 @@
 // ====================================================================================================================================================>
     #include "AA_UserConfig.h"
     #include "Defines.h"
-    #include <OSL_SimpleTimer.h>
     #include <EEPROM.h>
-    #include <OSL_Button.h>    // By JChristensen. See: https://github.com/JChristensen/Button Renamed from Button to OSL_Button simply so it won't conflict with other button libraries.
+    #include <OSL_SimpleTimer.h>
+    #include <JC_Button.h>
     #include <avr/eeprom.h>
     #include <avr/pgmspace.h>
 
@@ -66,21 +66,21 @@
 // ====================================================================================================================================================>
     // Useful names
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
-        const uint16_t NA                   =    -1;                 // For each of the 8 states the light can have the following settings: On, Off, NA, Blink, FastBlink, or Dim. On/Off are defined below
-        const uint16_t BLINK                =    -2;                 // These give us numerical values to these names which makes coding easier, we can just type in the name instead of the number.
-        const uint16_t FASTBLINK            =    -3;
-        const uint16_t SOFTBLINK            =    -4;
-        const uint16_t DIM                  =    -5;
-        const uint16_t FADEOFF              =    -6;
-        const uint16_t XENON                =    -7;
-        const uint16_t BACKFIRE             =    -8;
+        const uint16_t NA        = -1; // For each of the 8 states the light can have the following settings: On, Off, NA, Blink, FastBlink, or Dim. On/Off are defined below
+        const uint16_t BLINK     = -2; // These give us numerical values to these names which makes coding easier, we can just type in the name instead of the number.
+        const uint16_t FASTBLINK = -3;
+        const uint16_t SOFTBLINK = -4;
+        const uint16_t DIM       = -5;
+        const uint16_t FADEOFF   = -6;
+        const uint16_t XENON     = -7;
+        const uint16_t BACKFIRE  = -8;
 
-        const byte ON = 1;
-        const byte OFF = 0;
-        const byte YES = 1;
-        const byte NO = 0;
-        const byte PRESSED = 0;                                 // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
-        const byte RELEASED = 1;                                // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
+        const byte ON             = 1;
+        const byte OFF            = 0;
+        const byte YES            = 1;
+        const byte NO             = 0;
+        // const byte PRESSED        = 0; // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
+        // const byte RELEASED       = 1; // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
 
     // SIMPLE TIMER
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -101,43 +101,46 @@
         typedef char DRIVEMODES;
         #define UNKNOWN      0
         #define STOP         1
-        #define FWD 	       2
+        #define FWD 	     2
         #define REV          3
         #define LAST_MODE    REV
-
-        const __FlashStringHelper *printMode(DRIVEMODES Type);     //Returns a character string that is name of the drive mode.
 
         // Little function to help us print out actual drive mode names, rather than numbers.
         // To use, call something like this:  Serial.print(printMode(DriveModeCommand));
         const __FlashStringHelper *printMode(DRIVEMODES Type) {
             if(Type>LAST_MODE) Type=UNKNOWN;
-            const __FlashStringHelper *Names[LAST_MODE+1]={F("UNKNOWN"),F("STOP"),F("FORWARD"),F("REVERSE")};
+            const __FlashStringHelper* a = F("UNKNOWN");
+            const __FlashStringHelper* b = F("STOP");
+            const __FlashStringHelper* c = F("FORWARD");
+            const __FlashStringHelper* d = F("REVERSE");
+            const __FlashStringHelper* Names[LAST_MODE+1]={ a, b, c, d };
             return Names[Type];
         };
 
 
         // Throttle
+        boolean ThrottleChannelReverse;                         // Can be used to reverse the throttle channel if they don't have reversing on radio
         int ThrottleCommand            =     0;                 // A mapped value of ThrottlePulse to (0, MapPulseFwd/Rev) where MapPulseFwd/Rev is the maximum FWD/REV speed (100, or less if governed)
         int ThrottlePulse;                                      // Positive = Forward, Negative = Reverse <ThrottlePulseCenter - ThrottlePulseMin> to <0> to <ThrottlePulseCenter + ThrottlePulseMax>
         int ThrottlePulseMin;                                   // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
         int ThrottlePulseMax;                                   // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
         int ThrottlePulseCenter;                                // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
         int ThrottleCenterAdjust       =     0;                 // If small throttle commands do not result in movement due to gearbox/track resistance, increase this number. FOR NOW, LEAVE AT ZERO. IF SET, MUST BE SMALLER THAN THROTTLEDEADBAND
-        boolean ThrottleChannelReverse;                         // Can be used to reverse the throttle channel if they don't have reversing on radio
         int MaxFwdSpeed                =   100;                 //
         int MaxRevSpeed                =  -100;                 //
 
         // Steering
         boolean SteeringChannelPresent;                         // On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
+        boolean TurnChannelReverse;                             // Can be used to reverse the steering channel if they don't have reversing on radio
         int TurnCommand                =     0;                 // A mapped value of ThrottlePulse from (TurnPulseMin/TurnPulseMax) to MaxLeft/MaxRight turn (100 each way, or less if governed)
         int TurnPulse;                                          // Positive = Right, Negative = Left <TurnPulseCenter - TurnPulseMin> to <0> to <TurnPulseCenter + TurnPulseMax>
+        int TurnPulseCenter;                                    // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
         int TurnPulseMin;                                       // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
         int TurnPulseMax;                                       // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
-        int TurnPulseCenter;                                    // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
         int TurnCenterAdjust           =     0;                 // Leave at ZERO for now
-        boolean TurnChannelReverse;                             // Can be used to reverse the steering channel if they don't have reversing on radio
         int MaxRightTurn               =   100;                 //
         int MaxLeftTurn                =  -100;
+
         boolean TurnSignal_Enable      =  true;                 // If the user decides to restrict turn signals only to when the car is stopped, they can further add a delay that begins
                                                                 // when the car first stops, and until this delay is complete, the turn signals won't come on. This flag indicates if the delay
                                                                 // is up. Initialize to true, otherwise turn signals won't work until the car has driven forward once and stopped.
@@ -250,7 +253,7 @@
         const byte RedLED              =    19;                 // The Arduino pin connected to the on-board Red LED (this is the same as saying pin A5)
         const byte SetupButton         =    14;                 // The Arduino pin connected to the on-board push button (this is the same as saying pin A0)
         // Button Object
-        OSL_Button InputButton = OSL_Button(SetupButton, true, true, 25);   // Initialize a button object. Set pin, internal pullup = true, inverted = true, debounce time = 25 mS
+        Button InputButton = Button(SetupButton, 25, true, true);   // Initialize a button object. Set pin, internal pullup = true, inverted = true, debounce time = 25 mS
 
     // CHANGE-SCHEME-MODE MENU VARIABLES
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -285,9 +288,6 @@
     // NEW LIGHT SWITCHING - Wombii
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
         unsigned long runCount = 0;
-
-
-
 
 // ====================================================================================================================================================>
 //  SETUP
