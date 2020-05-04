@@ -21,21 +21,21 @@ void GreenLedOff()
 
 void GreenBlink()
 {
-    static boolean Status; 
+    static boolean Status;
     Status ? GreenLedOn() : GreenLedOff();
     Status = !Status;
 }
 
 void RedBlink()
 {
-    static boolean Status; 
+    static boolean Status;
     Status ? RedLedOn() : RedLedOff();
     Status = !Status;
 }
 
 void ToggleLEDs()
 {
-    static boolean Status; 
+    static boolean Status;
     Status ? RedLedOn() : RedLedOff();
     Status ? GreenLedOff() : GreenLedOn();
     Status = !Status;
@@ -43,7 +43,7 @@ void ToggleLEDs()
 
 void ToggleAllLights()
 {
-    static boolean Status; 
+    static boolean Status;
 
     // Flip flop the Red and Green LEDs
     Status ? RedLedOn() : RedLedOff();
@@ -54,19 +54,19 @@ void ToggleAllLights()
     {
         // Flip flop every other external light
         for (int j=0; j<NumLights; j += 2)
-        {    
+        {
             Status ? TurnOnLight(j) : TurnOffLight(j);
             Status ? TurnOffLight(j+1) : TurnOnLight(j+1);
         }
     }
-    
+
     // Flop the flip
     Status = !Status;
 }
 
 void ToggleSelectLight(uint8_t NumLight)
 {
-    static boolean Status; 
+    static boolean Status;
     Status ? TurnOnLight(NumLight-1) : TurnOffLight(NumLight-1);
     Status = !Status;
 }

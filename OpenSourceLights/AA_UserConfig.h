@@ -4,7 +4,7 @@
 
 // NUMBER OF SCHEMES
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-    #define NumSchemes                   2          // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
+    #define NumSchemes                   1          // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
                                                     // MAKE SURE THIS NUMBER MATCHES THE NUMBER OF SCHEMES DEFINED IN AA_LIGHT_SETUP !!
 
 // STATE SETTINGS
@@ -16,16 +16,11 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
     #define DimLevel                    20          // Number from 0-255, with 0 being off, 255 being full on. Often numbers much greater than half (128) are hard to distinguish from full on.
                                                     // Experiment to get the number that makes your lights as dim as you want them.
-    #define NumLights                    8          // The number of light outputs available on the board
-    #define NumStates                    14         // There are 14 possible states a light can be in:
                                                     // - Mode 1, Mode 2, Mode 3, Mode 4, Mode 5 (all from Channel3 switch),
                                                     // - Forward, Reverse, Stop, Stop Delay, Brake (from Throttle Channel),
                                                     // - Right Turn, Left Turn (from Turn Channel)
                                                     // - Accelerating -
                                                     // - Decelerating - special state that occurs on heavy deceleration (from Throttle Channel)
-    int LightSettings[NumLights][NumStates];        // An array to hold the settings for each state for each light.
-    int PriorLightSetting[NumLights][NumStates];    // Sometimes we want to temporarily change the setting for a light. We can store the prior setting here, and revert back to it when the temporary change is over.
-
 
 // LIGHT SETTINGS - BLINKING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -46,7 +41,7 @@
                                                     // Any setting other than BLINK or SOFTBLINK in the "RightTurn" or "LeftTurn" column will NOT be affected.
     #define AllTurnSettingsMatch      false         // Set to true to restrict all other turn settings (not just BLINK and SOFTBLINK) to the same conditions imposed by BlinkTurnOnlyAtStop
 
-    #define TurnSignalDelay_mS        3000          // If BlinkTurnOnlyAtStop = true, this setting further refines when the turn signals can come on. Instead of coming on right when the
+    #define TurnSignalDelay_mS        1000          // If BlinkTurnOnlyAtStop = true, this setting further refines when the turn signals can come on. Instead of coming on right when the
                                                     // car reaches a stop, you can set a delay in milliseconds (1000 mS = 1 second) before they will be enabled. This way, if you come
                                                     // to a stop while the wheels are turned, the turn signals will not come on instantly, which looks very strange.
                                                     // Instead there will be a delay of TurnSignalDelay_mS milliseconds after which you can hold the wheels over and the turn signals will come on.
@@ -59,7 +54,7 @@
 
 // DOUBLE TAP REVERSE
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-    #define DoubleTapReverse          true          // Most ESCs require you to tap reverse twice before the car actually goes into reverse.
+    #define DoubleTapReverse          false         // Most ESCs require you to tap reverse twice before the car actually goes into reverse.
                                                     // If yours is like this, set it to true. Most touring cars operate like this.
                                                     // But if you can shift directly into reverse from forward, set this to false - this is typical of crawlers.
 
@@ -102,7 +97,6 @@
     // For most ESCs this will be close to zero.
     #define TimeToShift_mS             100          // The pause time in milliseconds that will be required before the vehicle is allowed to change direction
 
-
 // DEADBAND
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
     // This reduces the sensitivity around center stick. The numbers can be 0-100 but should be rather small, like 10. This prevents minor movements of your sticks when
@@ -123,7 +117,7 @@
 
 // DEBUGGING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-    #define DEBUG                     true          // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
+    #define DEBUG                     false          // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
                                                     // so turn it off when you are done troubleshooting.
     #define LED_DEBUG                 true          // If this is set to true, the Green LED on the board will be on whenever the car is moving forward,
                                                     // the Red LED will come on whenever the car is moving in reverse,
@@ -135,6 +129,8 @@
                                                     // LED_DEBUG does not affect the performance of the circuit, so you can leave it on.
     #define BLINK_LIGHTS_RX_LOST      true          // If true, all eight LED outputs will blink rapidly when the radio signal has been lost.
                                                     // If set to false, only the onboard Red and Green LEDs will blink when the radio signal has been lost
+
+    #define RX_STARTUP_DELAY          500           // I found I needed to delay the first read that checks if the Steering and Channel 3 is in use, in order to get reliable startup using those channels.
 
 // SERIAL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>

@@ -54,8 +54,6 @@
 // ====================================================================================================================================================>
     #include "AA_UserConfig.h"
     #include "Defines.h"
-    #include "states.h"
-    #include <Arduino.h>
     #include <OSL_SimpleTimer.h>
     #include <EEPROM.h>
     #include <OSL_Button.h>    // By JChristensen. See: https://github.com/JChristensen/Button Renamed from Button to OSL_Button simply so it won't conflict with other button libraries.
@@ -66,6 +64,23 @@
 // ====================================================================================================================================================>
 //  GLOBAL VARIABLES
 // ====================================================================================================================================================>
+    // Useful names
+    // ------------------------------------------------------------------------------------------------------------------------------------------------>
+        const uint16_t NA                   =    -1;                 // For each of the 8 states the light can have the following settings: On, Off, NA, Blink, FastBlink, or Dim. On/Off are defined below
+        const uint16_t BLINK                =    -2;                 // These give us numerical values to these names which makes coding easier, we can just type in the name instead of the number.
+        const uint16_t FASTBLINK            =    -3;
+        const uint16_t SOFTBLINK            =    -4;
+        const uint16_t DIM                  =    -5;
+        const uint16_t FADEOFF              =    -6;
+        const uint16_t XENON                =    -7;
+        const uint16_t BACKFIRE             =    -8;
+
+        const byte ON = 1;
+        const byte OFF = 0;
+        const byte YES = 1;
+        const byte NO = 0;
+        const byte PRESSED = 0;                                 // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
+        const byte RELEASED = 1;                                // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
 
     // SIMPLE TIMER
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -86,7 +101,7 @@
         typedef char DRIVEMODES;
         #define UNKNOWN      0
         #define STOP         1
-        #define FWD 	     2
+        #define FWD 	       2
         #define REV          3
         #define LAST_MODE    REV
 
@@ -133,27 +148,52 @@
 
         // Channel 3
         boolean Channel3Present;                                // On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
-        int Channel3Pulse;                                      //
+        int Channel3Pulse;
         int Channel3PulseMin;
         int Channel3PulseMax;
         int Channel3PulseCenter;
-        int Channel3                   =   OFF;                 // State of the Channel 3 switch: On (1), Off (0), Disconnected (-1)
+        int Channel3 = OFF;                                     // State of the Channel 3 switch: On (1), Off (0), Disconnected (-1)
         boolean Channel3Reverse;
-        #define Pos1                         0                  // Position defines for Channel 3 switch (can be up to 5 positions)
-        #define Pos2                         1
-        #define Pos3                         2
-        #define Pos4                         3
-        #define Pos5                         4
+        #define Pos1 0                                          // Position defines for Channel 3 switch (can be up to 5 positions)
+        #define Pos2 1
+        #define Pos3 2
+        #define Pos4 3
+        #define Pos5 4
 
     // LIGHTS
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
         int CurrentScheme;                                      // Indicates which scheme is presently selected and active. Number from 1 to NumSchemes.
                                                                 // Note that the actual schemes are zero-based (0 to NumSchemes-1) but don't worry about that,
                                                                 // the code takes care of it.
+        #define NumLights                    8                  // The number of light outputs available on the board
+        #define NumStates                    14                 // There are 14 possible states a light can be in:
+                                                                // - Mode 1, Mode 2, Mode 3, Mode 4, Mode 5 (all from Channel3 switch),
+                                                                // - Forward, Reverse, Stop, Stop Delay, Brake (from Throttle Channel),
+                                                                // - Right Turn, Left Turn (from Turn Channel)
+                                                                // - Accelerating -
+                                                                // - Decelerating - special state that occurs on heavy deceleration (from Throttle Channel)
+        const byte Mode1               =     0;                 // Channel 3 in 1st position
+        const byte Mode2               =     1;                 // Channel 3 in 2nd position
+        const byte Mode3               =     2;                 // Channel 3 in 3rd position
+        const byte Mode4               =     3;                 // Channel 3 in 4th position
+        const byte Mode5               =     4;                 // Channel 3 in 5th position
+        const byte StateFwd            =     5;                 // Moving forward
+        const byte StateRev            =     6;                 // Moving backwards
+        const byte StateStop           =     7;                 // Stopped
+        const byte StateStopDelay      =     8;                 // Stopped for a user-defined length of time
+        const byte StateBrake          =     9;                 // Braking
+        const byte StateRT             =     10;                // Right turn
+        const byte StateLT             =     11;                // Left turn
+        const byte StateAccel          =     12;                // Acceleration
+        const byte StateDecel          =     13;                // Deceleration
+
         int ActualDimLevel;                                     // We allow the user to enter a Dim level from 0-255. Actually, we do not want them using numbers 0 or 1. The ActualDimLevel corrects for this.
                                                                 // In practice, it is unlikely a user would want a dim level of 1 anyway, as it would be probably invisible.
         int LightPin[NumLights] = {9,10,11,6,5,3,15,16};        // These are the Arduino pins to the 8 lights in order from left to right looking down on the top surface of the board.
                                                                 // Note that the six Arduino analog pins can be referred to by numbers 14-19
+
+        int LightSettings[NumLights][NumStates];                // An array to hold the settings for each state for each light.
+        int PriorLightSetting[NumLights][NumStates];            // Sometimes we want to temporarily change the setting for a light. We can store the prior setting here, and revert back to it when the temporary change is over.
 
         // With changes made by Wombii in October 2019 several of these settings are no longer needed
 //        int Dimmable[NumLights] = {1,1,1,1,1,1,0,0};            // This indicates which of these pins are capable of ouputting PWM, in order. PWM-capable pins on the Arduino are 3, 5, 6, 9, 10, 11
@@ -280,9 +320,9 @@ void setup()
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
         Failsafe = true;                                        // Set failsafe to true
         GetRxCommands();                                        // If a throttle signal is measured, Failsafe will turn off
+        delay(RX_STARTUP_DELAY);
         SteeringChannelPresent = CheckSteeringChannel();        // Check for the presence of a steering channel. If we don't find it here, we won't be checking for it again until the board is rebooted
         Channel3Present = CheckChannel3();                      // Check for the presence of Channel 3. If we don't find it here, we won't be checking for it again until the board is rebooted
-
 
     // LOAD VALUES FROM EEPROM
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -305,10 +345,7 @@ void setup()
         randomSeed(analogRead(0));
         backfire_interval = random(BF_Short, BF_Long);
         backfire_timeout  = BF_Time + random(BF_Short, BF_Long);
-
 }
-
-
 
 // ====================================================================================================================================================>
 //  MAIN LOOP
@@ -392,7 +429,7 @@ void loop()
 
         Startup = false;                                        // This ensures the startup stuff only runs once
 
-   }
+    }
 
 
 // ETERNAL LOOP
