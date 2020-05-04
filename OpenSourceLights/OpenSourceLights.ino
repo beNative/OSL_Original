@@ -319,8 +319,8 @@ void setup()
     // CONNECT TO RECEIVER
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
         Failsafe = true;                                        // Set failsafe to true
+        delay(RX_STARTUP_DELAY);                                // My Flysky receiver seems to need a moment to startup and send PWM before OSL will detect the use of Steering and Channel 3.
         GetRxCommands();                                        // If a throttle signal is measured, Failsafe will turn off
-        delay(RX_STARTUP_DELAY);
         SteeringChannelPresent = CheckSteeringChannel();        // Check for the presence of a steering channel. If we don't find it here, we won't be checking for it again until the board is rebooted
         Channel3Present = CheckChannel3();                      // Check for the presence of Channel 3. If we don't find it here, we won't be checking for it again until the board is rebooted
 

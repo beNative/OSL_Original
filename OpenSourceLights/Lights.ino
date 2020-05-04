@@ -1,4 +1,3 @@
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // SETUPLIGHTS - This assigns the various settings to each of the light states. Run once on startup, and each time the scheme is changed.
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -18,8 +17,6 @@ void SetupLights(int WhatScheme)
     }
     return;
 }
-
-
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // SETLIGHTS - the main function which assigns the appropriate setting to each light based on the current actual drive mode (different from commanded drive mode)
@@ -165,7 +162,6 @@ void SetLights(int DriveMode)
 
 }
 
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // DUMPLIGHTSCHEMETOSERIAL - Show each setting for each state for each light in tabular format out the serial port
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -198,8 +194,6 @@ void DumpLightSchemeToSerial(int WhatScheme)
     return;
 }
 
-
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // SETLIGHT - This sets an individual light to a specific setting - Wombii modified
 // FADEDISABLED:'0' FADEQUICK:'1' FADEUP:'2' FADEDOWN:'3' FADEBOTH:'4' FADEXENON:'5'
@@ -212,8 +206,6 @@ void SetLight(int WhatLight, int WhatSetting)
   byte activeLightValue = 0;
 
   static byte pinIsFlashing[NumLights] = {0,0,0,0,0,0,0,0}; //Helper to reset the phase to make sure we start a flash session ON with no delay
-
-
 
   //if (WhatLight == 0) Serial.print('\t');if (WhatLight == 0) Serial.println(WhatSetting);
     switch (WhatSetting)
@@ -318,8 +310,6 @@ void SetLight(int WhatLight, int WhatSetting)
    //Can skip some steps by doing only
    //analogWrite(LightPin[WhatLight],SimpleFader(WhatLight, WantedFade, WantedLightValue);
    //but splitting it might be more readable.
-
-
 }
 
 
@@ -356,7 +346,6 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
 
     byte fadeSetting = wantedFadeSetting;
 
-
     //If I remember correctly, this helps the xenon sequencing work:
       if (wantedOutput < lastOutput){
         if(previousFadeSetting[currentPin] >= '5'){//Fixes xenon bug.
@@ -369,8 +358,6 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
         if (previousFadeSetting[currentPin] < FADEXENON)
           previousFadeSetting[currentPin] = wantedFadeSetting;
       }
-
-
 
     switch (fadeSetting)
     {
@@ -422,8 +409,6 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
       case FADEXENON+1:
       case FADEXENON+2:
 
-
-
         if (wantedOutput > lastOutput)
         {
           byte flashMax = wantedOutput - (wantedOutput>>2);
@@ -450,8 +435,6 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
               previousFadeSetting[currentPin] = FADEXENON;
             }
           }
-
-
         }
         else if (wantedOutput < lastOutput)
         {
@@ -463,42 +446,7 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
           calculatedOutput = wantedOutput;
           previousFadeSetting[currentPin] = FADEXENON;
         }
-
-
         break;
-/*
-      case FADESIN:
-        previousFadeSetting[currentPin] = FADESIN;
-
-        if (FadeOff_EffectDone[WhatLight] == 0)
-        {
-          const byte fadestart = 150;
-          const byte fadespeed = 15;
-          byte fadeHelper;
-          fadeHelper = SinBlinkLight5(WhatLight, fadestart, fadespeed);
-          if (fadeHelper == 0)
-          {
-            FadeOff_EffectDone[WhatLight] = 1;
-            SinBlinkHelper[WhatLight] = 0;
-          }
-
-        }
-
-        if fadesin is off
-          loopcounter%360 to phase
-        if fading up
-          sinblink pin phase/blinkspeed speed   brightness = constrain(127 + 128*sin(radians(blinkspeed*(currentangle + correctedphase)) ),0,255);
-        if (wantedOutput > lastOutput)
-          calculatedOutput = min(lastOutput + fadeUpSlowSpeed, wantedOutput);
-        else if (wantedOutput < lastOutput)
-          calculatedOutput = max(0.9*lastOutput,wantedOutput);// - fadeValue, wantedOutput);
-        else
-        {
-          calculatedOutput = wantedOutput;
-          //previousFadeSetting[currentPin] = 0;
-        }
-        break;
-*/
       default:
         calculatedOutput = wantedOutput;
         previousFadeSetting[currentPin] = 0;
@@ -507,8 +455,6 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
 
     }
 
-
-
     //if (currentPin == 0) Serial.print('\t');if (currentPin == 0) Serial.println(calculatedOutput);
     //
 
@@ -516,24 +462,7 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
 
     return calculatedOutput;
 
-   /*
-    if ( (fadeSetting == 's') )
-    {
-      //is it possible to do sine blink without detecting a start condition? am I doing that in my normal blinker?
-      // in light flasher with active start I'm resetting turn signal phase when it's off.
-      if wanted == last
-        reset phase
-      else if wanted > last
-        sinblink up (phase at 6 or 9)
-      else if wanted < last
-        sinblink down (phase at 12 or 3)
-
-    }
-    */
-
 }
-
-
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // FLASHING FUNCTION - Wombii
@@ -574,7 +503,6 @@ byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4])
     return flasherState;
 }
 
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // TURNONLIGHT - Turns a light on
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -585,8 +513,6 @@ void TurnOnLight(int WhatLight)
     //FadeOffReset(WhatLight);
 }
 
-
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // TURNOFFLIGHT - Turns a light off
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -596,186 +522,6 @@ void TurnOffLight(int WhatLight)
     //PWM_Step[WhatLight] = 0;
     //XenonReset(WhatLight);
 }
-
-
-/*
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// TURNONXENONLIGHT - Turns a light on with XENON effect
-// All credit for Xenon effects code goes to Sergio Pizzotti
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-void TurnOnXENONLight(int WhatLight)
-{
-    // In order to prevent a Xenon effect halfway-complete from interfering with the FadeOff effect, we clear the FadeOff flag at the beginning
-    FadeOffReset(WhatLight);
-
-    // Only certain lights work with the Xenon effect (lights 1-6). We do a check here to make sure.
-    // If it is not an option on this pin, but the command was still issued, we instead turn it ON.
-    if (Dimmable[WhatLight])
-    {   // Ok, we can proceed
-        if (Xenon_EffectDone[WhatLight] == 1) {
-            // Xenon effect done, turn on light
-            TurnOnLight(WhatLight);
-        }
-        else
-        {
-            if (Xenon_EffectDone[WhatLight] == -1)
-            {   // We are coming to this effect from DIM. Unless we knew that, this effect woudln't begin from the beginning.
-                // Start from the beginning:
-                Xenon_EffectDone[WhatLight] = 0;
-                Xenon_Step[WhatLight] = 0;
-            }
-            if(millis() - Xenon_millis[WhatLight] > Xenon_interval)
-            {   // save the current time for the current light
-                Xenon_millis[WhatLight] = millis();
-
-                // Select the appropriate step for the Xenon light effect
-                switch(Xenon_Step[WhatLight])
-                {
-                    case 0:  // first step: turn on the light
-                        analogWrite(LightPin[WhatLight], 255);
-                        break;
-
-                    case 1: // second step: turn off the light for twice the time
-                    case 2:
-                        analogWrite(LightPin[WhatLight], 0);
-                        break;
-
-                    default: /// third step: fade the light to full (or quite full) light
-                        analogWrite(LightPin[WhatLight], Xenon_Step[WhatLight]);
-                        break;
-                }
-                if (PWM_Step[WhatLight] <= 250)
-                {   // Next step in the Xenon effect
-                    Xenon_Step[WhatLight]++;
-                    // Save our current PWM value in case we transition to a different effect
-                    PWM_Step[WhatLight] = Xenon_Step[WhatLight];
-                }
-                else
-                {    // We are at full light, save state for next loop
-                    Xenon_Step[WhatLight] = 0;
-                    Xenon_millis[WhatLight] = 0;
-                    Xenon_EffectDone[WhatLight] = 1;
-                }
-            }
-        }
-    }
-    else
-    {   // The Xenon effect is not an option on this pin. Just turn it on
-        TurnOnLight(WhatLight);
-        Xenon_Step[WhatLight] = 1;    // Effect done.
-    }
-}
-
-void XenonReset(int WhatLight)
-{
-    // reset the light state
-    Xenon_Step[WhatLight] = 0;
-    Xenon_EffectDone[WhatLight] = 0;
-    Xenon_millis[WhatLight] = 0;
-}
-
-
-
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// FADEOFFLIGHT - Slowly turn off light
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-void FadeOffLight(int WhatLight)
-{
-    unsigned int brightness=0xffff;
-
-    // Only certain lights can be faded (lights 1-6). We do a check here to make sure.
-    // If it is not an option on this pin, but the command was still issued, we instead turn it off.
-    if (Dimmable[WhatLight])
-    {   // Ok, we can proceed
-        if (FadeOff_EffectDone[WhatLight] == 0)
-        {   // This completely interrupts everything else while the fade is occuring, otherwise it looks too choppy and unrealistic.
-            // Downside, nothing else gets processed while this is happening. Even worse, if you have multiple lights set to FadeOff on the
-            // same state, they will go sequentially one-by-one, not all at the same time. This looks cool, but takes even more time.
-            // Using code from: http://forum.arduino.cc/index.php?topic=205417.msg1512121#msg1512121
-            brightness = PWM_Step[WhatLight]*PWM_Step[WhatLight];
-            while (brightness > 255)
-            {
-                analogWrite(LightPin[WhatLight],brightness>>8);
-                brightness -= brightness>>2;
-                // About 20 steps from full brightness to off. With a delay of 25, that means 1/2 second to fade off
-                delay(25);
-            }
-            TurnOffLight(WhatLight);    // TurnOffLight will also reset the PWM_Step
-            FadeOff_EffectDone[WhatLight] = 1;
-        }
-        else
-        {   // Shouldn't come here, but if we do, the effect is done, turn the light off
-            TurnOffLight(WhatLight);    // TurnOffLight will also reset the PWM_Step
-        }
-    }
-    else
-    {   // No, this is not a PWM pin, we can't fade. Just turn it off.
-        TurnOffLight(WhatLight);        // TurnOffLight will also reset the PWM_Step
-        FadeOff_EffectDone[WhatLight] = 1;
-    }
-}
-void FadeOffReset(int WhatLight)
-{
-    // reset the light state
-    FadeOff_EffectDone[WhatLight] = 0;
-}
-
-void FadeBlink(int WhatLight, boolean fadeUp, int mS)
-{
-    unsigned int brightness=0xffff;
-    float fbrightness;
-    float LowLevel;
-
-    // Only certain lights can be faded (lights 1-6). We do a check here to make sure.
-    // If it is not an option on this pin, but the command was still issued, we instead turn it off.
-    if (Dimmable[WhatLight])
-    {   // Ok, we can proceed
-        // This completely interrupts everything else while the fade is occuring, otherwise it looks too choppy and unrealistic.
-        // Downside, nothing else gets processed while this is happening. Even worse, if you have multiple lights set to FadeOff on the
-        // same state, they will go sequentially one-by-one, not all at the same time. This looks cool, but takes even more time.
-
-        if (fadeUp) // fade from off (or DIM) up to full bright
-        {
-            if (LightSettings[WhatLight][Channel3] == DIM) fbrightness = DimLevel<<8;   // Starting point is DIM
-            else fbrightness = 275.0;                                                   // Starting point is full OFF
-
-            // Ramp up
-            while (fbrightness < 65536.0)
-            {
-                brightness = (unsigned int)fbrightness>>8;
-                analogWrite(LightPin[WhatLight],brightness);
-                fbrightness += (fbrightness / 3);
-                delay(mS);
-            }
-            TurnOnLight(WhatLight);             // We are now at full brightness (full ON)
-        }
-        else        // Fade from full bright down to off (or DIM)
-        {
-            // Start at whatever level the light is already at, but should be full on
-            fbrightness = pow((float)PWM_Step[WhatLight],2);
-
-            if (LightSettings[WhatLight][Channel3] == DIM) LowLevel = DimLevel<<8;  // End point is DIM
-            else LowLevel = 256.0;                                                  // End point is full OFF
-
-            while (fbrightness > LowLevel)
-            {
-                brightness = (unsigned int)fbrightness>>8;
-                analogWrite(LightPin[WhatLight],brightness);
-                PWM_Step[WhatLight] = brightness;
-                fbrightness -= (fbrightness / 5);
-                delay(mS);
-            }
-            if (LightSettings[WhatLight][Channel3] != DIM) TurnOffLight(WhatLight);    // Turn it completely off
-        }
-    }
-    else
-    {   // No, this is not a PWM pin, we can't fade. Just blink it on/off
-        fadeUp ? TurnOnLight(WhatLight) : TurnOffLight(WhatLight);
-    }
-}
-
-
-*/
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // LIGHTBACKFIRE - briefly and randomly light a led
@@ -823,7 +569,6 @@ void OvertakeOff()
     }
 }
 
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // TURN SIGNAL - Artificial turn signal cancel
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -835,44 +580,6 @@ void ClearBlinkerOverride(void)
     TurnSignalOverride = 0;
 }
 
-/*
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// BLINKLIGHT - This blinks a light
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-void BlinkLight(int WhatLight)
-{
-    if (Blinker) TurnOnLight(WhatLight);
-    else
-    {
-        if (LightSettings[WhatLight][Channel3] == DIM) DimLight(WhatLight);
-        else TurnOffLight(WhatLight);
-    }
-}
-
-
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// SOFTBLINKLIGHT - This blinks a light but the light fades in and fades out
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-void SoftBlinkLight(int WhatLight)
-{
-    // Only blink if blinker status has changed
-    if (IndividualLightBlinker[WhatLight] != Blinker)
-    {
-        // FadeBlink takes three arguments:
-        // 1. Light number
-        // 2. Direction (true means fade up, false means fade down)
-        // 3. delay per step in milli-seconds.
-        // The fade effect takes 20 steps to complete from full off to on (or vice versa).
-        // Tweak the delay for the total length of time you want the fade to take, ie FadeLength = (20 * delay)
-        // For example, if you set the delay to 10 for both up and down, it will take (10*20) = 200 mS to fade in, and 200 mS to fade out, so 400mS total.
-        // That would be very slow. Remember also that you shouldn't exceed the total time for "BlinkInterval", which is set in AA_UserConfig,
-        // Otherwise the light won't be done fading out before the next blink starts.
-        Blinker ? FadeBlink(WhatLight, true, SoftBlinkFadeInDelay) : FadeBlink(WhatLight, false, SoftBlinkFadeOutDelay);
-        IndividualLightBlinker[WhatLight] = Blinker;
-    }
-}
-*/
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // FASTBLINKLIGHT - This blinks a light at the fast rate
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -880,36 +587,6 @@ void FastBlinkLight(int WhatLight)
 {
     FastBlinker ? TurnOnLight(WhatLight) : TurnOffLight(WhatLight);
 }
-
-/*
-
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// DIMLIGHT - This dims a light
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-void DimLight(int WhatLight)
-{
-
-    // Clear the FadeOff flag at the beginning, so if we transition from DIM to FadeOff the fade will occur
-    FadeOffReset(WhatLight);
-
-    // Only certain lights can be dimmed. We do a check here to make sure.
-    // If dimming is not an option on this pin, but the command was still issued,
-    // we instead turn it off.
-    if (Dimmable[WhatLight])
-    {
-        // NOTE: Only use the ActualDimLevel variable in this function, do not use DimLevel from UserConfig.h
-        SetLightLevel(WhatLight, ActualDimLevel);
-        // Set a flag so that if we transition from DIM to XENON the Xenon effect will know to start from the beginning,
-        // instead of from the DIM level
-        Xenon_EffectDone[WhatLight] = -1;
-    }
-    else
-    {
-        TurnOffLight(WhatLight);
-    }
-}
-
-*/
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // FIXDIMLEVEL - Sets the ActualDimLevel and prevents the bug that occurs if the User strangely set DimLevel to less than 2 (unlikely)
@@ -921,23 +598,6 @@ void FixDimLevel()
     else
     { ActualDimLevel = DimLevel; }
 }
-
-
-
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// SETLIGHTLEVEL - Set an individual light to a PWM level, save that in PWM_Step
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-/*
-void SetLightLevel(int WhatLight, int WhatLevel)
-{
-    if (Dimmable[WhatLight])
-    {
-        analogWrite(LightPin[WhatLight], WhatLevel);
-        PWM_Step[WhatLight] = WhatLevel;
-    }
-}
-*/
-
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // TWINKLELIGHTS - Sets all lights to FastBlink for Seconds seconds
@@ -956,8 +616,6 @@ void TwinkleLights(int Seconds)
     }
     while(!TimeUp);
 }
-
-
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // BLINKALLLIGHTS - Blinks every single light, onboard and off, HowManyTimes. This is used as an indicator during Change-Scheme-Mode
@@ -1027,14 +685,14 @@ void BlinkWait()
 
 void ReverseLight(int WhatLight)
 {
-    int OppositeVal;
-    // If light is on, turn it off. But if light is off, turn it on.
-    OppositeVal = !digitalRead(LightPin[WhatLight]);
-    digitalWrite(LightPin[WhatLight], OppositeVal);
-    PWM_Step[WhatLight] = OppositeVal;
+  int OppositeVal;
+  // If light is on, turn it off. But if light is off, turn it on.
+  OppositeVal = !digitalRead(LightPin[WhatLight]);
+  digitalWrite(LightPin[WhatLight], OppositeVal);
+  PWM_Step[WhatLight] = OppositeVal;
 }
 
 void ReturnToPriorState(int WhatLight, int WhatState)
 {
-       LightSettings[WhatLight][WhatState] = PriorLightSetting[WhatLight][WhatState];
+  LightSettings[WhatLight][WhatState] = PriorLightSetting[WhatLight][WhatState];
 }
