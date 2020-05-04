@@ -77,14 +77,14 @@
         //     SCHEME 1 - Crusing
         //     Pos 1         Pos 2         Pos 3         Pos 4         Pos 5         Forward       Reverse       Stop          StopDelay     Brake         Right Turn    Left Turn     Accelerating  Decelerating
         // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 1    --
-            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 2    --
-            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 3    --
-            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 4    --
-            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 5    --
+            {  OFF,          OFF,          XENON,        ON,           ON,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 1    -- Headlight
+            {  OFF,          XENON,        ON,           ON,           ON,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 2    -- Fog Light
+            {  OFF,          OFF,          DIM,          DIM,          DIM,          NA,           NA,           ON,           NA,           ON,           NA,           NA,           NA,           NA           },  // Light 3    -- Break Light
+            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 4    -- Right Blinker
+            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 5    -- Left Blinker
             {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 6    --
             {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 7    --
-            {  OFF,          OFF,          OFF,          OFF,          OFF,          NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 8    --
+            {  OFF,          OFF,          OFF,          OFF,          ON,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA,           NA           },  // Light 8    -- Light Bar
         },
         {
         //     SCHEME 2 - Offroad

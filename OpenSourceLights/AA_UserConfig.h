@@ -90,7 +90,7 @@
     #define TimeToStop_FWD_mS          500          // An estimate of the time usually spent coasting to a stop from forward. During this time, reverse commands will be counted as braking
     #define TimeToStop_REV_mS          300          // An estimate of the time usually spent coasting to a stop fro reverse. During this time, forward commands will be counted as braking
 
-    #define DragBrake                 false         // If DragBrake = false, the Brake state will be active only when your car is moving one direction, and you command an opposite direction
+    #define DragBrake                 true          // If DragBrake = false, the Brake state will be active only when your car is moving one direction, and you command an opposite direction
                                                     // If DragBrake = true, the Brake state will still occur in the above example, but it will also occur anytime your throttle stick is near center.
                                                     // In other words, setting this to true essentially has your brakes come on automatically whenever you are coasting. For touring cars, this
                                                     // can sometimes make for a nice effect going round a track (brake lights should come on in advance of a curve, for example).
@@ -123,7 +123,7 @@
 
 // DEBUGGING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-    #define DEBUG                     false         // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
+    #define DEBUG                     true          // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
                                                     // so turn it off when you are done troubleshooting.
     #define LED_DEBUG                 true          // If this is set to true, the Green LED on the board will be on whenever the car is moving forward,
                                                     // the Red LED will come on whenever the car is moving in reverse,
