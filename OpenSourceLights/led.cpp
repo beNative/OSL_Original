@@ -103,19 +103,31 @@ void GreenBlinkFast(int HowMany)
 
 // If these seem redundant it is because SimpleTimer can only call a void function
 void GreenBlinkOne()
-{ GreenBlinkFast(1); }
+{
+  GreenBlinkFast(1);
+}
 
 void GreenBlinkTwo()
-{ GreenBlinkFast(2); }
+{
+  GreenBlinkFast(2);
+}
 
 void GreenBlinkThree()
-{ GreenBlinkFast(3); }
+{
+  GreenBlinkFast(3);
+}
 
 void RedBlinkOne()
-{ RedBlinkFast(1); }
+{
+  RedBlinkFast(1);
+}
 
 void RedBlinkTwo()
-{ RedBlinkFast(2); }
+{
+  RedBlinkFast(2);
+}
 
 void RedBlinkThree()
-{ RedBlinkFast(3); }
+{
+  RedBlinkFast(3);
+}
