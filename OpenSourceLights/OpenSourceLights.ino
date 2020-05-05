@@ -242,10 +242,10 @@
 
   // Wombiii timing array
   byte specialTimingArray[3][4] = {
-                                      {1,255,blinkLoopsPerCycle,blinkLoopsOn},
-                                      {1,255,softblinkLoopsPerCycle,softblinkLoopsOn},
-                                      {1,255,fastblinkLoopsPerCycle,fastblinkLoopsOn}
-                                  };
+    {1,255,blinkLoopsPerCycle,blinkLoopsOn},
+    {1,255,softblinkLoopsPerCycle,softblinkLoopsOn},
+    {1,255,fastblinkLoopsPerCycle,fastblinkLoopsOn}
+  };
 
   // RC CHANNEL INPUTS
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -306,7 +306,6 @@
 // ====================================================================================================================================================>
 //  SETUP
 // ====================================================================================================================================================>
-// cppcheck-suppress unusedFunction
 void setup()
 {
   // SERIAL
@@ -366,7 +365,6 @@ void setup()
 // ====================================================================================================================================================>
 //  MAIN LOOP
 // ====================================================================================================================================================>
-// cppcheck-suppress unusedFunction
 void loop()
 {
   // LOCAL VARIABLES
@@ -395,23 +393,14 @@ void loop()
   static byte RightCount = 0;                                 // We use these to count up the number of times the user has cranked the
   static byte LeftCount = 0;                                  // steering wheel completely over.
   static boolean ChangeSchemeTimerFlag = false;               // Has the timer begun
-  // cppcheck-suppress variableScope
   static int ChangeModeTime_mS = 2000;                        // Amount of time user has to enter Change-Scheme-Mode
-  // cppcheck-suppress variableScope
   static unsigned int TurnTimerID;                            // An ID for the timer that counts the turns of the wheel
-  // cppcheck-suppress variableScope
   static int ExitSchemeFlag = 0;                              // A flag to indicate whether or not to exit Change-Scheme-Mode
-  // cppcheck-suppress variableScope
   static int TimeToWait_mS = 1200;                            // Time to wait between change-scheme commands (otherwise as long as you held the wheel over it would keep cycling through rapidly)
-  // cppcheck-suppress variableScope
   static int TimeToExit_mS = 3000;                            // How long to hold the wheel over until Change-Scheme-Mode is exited
-  // cppcheck-suppress variableScope
   static unsigned long ExitStart;                             // Start time of the exit waiting period
-  // cppcheck-suppress variableScope
   static boolean TimeoutFlag;
-  // cppcheck-suppress variableScope
   static boolean HoldFlag;
-  // cppcheck-suppress variableScope
   static unsigned long HoldStart;
 
   // Backfire
@@ -420,9 +409,7 @@ void loop()
   static unsigned int OvertakeTimerID = 0;
 
   // Temp vars
-  // cppcheck-suppress variableScope
   static unsigned long currentMillis;
-  // cppcheck-suppress variableScope
   static boolean WhatState = true;
 
   // STARTUP - RUN ONCE
