@@ -408,7 +408,6 @@ void loop()
     if (Startup)
     {
         if (DEBUG) { DumpDebug(); }                             // This puts some useful information to the Serial Port
-
         timer.setInterval(BlinkInterval, BlinkLights);          // This will call the function BlinkLights every BlinkInterval milliseconds
         timer.setInterval(FastBlinkInterval, FastBlinkLights);  // This will call the function FastBlinkLights every FastBlinkInterval milliseconds
 
@@ -428,7 +427,6 @@ void loop()
         LeftCount = 0;
 
         Startup = false;                                        // This ensures the startup stuff only runs once
-
     }
 
 

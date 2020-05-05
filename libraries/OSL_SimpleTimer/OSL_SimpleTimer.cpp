@@ -1,14 +1,14 @@
 /* Open Source Lights - Simple Timer Library
- * 
- * This library has been modified to fix some bugs. It now returns 
+ *
+ * This library has been modified to fix some bugs. It now returns
  * a unique ID for each timer created (unsigned int). This prevents
  * routines from inadvertently deleting timers that are not theirs,
- * but which have re-used the same slot number. 
+ * but which have re-used the same slot number.
  *
  * The library has also been renamed from SimpleTimer to OSL_SimpleTimer
  * to prevent any conflicts with other SimpleTimer libraries you may
- * have installed. 
- * 
+ * have installed.
+ *
  * May 2015 - Luke Middleton
  */
 
@@ -149,34 +149,33 @@ int OSL_SimpleTimer::findFirstFreeSlot() {
 
 
 unsigned int OSL_SimpleTimer::setTimer(long d, timer_callback f, int n) {
-    unsigned int returnID;
+  unsigned int returnID;
 	int freeTimer;
 
-    freeTimer = findFirstFreeSlot();
-    if (freeTimer < 0) {
-		return -1;
-    }
+  freeTimer = findFirstFreeSlot();
+  if (freeTimer < 0) {
+    return -1;
+  }
 
-    if (f == NULL) {
-        return -1;
-    }
+  if (f == NULL) {
+    return -1;
+  }
 
-    delays[freeTimer] = d;
-    callbacks[freeTimer] = f;
-    maxNumRuns[freeTimer] = n;
-    enabled[freeTimer] = true;
-    prev_millis[freeTimer] = elapsed();
+  delays[freeTimer] = d;
+  callbacks[freeTimer] = f;
+  maxNumRuns[freeTimer] = n;
+  enabled[freeTimer] = true;
+  prev_millis[freeTimer] = elapsed();
 	timerID[freeTimer] = NextID;
 
     // Increment number of timers
-	numTimers++;				
-	
+	numTimers++;
 	// Increment timer ID
 	returnID = NextID;
 	if (NextID + 1 == 0) { NextID = 1; } // rollover
 	else { NextID++; }					  // increment
 
-    //return freeTimer; // OLD	
+    //return freeTimer; // OLD
 //	Serial.print(F("Created ")); Serial.print(returnID); Serial.print(" ("); Serial.print(freeTimer); Serial.println(F(")"));
 	return (returnID);
 }
@@ -192,17 +191,17 @@ unsigned int OSL_SimpleTimer::setTimeout(long d, timer_callback f) {
 }
 
 
-void OSL_SimpleTimer::deleteTimer(unsigned int ID) 
+void OSL_SimpleTimer::deleteTimer(unsigned int ID)
 {
     int timerNum;
-	
+
     // nothing to delete if no timers are in use
     if (numTimers == 0) {
         return;
     }
 
 	timerNum = getTimerNum(ID);
-	
+
 	if (timerNum == -1) {
 		return;
 	}
@@ -219,47 +218,47 @@ void OSL_SimpleTimer::deleteTimer(unsigned int ID)
 
         // update number of timers
         numTimers--;
-		
+
 		//Serial.print(F("Deleted ")); Serial.print(ID); Serial.print(" ("); Serial.print(timerNum); Serial.println(F(")"));
     }
 }
 
 
-void OSL_SimpleTimer::restartTimer(unsigned int ID) 
+void OSL_SimpleTimer::restartTimer(unsigned int ID)
 {
 
     int timerNum;
-	
+
 	timerNum = getTimerNum(ID);
-	
+
 	if (timerNum == -1) {
 		return;
 	}
-	
+
     prev_millis[timerNum] = elapsed();
 }
 
 
-boolean OSL_SimpleTimer::isEnabled(unsigned int ID) 
+boolean OSL_SimpleTimer::isEnabled(unsigned int ID)
 {
     int timerNum;
-	
+
 	timerNum = getTimerNum(ID);
-	
+
 	if (timerNum == -1) {
 		return false;
 	}
-	
+
     return enabled[timerNum];
 }
 
 
-void OSL_SimpleTimer::enable(unsigned int ID) 
+void OSL_SimpleTimer::enable(unsigned int ID)
 {
     int timerNum;
-	
+
 	timerNum = getTimerNum(ID);
-	
+
 	if (timerNum == -1) {
 		return;
 	}
@@ -268,30 +267,30 @@ void OSL_SimpleTimer::enable(unsigned int ID)
 }
 
 
-void OSL_SimpleTimer::disable(unsigned int ID) 
+void OSL_SimpleTimer::disable(unsigned int ID)
 {
     int timerNum;
-	
+
 	timerNum = getTimerNum(ID);
-	
+
 	if (timerNum == -1) {
 		return;
 	}
-	
+
     enabled[timerNum] = false;
 }
 
 
-void OSL_SimpleTimer::toggle(unsigned int ID) 
+void OSL_SimpleTimer::toggle(unsigned int ID)
 {
     int timerNum;
-	
+
 	timerNum = getTimerNum(ID);
-	
+
 	if (timerNum == -1) {
 		return;
 	}
-	
+
 	enabled[timerNum] = !enabled[timerNum];
 }
 
@@ -303,11 +302,11 @@ int OSL_SimpleTimer::getNumTimers() {
 int OSL_SimpleTimer::getTimerNum(unsigned int ID)
 {
 	int timerNum = -1;
-	
-	for (int i = 0; i < MAX_TIMERS; i++) 
+
+	for (int i = 0; i < MAX_TIMERS; i++)
 	{
 		if (timerID[i] == ID) { timerNum = i; break;}
 	}
-	
+
 	return timerNum;
 }
