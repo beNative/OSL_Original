@@ -48,17 +48,16 @@
  *
 */
 
-
 // ====================================================================================================================================================>
 //  INCLUDES
 // ====================================================================================================================================================>
-    #include "AA_UserConfig.h"
-    #include "Defines.h"
-    #include <EEPROM.h>
-    #include <OSL_SimpleTimer.h>
-    #include <JC_Button.h>
-    #include <avr/eeprom.h>
-    #include <avr/pgmspace.h>
+  #include "AA_UserConfig.h"
+  #include "Defines.h"
+  #include <EEPROM.h>
+  #include <OSL_SimpleTimer.h>
+  #include <JC_Button.h>
+  #include <avr/eeprom.h>
+  #include <avr/pgmspace.h>
 
 
 // ====================================================================================================================================================>
@@ -66,8 +65,10 @@
 // ====================================================================================================================================================>
   // Useful names
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  const uint16_t NA        = -1; // For each of the 8 states the light can have the following settings: On, Off, NA, Blink, FastBlink, or Dim. On/Off are defined below
-  const uint16_t BLINK     = -2; // These give us numerical values to these names which makes coding easier, we can just type in the name instead of the number.
+  // For each of the 8 states the light can have the following settings: On, Off, NA, Blink, FastBlink, or Dim. On/Off are defined below
+  // These give us numerical values to these names which makes coding easier, we can just type in the name instead of the number.
+  const uint16_t NA        = -1;
+  const uint16_t BLINK     = -2;
   const uint16_t FASTBLINK = -3;
   const uint16_t SOFTBLINK = -4;
   const uint16_t DIM       = -5;
@@ -106,60 +107,82 @@
   // Little function to help us print out actual drive mode names, rather than numbers. // Updated to latest avr-gcc so it will compile if Debug is enabled.
   // To use, call something like this:  Serial.print(printMode(DriveModeCommand));
   const __FlashStringHelper *printMode(DRIVEMODES Type) {
-      if(Type>LAST_MODE) Type=UNKNOWN;
-      const __FlashStringHelper* a = F("UNKNOWN");
-      const __FlashStringHelper* b = F("STOP");
-      const __FlashStringHelper* c = F("FORWARD");
-      const __FlashStringHelper* d = F("REVERSE");
-      const __FlashStringHelper* Names[LAST_MODE+1]={ a, b, c, d };
-      return Names[Type];
+    if(Type>LAST_MODE) {
+      Type = UNKNOWN;
+    }
+    const __FlashStringHelper* a = F("UNKNOWN");
+    const __FlashStringHelper* b = F("STOP");
+    const __FlashStringHelper* c = F("FORWARD");
+    const __FlashStringHelper* d = F("REVERSE");
+    const __FlashStringHelper* Names[LAST_MODE+1]={ a, b, c, d };
+    return Names[Type];
   };
 
-
   // Throttle
-  boolean ThrottleChannelReverse; // Can be used to reverse the throttle channel if they don't have reversing on radio
-  int ThrottleCommand = 0;        // A mapped value of ThrottlePulse to (0, MapPulseFwd/Rev) where MapPulseFwd/Rev is the maximum FWD/REV speed (100, or less if governed)
-  int ThrottlePulse;              // Positive = Forward, Negative = Reverse <ThrottlePulseCenter - ThrottlePulseMin> to <0> to <ThrottlePulseCenter + ThrottlePulseMax>
-  int ThrottlePulseMin;           // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
-  int ThrottlePulseMax;           // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
-  int ThrottlePulseCenter;        // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
-  int ThrottleCenterAdjust = 0;   // If small throttle commands do not result in movement due to gearbox/track resistance, increase this number. FOR NOW, LEAVE AT ZERO. IF SET, MUST BE SMALLER THAN THROTTLEDEADBAND
+  // Can be used to reverse the throttle channel if they don't have reversing on radio
+  boolean ThrottleChannelReverse;
+  // A mapped value of ThrottlePulse to (0, MapPulseFwd/Rev) where MapPulseFwd/Rev is the maximum FWD/REV speed (100, or less if governed)
+  int ThrottleCommand = 0;
+  // Positive = Forward, Negative = Reverse <ThrottlePulseCenter - ThrottlePulseMin> to <0> to <ThrottlePulseCenter + ThrottlePulseMax>
+  int ThrottlePulse;
+  // Will ultimately be determined by setup procedure to read min travel on stick, or from EEPROM if setup complete
+  int ThrottlePulseMin;
+  // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
+  int ThrottlePulseMax;
+  // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
+  int ThrottlePulseCenter;
+  // If small throttle commands do not result in movement due to gearbox/track resistance, increase this number. FOR NOW, LEAVE AT ZERO. IF SET, MUST BE SMALLER THAN THROTTLEDEADBAND
+  int ThrottleCenterAdjust = 0;
   int MaxFwdSpeed = 100;
   int MaxRevSpeed = -100;
 
   // Steering
-  boolean SteeringChannelPresent;                         // On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
-  boolean TurnChannelReverse;                             // Can be used to reverse the steering channel if they don't have reversing on radio
-  int TurnCommand                =     0;                 // A mapped value of ThrottlePulse from (TurnPulseMin/TurnPulseMax) to MaxLeft/MaxRight turn (100 each way, or less if governed)
-  int TurnPulse;                                          // Positive = Right, Negative = Left <TurnPulseCenter - TurnPulseMin> to <0> to <TurnPulseCenter + TurnPulseMax>
-  int TurnPulseCenter;                                    // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
-  int TurnPulseMin;                                       // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
-  int TurnPulseMax;                                       // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
-  int TurnCenterAdjust           =     0;                 // Leave at ZERO for now
-  int MaxRightTurn               =   100;                 //
-  int MaxLeftTurn                =  -100;
+  // On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
+  boolean SteeringChannelPresent;
+  // Can be used to reverse the steering channel if they don't have reversing on radio
+  boolean TurnChannelReverse;
+  // A mapped value of ThrottlePulse from (TurnPulseMin/TurnPulseMax) to MaxLeft/MaxRight turn (100 each way, or less if governed)
+  int TurnCommand = 0;
+  // Positive = Right, Negative = Left <TurnPulseCenter - TurnPulseMin> to <0> to <TurnPulseCenter + TurnPulseMax>
+  int TurnPulse;
+  // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
+  int TurnPulseCenter;
+  // Will ultimately be determined by setup procedure to read min travel on stick, or from EEPROM if setup complete
+  int TurnPulseMin;
+  // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
+  int TurnPulseMax;
+  // Leave at ZERO for now
+  int TurnCenterAdjust = 0;
+  int MaxRightTurn = 100;
+  int MaxLeftTurn = -100;
 
-  boolean TurnSignal_Enable      =  true;                 // If the user decides to restrict turn signals only to when the car is stopped, they can further add a delay that begins
-                                                          // when the car first stops, and until this delay is complete, the turn signals won't come on. This flag indicates if the delay
-                                                          // is up. Initialize to true, otherwise turn signals won't work until the car has driven forward once and stopped.
-  int TurnSignalOverride         =     0;                 // The other situation we want to modify the turn signal is when starting from a stop, while turning. In this case we leave the turn signals on
-                                                          // for a period of time even after the car has started moving (typically turn signals are disabled while moving). This mimics a real car where
-                                                          // the turn signal isn't cancelled until after the steering wheel turns back the opposite way. In our case we don't check the steering wheel,
-                                                          // we just wait a short amount of time (user configurable in AA_UserConfig.h, variable TurnFromStartContinue_mS)
+  // If the user decides to restrict turn signals only to when the car is stopped, they can further add a delay that begins
+  // when the car first stops, and until this delay is complete, the turn signals won't come on. This flag indicates if the delay
+  // is up. Initialize to true, otherwise turn signals won't work until the car has driven forward once and stopped.
+  boolean TurnSignal_Enable      =  true;
+
+  // The other situation we want to modify the turn signal is when starting from a stop, while turning. In this case we leave the turn signals on
+  // for a period of time even after the car has started moving (typically turn signals are disabled while moving). This mimics a real car where
+  // the turn signal isn't cancelled until after the steering wheel turns back the opposite way. In our case we don't check the steering wheel,
+  // we just wait a short amount of time (user configurable in AA_UserConfig.h, variable TurnFromStartContinue_mS)
+  int TurnSignalOverride         =     0;
 
   // Channel 3
-  boolean Channel3Present;                                // On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
+  // On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
+  boolean Channel3Present;
   int Channel3Pulse;
   int Channel3PulseMin;
   int Channel3PulseMax;
   int Channel3PulseCenter;
-  int Channel3 = OFF;                                     // State of the Channel 3 switch: On (1), Off (0), Disconnected (-1)
+  // State of the Channel 3 switch: On (1), Off (0), Disconnected (-1)
+  int Channel3 = OFF;
   boolean Channel3Reverse;
-  #define Pos1 0                                          // Position defines for Channel 3 switch (can be up to 5 positions)
-  #define Pos2 1
-  #define Pos3 2
-  #define Pos4 3
-  #define Pos5 4
+  // Position defines for Channel 3 switch (can be up to 5 positions)
+  const byte Pos1 = 0;
+  const byte Pos2 = 1;
+  const byte Pos3 = 2;
+  const byte Pos4 = 3;
+  const byte Pos5 = 4;
 
   // LIGHTS
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -283,6 +306,7 @@
 // ====================================================================================================================================================>
 //  SETUP
 // ====================================================================================================================================================>
+// cppcheck-suppress unusedFunction
 void setup()
 {
   // SERIAL
@@ -318,6 +342,7 @@ void setup()
   // LOAD VALUES FROM EEPROM
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   long Temp;
+  // cppcheck-suppress cstyleCast
   eeprom_read(Temp, E_InitNum);                           // Get our EEPROM Initialization value
   if(Temp != EEPROM_Init)                                 // If EEPROM has never been initialized before, do so now
   {    Initialize_EEPROM();  }
@@ -341,7 +366,7 @@ void setup()
 // ====================================================================================================================================================>
 //  MAIN LOOP
 // ====================================================================================================================================================>
-
+// cppcheck-suppress unusedFunction
 void loop()
 {
   // LOCAL VARIABLES
@@ -369,15 +394,24 @@ void loop()
   static int MinTurn;                                         // This will end up being 10-20 percent of Turn Command, this is the minimum movement to be considered a turn command during Change-Scheme-Mode
   static byte RightCount = 0;                                 // We use these to count up the number of times the user has cranked the
   static byte LeftCount = 0;                                  // steering wheel completely over.
-  static int ChangeModeTime_mS = 2000;                        // Amount of time user has to enter Change-Scheme-Mode
   static boolean ChangeSchemeTimerFlag = false;               // Has the timer begun
+  // cppcheck-suppress variableScope
+  static int ChangeModeTime_mS = 2000;                        // Amount of time user has to enter Change-Scheme-Mode
+  // cppcheck-suppress variableScope
   static unsigned int TurnTimerID;                            // An ID for the timer that counts the turns of the wheel
+  // cppcheck-suppress variableScope
   static int ExitSchemeFlag = 0;                              // A flag to indicate whether or not to exit Change-Scheme-Mode
+  // cppcheck-suppress variableScope
   static int TimeToWait_mS = 1200;                            // Time to wait between change-scheme commands (otherwise as long as you held the wheel over it would keep cycling through rapidly)
+  // cppcheck-suppress variableScope
   static int TimeToExit_mS = 3000;                            // How long to hold the wheel over until Change-Scheme-Mode is exited
+  // cppcheck-suppress variableScope
   static unsigned long ExitStart;                             // Start time of the exit waiting period
+  // cppcheck-suppress variableScope
   static boolean TimeoutFlag;
+  // cppcheck-suppress variableScope
   static boolean HoldFlag;
+  // cppcheck-suppress variableScope
   static unsigned long HoldStart;
 
   // Backfire
@@ -386,7 +420,9 @@ void loop()
   static unsigned int OvertakeTimerID = 0;
 
   // Temp vars
+  // cppcheck-suppress variableScope
   static unsigned long currentMillis;
+  // cppcheck-suppress variableScope
   static boolean WhatState = true;
 
   // STARTUP - RUN ONCE
@@ -662,6 +698,7 @@ void loop()
   // Then if all this is true, we set the Decelerating flag
   // We are decelerating
   if ((DriveMode == FWD) && (ThrottleCommand >= 0) && (ThrottleCommand < ThrottleCommand_Previous - DecelPct)) {
+    // cppcheck-suppress redundantAssignment
     Decelerating = true;
   }
   // We are not decelerating, clear
@@ -850,7 +887,6 @@ void loop()
     Serial.println(printMode(DriveMode));
   }
 
-
   //  SAVE COMMANDS FOR NEXT ITERATION
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // Set previous variables to current
@@ -861,45 +897,48 @@ void loop()
 
 void DumpDebug()
 {
-    // Channel pulse values
-    Serial.println(F("PULSE:  Min - Ctr - Max"));
-    Serial.print(F("Throttle "));
-    Serial.print(ThrottlePulseMin);
-    PrintSpaceDash();
-    Serial.print(ThrottlePulseCenter);
-    PrintSpaceDash();
-    Serial.println(ThrottlePulseMax);
+  // Channel pulse values
+  Serial.println(F("PULSE:  Min - Ctr - Max"));
+  Serial.print(F("Throttle "));
+  Serial.print(ThrottlePulseMin);
+  PrintSpaceDash();
+  Serial.print(ThrottlePulseCenter);
+  PrintSpaceDash();
+  Serial.println(ThrottlePulseMax);
 
-    Serial.print(F("Turn "));
-    Serial.print(TurnPulseMin);
-    PrintSpaceDash();
-    Serial.print(TurnPulseCenter);
-    PrintSpaceDash();
-    Serial.println(TurnPulseMax);
+  Serial.print(F("Turn "));
+  Serial.print(TurnPulseMin);
+  PrintSpaceDash();
+  Serial.print(TurnPulseCenter);
+  PrintSpaceDash();
+  Serial.println(TurnPulseMax);
 
-    Serial.print(F("Ch3 "));
-    Serial.print(Channel3PulseMin);
-    PrintSpaceDash();
-    Serial.print(Channel3PulseCenter);
-    PrintSpaceDash();
-    Serial.println(Channel3PulseMax);
+  Serial.print(F("Ch3 "));
+  Serial.print(Channel3PulseMin);
+  PrintSpaceDash();
+  Serial.print(Channel3PulseCenter);
+  PrintSpaceDash();
+  Serial.println(Channel3PulseMax);
 
+  // Channel Reversing
+  Serial.print(F(" - Throttle Channel Reverse: "));
+  PrintTrueFalse(ThrottleChannelReverse);
+  Serial.print(F(" - Turn Channel Reverse: "));
+  PrintTrueFalse(TurnChannelReverse);
+  Serial.print(F(" - Channel 3 Reverse: "));
+  PrintTrueFalse(Channel3Reverse);
 
-    // Channel Reversing
-    Serial.print(F(" - Throttle Channel Reverse: "));
-    PrintTrueFalse(ThrottleChannelReverse);
-    Serial.print(F(" - Turn Channel Reverse: "));
-    PrintTrueFalse(TurnChannelReverse);
-    Serial.print(F(" - Channel 3 Reverse: "));
-    PrintTrueFalse(Channel3Reverse);
+  // Channels disconnected?
+  Serial.print(F("Steering Channel: "));
+  if (!SteeringChannelPresent == true) { Serial.print(F("NOT ")); }
+  Serial.println(F("CONNECTED"));
 
+  Serial.print(F("Channel 3: "));
+  if (!Channel3Present) { Serial.print(F("NOT ")); }
+  Serial.println(F("CONNECTED"));
 
-    // Channels disconnected?
-    Serial.print(F("Steering Channel: "));
-    if (!SteeringChannelPresent == true) { Serial.print(F("NOT ")); }
-    Serial.println(F("CONNECTED"));
-
-    Serial.print(F("Channel 3: "));
-    if (!Channel3Present) { Serial.print(F("NOT ")); }
-    Serial.println(F("CONNECTED"));
+  PrintHorizontalLine();
+  for (int i=1; i <= NumSchemes; i++) {
+    DumpLightSchemeToSerial(i);
+  }
 }

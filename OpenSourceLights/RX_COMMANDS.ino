@@ -2,46 +2,46 @@
 // Loop speed gain is up to 2-3x
 void GetRxCommands()
 {
-    // static int LastThrottleCommand;
-    static uint8_t failsafeCounter = 0;
+  // static int LastThrottleCommand;
+  static uint8_t failsafeCounter = 0;
 
-    if (Failsafe)
+  if (Failsafe)
+  {
+    failsafeCounter++;
+    //if (DEBUG) Serial.println(F("RX: Lost packet"));
+    while(failsafeCounter > 4)                                  // Don't go into failsafe until we've missed 4 sequential packets
     {
-        failsafeCounter++;
-        //if (DEBUG) Serial.println(F("RX: Lost packet"));
-        while(failsafeCounter > 4)                                  // Don't go into failsafe until we've missed 4 sequential packets
-        {
-            if (DEBUG) Serial.println(F("RX Disconnected!"));
-            ToggleAllLights();                                      // If the receiver isn't connected, pause the program and flash all the lights
-            delay(50);
-            GetThrottleCommand();                                   // If we can successfully read the throttle channel, we will go out of failsafe
-            if (Failsafe == false) failsafeCounter = 0;             // We're out of failsafe, exit this while
-        }
+        if (DEBUG) Serial.println(F("RX Disconnected!"));
+        ToggleAllLights();                                      // If the receiver isn't connected, pause the program and flash all the lights
+        delay(50);
+        GetThrottleCommand();                                   // If we can successfully read the throttle channel, we will go out of failsafe
+        if (Failsafe == false) failsafeCounter = 0;             // We're out of failsafe, exit this while
     }
-    else
-    {
-        failsafeCounter = 0;
-    }
+  }
+  else
+  {
+    failsafeCounter = 0;
+  }
 
-    byte channelSelector;
-    channelSelector = runCount % 4;
-    switch (channelSelector)
-    {
-        case 0:
-            ThrottleCommand = GetThrottleCommand();
-            break;
-        case 1:
-            if (SteeringChannelPresent) { TurnCommand = GetTurnCommand(); }
-            else                        { TurnCommand = 0;                }    // We set Turn to nothing if not being used
-            break;
-        case 2:
-            ThrottleCommand = GetThrottleCommand();
-            break;
-        case 3:
-            if (Channel3Present)        { Channel3 = GetChannel3Command();}
-            else                        { Channel3 = Pos1;                }     // We set Channel 3 to Position 1 if not being used
-            break;
-    }
+  byte channelSelector;
+  channelSelector = runCount % 4;
+  switch (channelSelector)
+  {
+    case 0:
+      ThrottleCommand = GetThrottleCommand();
+      break;
+    case 1:
+      if (SteeringChannelPresent) { TurnCommand = GetTurnCommand(); }
+      else                        { TurnCommand = 0;                }    // We set Turn to nothing if not being used
+      break;
+    case 2:
+      ThrottleCommand = GetThrottleCommand();
+      break;
+    case 3:
+      if (Channel3Present)        { Channel3 = GetChannel3Command();}
+      else                        { Channel3 = Pos1;                }     // We set Channel 3 to Position 1 if not being used
+      break;
+  }
 }
 
 
@@ -63,109 +63,102 @@ boolean CheckSteeringChannel()
 
 int GetThrottleCommand()
 {
-    int ThrottleCommand;
-    ThrottlePulse = pulseIn(ThrottleChannel_Pin, HIGH, ServoTimeout);
+  int ThrottleCommand;
+  ThrottlePulse = pulseIn(ThrottleChannel_Pin, HIGH, ServoTimeout);
 
-    if ((ThrottlePulse == 0) || (ThrottlePulse > PulseMax_Bad) || (ThrottlePulse < PulseMin_Bad))
-    {   // Timed out waiting for a signal, or measured a bad signal
-        // Set Failsafe flag, set Throttle to 0
-        Failsafe = true;
-        ThrottleCommand = 0;
+  if ((ThrottlePulse == 0) || (ThrottlePulse > PulseMax_Bad) || (ThrottlePulse < PulseMin_Bad))
+  {   // Timed out waiting for a signal, or measured a bad signal
+    // Set Failsafe flag, set Throttle to 0
+    Failsafe = true;
+    ThrottleCommand = 0;
+    return constrain(ThrottleCommand, MaxRevSpeed, MaxFwdSpeed);
+  }
+  else
+  {
+    Failsafe = false;
+    if (ThrottlePulse >= ThrottlePulseCenter + ThrottleDeadband)
+    {
+      if (ThrottleChannelReverse == false)
+      {
+          // Without channel reversing, we consider PPM pulse values greater than Center to be forward throttle commands. We now map the radio command to our forward throttle range
+          ThrottleCommand = map(ThrottlePulse, (ThrottlePulseCenter + ThrottleDeadband), ThrottlePulseMax, ThrottleCenterAdjust, MaxFwdSpeed);
+      }
+      else
+      {
+          // With channel reversing, we consider PPM pulse values greater than Center to be reverse throttle commands. We now map the radio command to our reverse throttle range
+          ThrottleCommand = map(ThrottlePulse, (ThrottlePulseCenter + ThrottleDeadband), ThrottlePulseMax, -ThrottleCenterAdjust, MaxRevSpeed);
+      }
+    }
+    else if (ThrottlePulse <= (ThrottlePulseCenter - ThrottleDeadband))
+    {
+      if (ThrottleChannelReverse == false)
+      {
+          // Without channel reversing, we consider PPM pulse values less than Center to be reverse throttle commands. We now map the radio command to our reverse throttle range
+          ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxRevSpeed, -ThrottleCenterAdjust);
+      }
+      else
+      {
+          // With channel reversing, we consider PPM pulse values less than Center to be forward throttle commands. We now map the radio command to our forward throttle range
+          ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxFwdSpeed, ThrottleCenterAdjust);
+      }
     }
     else
-    {
-        Failsafe = false;
-        if (ThrottlePulse >= ThrottlePulseCenter + ThrottleDeadband)
-        {
-            if (ThrottleChannelReverse == false)
-            {
-                // Without channel reversing, we consider PPM pulse values greater than Center to be forward throttle commands. We now map the radio command to our forward throttle range
-                ThrottleCommand = map(ThrottlePulse, (ThrottlePulseCenter + ThrottleDeadband), ThrottlePulseMax, ThrottleCenterAdjust, MaxFwdSpeed);
-            }
-            else
-            {
-                // With channel reversing, we consider PPM pulse values greater than Center to be reverse throttle commands. We now map the radio command to our reverse throttle range
-                ThrottleCommand = map(ThrottlePulse, (ThrottlePulseCenter + ThrottleDeadband), ThrottlePulseMax, -ThrottleCenterAdjust, MaxRevSpeed);
-            }
-        }
-        else if (ThrottlePulse <= (ThrottlePulseCenter - ThrottleDeadband))
-        {
-            if (ThrottleChannelReverse == false)
-            {
-                // Without channel reversing, we consider PPM pulse values less than Center to be reverse throttle commands. We now map the radio command to our reverse throttle range
-                ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxRevSpeed, -ThrottleCenterAdjust);
-            }
-            else
-            {
-                // With channel reversing, we consider PPM pulse values less than Center to be forward throttle commands. We now map the radio command to our forward throttle range
-                ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxFwdSpeed, ThrottleCenterAdjust);
-            }
-        }
-        else
-        {   // In this case we are within the ThrottleDeadband setting, so Command is actually Zero (0)
-            ThrottleCommand = 0;
-        }
-
-        // Average the command if user has this option enabled
-        if (SmoothThrottle) ThrottleCommand = smoothThrottleCommand(ThrottleCommand);
-
-        return constrain(ThrottleCommand, MaxRevSpeed, MaxFwdSpeed);
-        // After all this, ThrottleCommand is now some value from -255 to +255 where negative equals REV and positive equals FWD. (The values can actually be less if top forward or
-        // reverse speeds have been limited by user)
+    {   // In this case we are within the ThrottleDeadband setting, so Command is actually Zero (0)
+        ThrottleCommand = 0;
     }
+
+    // Average the command if user has this option enabled
+    if (SmoothThrottle) ThrottleCommand = smoothThrottleCommand(ThrottleCommand);
+
+    return constrain(ThrottleCommand, MaxRevSpeed, MaxFwdSpeed);
+    // After all this, ThrottleCommand is now some value from -255 to +255 where negative equals REV and positive equals FWD. (The values can actually be less if top forward or
+    // reverse speeds have been limited by user)
+  }
 }
 
 
 int GetTurnCommand()
 {
-    int TurnCommand;
-    TurnPulse = pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
-
-    if ((TurnPulse == 0) || (TurnPulse > PulseMax_Bad) || (TurnPulse < PulseMin_Bad))
-    {   // In this case, there was no signal found on the turn channel
-        TurnCommand = 0;    // If no TurnPulse, we set Turn to 0 (no turn)
+  int TurnCommand;
+  TurnPulse = pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
+  // In this case, there was no signal found on the turn channel
+  if ((TurnPulse == 0) || (TurnPulse > PulseMax_Bad) || (TurnPulse < PulseMin_Bad)) {
+    TurnCommand = 0; // If no TurnPulse, we set Turn to 0 (no turn)
+    return constrain(TurnCommand, MaxLeftTurn, MaxRightTurn);
+  }
+  else {
+    if (TurnPulse >= TurnPulseCenter + TurnDeadband) {
+      if (TurnChannelReverse == false) {
+        // Without channel reversing, we consider PPM pulse values greater than Center to be Right Turn commands. We now map the radio command to our Right Turn range
+        TurnCommand = map(TurnPulse, (TurnPulseCenter + TurnDeadband), TurnPulseMax, TurnCenterAdjust, MaxRightTurn);
+      }
+      else {
+        // With channel reversing, we consider PPM pulse values greater than Center to be Left Turn commands. We now map the radio command to our Left Turn range
+        TurnCommand = map(TurnPulse, (TurnPulseCenter + TurnDeadband), TurnPulseMax, -TurnCenterAdjust, MaxLeftTurn);
+      }
     }
-    else
-    {
-        if (TurnPulse >= TurnPulseCenter + TurnDeadband)
-        {
-            if (TurnChannelReverse == false)
-            {
-                // Without channel reversing, we consider PPM pulse values greater than Center to be Right Turn commands. We now map the radio command to our Right Turn range
-                TurnCommand = map(TurnPulse, (TurnPulseCenter + TurnDeadband), TurnPulseMax, TurnCenterAdjust, MaxRightTurn);
-            }
-            else
-            {
-                // With channel reversing, we consider PPM pulse values greater than Center to be Left Turn commands. We now map the radio command to our Left Turn range
-                TurnCommand = map(TurnPulse, (TurnPulseCenter + TurnDeadband), TurnPulseMax, -TurnCenterAdjust, MaxLeftTurn);
-            }
-        }
-        else if (TurnPulse <= (TurnPulseCenter - TurnDeadband))
-        {
-            if (TurnChannelReverse == false)
-            {
-                // Without channel reversing, we consider PPM pulse values less than Center to be Left Turn commands. We now map the radio command to our Left Turn range
-                TurnCommand = map(TurnPulse, TurnPulseMin, (TurnPulseCenter - TurnDeadband), MaxLeftTurn, -TurnCenterAdjust);
-            }
-            else
-            {
-                // With channel reversing, we consider PPM pulse values less than Center to be Right Turn commands. We now map the radio command to our Right Turn range
-                TurnCommand = map(TurnPulse, TurnPulseMin, (TurnPulseCenter - TurnDeadband), MaxRightTurn, TurnCenterAdjust);
-            }
-        }
-        else
-        {   // In this case we are within the TurnDeadband setting, so Command is actually Zero (0)
-            TurnCommand = 0;
-        }
-
-        // Average the command if user has this option enabled
-        if (SmoothSteering) TurnCommand = smoothSteeringCommand(TurnCommand);
-
-        return constrain(TurnCommand, MaxLeftTurn, MaxRightTurn);
-        // After all this, TurnCommand is now some value from -100 to +100 where negative equals LEFT and positive equals RIGHT.
+    else if (TurnPulse <= (TurnPulseCenter - TurnDeadband)) {
+      if (TurnChannelReverse == false) {
+        // Without channel reversing, we consider PPM pulse values less than Center to be Left Turn commands. We now map the radio command to our Left Turn range
+        TurnCommand = map(TurnPulse, TurnPulseMin, (TurnPulseCenter - TurnDeadband), MaxLeftTurn, -TurnCenterAdjust);
+      }
+      else {
+        // With channel reversing, we consider PPM pulse values less than Center to be Right Turn commands. We now map the radio command to our Right Turn range
+        TurnCommand = map(TurnPulse, TurnPulseMin, (TurnPulseCenter - TurnDeadband), MaxRightTurn, TurnCenterAdjust);
+      }
     }
+    else {
+      // In this case we are within the TurnDeadband setting, so Command is actually Zero (0)
+      TurnCommand = 0;
+    }
+
+    // Average the command if user has this option enabled
+    if (SmoothSteering) TurnCommand = smoothSteeringCommand(TurnCommand);
+
+    return constrain(TurnCommand, MaxLeftTurn, MaxRightTurn);
+    // After all this, TurnCommand is now some value from -100 to +100 where negative equals LEFT and positive equals RIGHT.
+  }
 }
-
 
 int GetChannel3Command()
 {
@@ -219,7 +212,6 @@ int GetChannel3Command()
 
     return Channel3Command;
 }
-
 
 // Smoothing code submitted by Wombii
 // https://www.rcgroups.com/forums/showthread.php?1539753-Open-Source-Lights-Arduino-based-RC-Light-Controller/page57#post41145245

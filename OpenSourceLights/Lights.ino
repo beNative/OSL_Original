@@ -167,24 +167,20 @@ void SetLights(int DriveMode)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void DumpLightSchemeToSerial(int WhatScheme)
 {
-    int i;
-    int j;
-    int MySetting;
-
     if (WhatScheme <= NumSchemes)
     {   // Schemes are zero-based, so if they pass Scheme 1 what we really want to show is Scheme 0
         WhatScheme -= 1;
         Serial.print(F("SCHEME: "));
         Serial.print(WhatScheme+1);
         Serial.println();
-        for (i=0; i<NumLights; i++)
+        for (int i=0; i<NumLights; i++)
         {
             Serial.print(F("Light #"));
             Serial.print(i+1);
             Serial.print(F(" States: "));
-            for (j=0; j<NumStates; j++)
+            for (int j=0; j<NumStates; j++)
             {
-                MySetting = pgm_read_word_near(&(Schemes[WhatScheme][i][j]));
+                int MySetting = pgm_read_word_near(&(Schemes[WhatScheme][i][j]));
                 Serial.print(MySetting, DEC);
                 Serial.print(F("  "));
             }
@@ -207,97 +203,100 @@ void SetLight(int WhatLight, int WhatSetting)
 
   static byte pinIsFlashing[NumLights] = {0,0,0,0,0,0,0,0}; //Helper to reset the phase to make sure we start a flash session ON with no delay
 
-  //if (WhatLight == 0) Serial.print('\t');if (WhatLight == 0) Serial.println(WhatSetting);
-    switch (WhatSetting)
-    {
-        case ON:
-            WantedLightState = 1;
-            WantedLightValue = 255;
-            WantedFade = '0';
-            pinIsFlashing[WhatLight] = 0;
-            break;
+  switch (WhatSetting)
+  {
+    case ON:
+      WantedLightState = 1;
+      WantedLightValue = 255;
+      WantedFade = '0';
+      pinIsFlashing[WhatLight] = 0;
+      break;
 
-        case OFF:
-            WantedLightState = 0;
-            WantedLightValue = 0;
-            WantedFade = '0';
-            pinIsFlashing[WhatLight] = 0;
-            break;
+    case OFF:
+      WantedLightState = 0;
+      WantedLightValue = 0;
+      WantedFade = '0';
+      pinIsFlashing[WhatLight] = 0;
+      break;
 
-        case BLINK:
-            if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[0][1] = 255;
-            WantedLightState = flashingFunctionStartActiveSimple(0,specialTimingArray[0]);
-            WantedLightValue = WantedLightState*255;
-            WantedFade = '0';
-            if (LightSettings[WhatLight][Channel3] == DIM)
-            {
-              if(WantedLightState == 0)
-                WantedLightValue = ActualDimLevel;
-            }
-            pinIsFlashing[WhatLight] = 1;
-            break;
+    case BLINK:
+      if (pinIsFlashing[WhatLight] == 0) {
+        specialTimingArray[0][1] = 255;
+      }
+      WantedLightState = flashingFunctionStartActiveSimple(0,specialTimingArray[0]);
+      WantedLightValue = WantedLightState * 255;
+      WantedFade = '0';
+      if (LightSettings[WhatLight][Channel3] == DIM) {
+        if(WantedLightState == 0) {
+          WantedLightValue = ActualDimLevel;
+        }
+      }
+      pinIsFlashing[WhatLight] = 1;
+      break;
 
-        case SOFTBLINK:
-            if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[1][1] = 255;             //If new flash session, reset phase
-            WantedLightState = flashingFunctionStartActiveSimple(1,specialTimingArray[1]);
-            WantedLightValue = WantedLightState*255;
-            WantedFade = '4';
-            if (LightSettings[WhatLight][Channel3] == DIM)
-            {
-              if(WantedLightState == 0)
-                WantedLightValue = ActualDimLevel;
-            }
-            pinIsFlashing[WhatLight] = 1;                                                   //Currently in a flashing session, leave phase alone
-            break;
+    case SOFTBLINK:
+      if (pinIsFlashing[WhatLight] == 0) {
+        specialTimingArray[1][1] = 255;             //If new flash session, reset phase
+      }
+      WantedLightState = flashingFunctionStartActiveSimple(1,specialTimingArray[1]);
+      WantedLightValue = WantedLightState * 255;
+      WantedFade = '4';
+      if (LightSettings[WhatLight][Channel3] == DIM) {
+        if(WantedLightState == 0) {
+          WantedLightValue = ActualDimLevel;
+        }
+      }
+      pinIsFlashing[WhatLight] = 1;                                                   //Currently in a flashing session, leave phase alone
+      break;
 
-        case FASTBLINK:
-            if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[2][1] = 255;
-            WantedLightState = flashingFunctionStartActiveSimple(2,specialTimingArray[2]);
-            WantedLightValue = WantedLightState*255;
-            WantedFade = '0';
-            if (LightSettings[WhatLight][Channel3] == DIM)
-            {
-              if(WantedLightState == 0)
-                WantedLightValue = ActualDimLevel;
-            }
-            pinIsFlashing[WhatLight] = 1;
-            break;
+    case FASTBLINK:
+      if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[2][1] = 255;
+      WantedLightState = flashingFunctionStartActiveSimple(2,specialTimingArray[2]);
+      WantedLightValue = WantedLightState*255;
+      WantedFade = '0';
+      if (LightSettings[WhatLight][Channel3] == DIM)
+      {
+        if(WantedLightState == 0)
+          WantedLightValue = ActualDimLevel;
+      }
+      pinIsFlashing[WhatLight] = 1;
+      break;
 
-        case DIM:
-            WantedLightValue = ActualDimLevel;
-            WantedFade = '0';
-            pinIsFlashing[WhatLight] = 0;
-            break;
+    case DIM:
+      WantedLightValue = ActualDimLevel;
+      WantedFade = '0';
+      pinIsFlashing[WhatLight] = 0;
+      break;
 
-        case BACKFIRE: //Unchanged
-            LightBackfire(WhatLight);
-            pinIsFlashing[WhatLight] = 0;
-            break;
+    case BACKFIRE: //Unchanged
+      LightBackfire(WhatLight);
+      pinIsFlashing[WhatLight] = 0;
+      break;
 
-        case XENON:
-            WantedLightState = 1;
-            WantedLightValue = 255;
-            WantedFade = '5';
-            pinIsFlashing[WhatLight] = 0;
-            break;
+    case XENON:
+      WantedLightState = 1;
+      WantedLightValue = 255;
+      WantedFade = '5';
+      pinIsFlashing[WhatLight] = 0;
+      break;
 
-        case FADEOFF:
-            WantedLightState = 0;
-            WantedLightValue = 0;
-            WantedFade = '3';
-            pinIsFlashing[WhatLight] = 0;
-            break;
-    }
+    case FADEOFF:
+      WantedLightState = 0;
+      WantedLightValue = 0;
+      WantedFade = '3';
+      pinIsFlashing[WhatLight] = 0;
+      break;
+  }
 
-    activeLightValue = SimpleFader(WhatLight, WantedFade, WantedLightValue);
+  activeLightValue = SimpleFader(WhatLight, WantedFade, WantedLightValue);
 
-    //Actually write to the pins: (Could do all with analogWrite, but can do the digitalWrite parts to possibly save some time)
-    if (activeLightValue == 0)
-        digitalWrite(LightPin[WhatLight],LOW);
-    else if (activeLightValue == 255)
-        digitalWrite(LightPin[WhatLight],HIGH);
-    else
-        analogWrite(LightPin[WhatLight],activeLightValue);
+  //Actually write to the pins: (Could do all with analogWrite, but can do the digitalWrite parts to possibly save some time)
+  if (activeLightValue == 0)
+      digitalWrite(LightPin[WhatLight],LOW);
+  else if (activeLightValue == 255)
+      digitalWrite(LightPin[WhatLight],HIGH);
+  else
+      analogWrite(LightPin[WhatLight],activeLightValue);
 }
 
 
@@ -453,28 +452,26 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
 //   phase is the delay before the rising edge.
 byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4]) // -Wombii
 {
-    byte phase = tempArray[1];
-    byte numberOfFrames = tempArray[2];
-    byte numberOfActiveFrames = tempArray[3];
-    byte flasherState = 0;
+  byte phase = tempArray[1];
+  byte numberOfFrames = tempArray[2];
+  byte numberOfActiveFrames = tempArray[3];
+  byte flasherState = 0;
 
-    //set phase if this is a new blinking session to always start ON
-    if (phase == 255)
-    {
-        phase = numberOfFrames - (runCount % numberOfFrames );
-        specialTimingArray[functionNumber][1] = phase;
-    }
+  //set phase if this is a new blinking session to always start ON
+  if (phase == 255) {
+    phase = numberOfFrames - (runCount % numberOfFrames );
+    specialTimingArray[functionNumber][1] = phase;
+  }
 
-    //split up the infinite number line of loops into reasonable chunks.
-    //numberOfFrames = number of loops per light cycle
-    //numberOfActiveFrames = number of loops per light cycle that should be ON.
-    //phase = number of frames to wait before starting the ON part.
-    if ((runCount + phase)%numberOfFrames < numberOfActiveFrames )
-    {
-        flasherState = 1;
-    }
+  //split up the infinite number line of loops into reasonable chunks.
+  //numberOfFrames = number of loops per light cycle
+  //numberOfActiveFrames = number of loops per light cycle that should be ON.
+  //phase = number of frames to wait before starting the ON part.
+  if ((runCount + phase)%numberOfFrames < numberOfActiveFrames ) {
+    flasherState = 1;
+  }
 
-    return flasherState;
+  return flasherState;
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -482,7 +479,7 @@ byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4])
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void TurnOnLight(int WhatLight)
 {
-    digitalWrite(LightPin[WhatLight], HIGH);
+  digitalWrite(LightPin[WhatLight], HIGH);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -490,7 +487,7 @@ void TurnOnLight(int WhatLight)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void TurnOffLight(int WhatLight)
 {
-    digitalWrite(LightPin[WhatLight], LOW);
+  digitalWrite(LightPin[WhatLight], LOW);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -499,28 +496,27 @@ void TurnOffLight(int WhatLight)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void LightBackfire(int WhatLight)
 {
-    if (canBackfire)
-    {   // Has enough time passed to flicker the backfire LED?
-        if(millis() - Backfire_millis > backfire_interval)
-        {   // Save time for next check
-            Backfire_millis = millis();
-            // Change state of backfire LED
-            for (int i=0; i<NumLights; i++)
-            {
-                if (LightSettings[i][StateDecel] == BACKFIRE) {ReverseLight(i); }
-            }
-            // Calculate new random interval for the next flicker
-            backfire_interval = random(BF_Short, BF_Long);
-        }
+  // Has enough time passed to flicker the backfire LED?
+  if (canBackfire) {
+    // Save time for next check
+    if(millis() - Backfire_millis > backfire_interval) {
+      Backfire_millis = millis();
+      // Change state of backfire LED
+      for (int i=0; i<NumLights; i++) {
+        if (LightSettings[i][StateDecel] == BACKFIRE) {ReverseLight(i); }
+      }
+      // Calculate new random interval for the next flicker
+      backfire_interval = random(BF_Short, BF_Long);
     }
+  }
 }
 
 void BackfireOff()
 {
-    // Time up - stop backfire effect
-    canBackfire = false;
-    // Reset the random backfire timeout for the next event
-    backfire_timeout = BF_Time + random(BF_Short, BF_Long);
+  // Time up - stop backfire effect
+  canBackfire = false;
+  // Reset the random backfire timeout for the next event
+  backfire_timeout = BF_Time + random(BF_Short, BF_Long);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -528,13 +524,15 @@ void BackfireOff()
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void OvertakeOff()
 {
-    // Time up - stop the overtake effects
-    Overtaking = false;
-    for (int i=0; i<NumLights; i++)
-    {   // The overtaking effect can cause a Xenon effect to re-start, so in the event a Xenon effect is defined for this same light,
-        // we go ahead and flag it complete.
-        if (LightSettings[i][StateAccel] != NA) { Xenon_EffectDone[i] = 1; }
+  // Time up - stop the overtake effects
+  Overtaking = false;
+  // The overtaking effect can cause a Xenon effect to re-start, so in the event a Xenon effect is defined for this same light,
+  for (int i=0; i<NumLights; i++) {
+    // we go ahead and flag it complete.
+    if (LightSettings[i][StateAccel] != NA) {
+      Xenon_EffectDone[i] = 1;
     }
+  }
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -545,7 +543,7 @@ void OvertakeOff()
 // runs out this function is called which sets TurnSignalOverride back to 0.
 void ClearBlinkerOverride(void)
 {
-    TurnSignalOverride = 0;
+  TurnSignalOverride = 0;
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -553,7 +551,7 @@ void ClearBlinkerOverride(void)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void FastBlinkLight(int WhatLight)
 {
-    FastBlinker ? TurnOnLight(WhatLight) : TurnOffLight(WhatLight);
+  FastBlinker ? TurnOnLight(WhatLight) : TurnOffLight(WhatLight);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -561,10 +559,12 @@ void FastBlinkLight(int WhatLight)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void FixDimLevel()
 {
-    if (DimLevel < 2)
-    { ActualDimLevel = 2; }
-    else
-    { ActualDimLevel = DimLevel; }
+  if (DimLevel < 2) {
+    ActualDimLevel = 2;
+  }
+  else {
+    ActualDimLevel = DimLevel;
+  }
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -572,17 +572,14 @@ void FixDimLevel()
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void TwinkleLights(int Seconds)
 {
-    int j;
-    StartWaiting_sec(Seconds);
-    do
-    {
-        for (j=0; j<NumLights; j++)
-        {
-            FastBlinkLight(j);
-        }
-        timer.run();
+  StartWaiting_sec(Seconds);
+  do {
+    for (int j=0; j<NumLights; j++) {
+      FastBlinkLight(j);
     }
-    while(!TimeUp);
+    timer.run();
+  }
+  while(!TimeUp);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -590,65 +587,60 @@ void TwinkleLights(int Seconds)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void BlinkAllLights(int HowManyTimes)
 {
-    if (Blinking)
-    {
-        if (State)
-        {
-            if (!PriorState)
-            {
-                // Turn everything on
-                GreenLedOn();
-                RedLedOn();
-                for (int j=0; j<NumLights; j++)
-                {   TurnOnLight(j); }
-                PriorState = true;
-                TimesBlinked += 1;
-                timer.setTimeout(130, BlinkOn);
-            }
+  if (Blinking) {
+    if (State) {
+      if (!PriorState) {
+        // Turn everything on
+        GreenLedOn();
+        RedLedOn();
+        for (int j=0; j<NumLights; j++){
+          TurnOnLight(j);
         }
-        else
-        {
-            if (PriorState)
-            {
-                // Turn everything off
-                GreenLedOff();
-                RedLedOff();
-                for (int j=0; j<NumLights; j++)
-                {   TurnOffLight(j); }
-                PriorState = false;
-                BlinkOffID = timer.setTimeout(160, BlinkOff);
-            }
-
-            if (TimesBlinked >= HowManyTimes)
-            {   TimesBlinked = 0;
-                Blinking = false;
-                timer.setTimeout(1000, BlinkWait);
-                timer.deleteTimer(BlinkOffID);
-            }
-
-        }
+        PriorState = true;
+        TimesBlinked += 1;
+        timer.setTimeout(130, BlinkOn);
+      }
     }
+    else {
+      if (PriorState) {
+        // Turn everything off
+        GreenLedOff();
+        RedLedOff();
+        for (int j=0; j<NumLights; j++)
+        {   TurnOffLight(j); }
+        PriorState = false;
+        BlinkOffID = timer.setTimeout(160, BlinkOff);
+      }
+
+      if (TimesBlinked >= HowManyTimes) {
+        TimesBlinked = 0;
+        Blinking = false;
+        timer.setTimeout(1000, BlinkWait);
+        timer.deleteTimer(BlinkOffID);
+      }
+    }
+  }
 }
 
 void BlinkOn()
 {
-    Blinking = true;
-    State = false;
-    PriorState = true;
+  Blinking = true;
+  State = false;
+  PriorState = true;
 }
 
 void BlinkOff()
 {
-    Blinking = true;
-    State = true;
-    PriorState = false;
+  Blinking = true;
+  State = true;
+  PriorState = false;
 }
 
 void BlinkWait()
 {
-    Blinking = true;
-    State = true;
-    PriorState = false;
+  Blinking = true;
+  State = true;
+  PriorState = false;
 }
 
 void ReverseLight(int WhatLight)
@@ -658,9 +650,4 @@ void ReverseLight(int WhatLight)
   OppositeVal = !digitalRead(LightPin[WhatLight]);
   digitalWrite(LightPin[WhatLight], OppositeVal);
   PWM_Step[WhatLight] = OppositeVal;
-}
-
-void ReturnToPriorState(int WhatLight, int WhatState)
-{
-  LightSettings[WhatLight][WhatState] = PriorLightSetting[WhatLight][WhatState];
 }

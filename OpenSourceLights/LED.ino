@@ -33,14 +33,6 @@ void RedBlink()
     Status = !Status;
 }
 
-void ToggleLEDs()
-{
-    static boolean Status;
-    Status ? RedLedOn() : RedLedOff();
-    Status ? GreenLedOff() : GreenLedOn();
-    Status = !Status;
-}
-
 void ToggleAllLights()
 {
     static boolean Status;
@@ -61,13 +53,6 @@ void ToggleAllLights()
     }
 
     // Flop the flip
-    Status = !Status;
-}
-
-void ToggleSelectLight(uint8_t NumLight)
-{
-    static boolean Status;
-    Status ? TurnOnLight(NumLight-1) : TurnOffLight(NumLight-1);
     Status = !Status;
 }
 
