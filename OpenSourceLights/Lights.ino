@@ -211,7 +211,6 @@ void SetLight(int WhatLight, int WhatSetting)
     switch (WhatSetting)
     {
         case ON:
-            //TurnOnLight(WhatLight);
             WantedLightState = 1;
             WantedLightValue = 255;
             WantedFade = '0';
@@ -219,7 +218,6 @@ void SetLight(int WhatLight, int WhatSetting)
             break;
 
         case OFF:
-            //TurnOffLight(WhatLight);
             WantedLightState = 0;
             WantedLightValue = 0;
             WantedFade = '0';
@@ -227,7 +225,6 @@ void SetLight(int WhatLight, int WhatSetting)
             break;
 
         case BLINK:
-            //BlinkLight(WhatLight);
             if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[0][1] = 255;
             WantedLightState = flashingFunctionStartActiveSimple(0,specialTimingArray[0]);
             WantedLightValue = WantedLightState*255;
@@ -241,7 +238,6 @@ void SetLight(int WhatLight, int WhatSetting)
             break;
 
         case SOFTBLINK:
-            //SoftBlinkLight(WhatLight);
             if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[1][1] = 255;             //If new flash session, reset phase
             WantedLightState = flashingFunctionStartActiveSimple(1,specialTimingArray[1]);
             WantedLightValue = WantedLightState*255;
@@ -255,7 +251,6 @@ void SetLight(int WhatLight, int WhatSetting)
             break;
 
         case FASTBLINK:
-            //FastBlinkLight(WhatLight);
             if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[2][1] = 255;
             WantedLightState = flashingFunctionStartActiveSimple(2,specialTimingArray[2]);
             WantedLightValue = WantedLightState*255;
@@ -269,7 +264,6 @@ void SetLight(int WhatLight, int WhatSetting)
             break;
 
         case DIM:
-            //DimLight(WhatLight);
             WantedLightValue = ActualDimLevel;
             WantedFade = '0';
             pinIsFlashing[WhatLight] = 0;
@@ -281,7 +275,6 @@ void SetLight(int WhatLight, int WhatSetting)
             break;
 
         case XENON:
-            //TurnOnXENONLight(WhatLight);
             WantedLightState = 1;
             WantedLightValue = 255;
             WantedFade = '5';
@@ -289,7 +282,6 @@ void SetLight(int WhatLight, int WhatSetting)
             break;
 
         case FADEOFF:
-            //FadeOffLight(WhatLight);
             WantedLightState = 0;
             WantedLightValue = 0;
             WantedFade = '3';
@@ -306,10 +298,6 @@ void SetLight(int WhatLight, int WhatSetting)
         digitalWrite(LightPin[WhatLight],HIGH);
     else
         analogWrite(LightPin[WhatLight],activeLightValue);
-
-   //Can skip some steps by doing only
-   //analogWrite(LightPin[WhatLight],SimpleFader(WhatLight, WantedFade, WantedLightValue);
-   //but splitting it might be more readable.
 }
 
 
@@ -331,42 +319,35 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
     static byte fadeValueArray[NumLights] = {0,0,0,0,0,0,0,0};      //Stores the current pwm value per pin
     static byte previousFadeSetting[NumLights] = {0,0,0,0,0,0,0,0}; //Stores the previously used fade setting
 
-
-    const byte fadeSpeed = 10;        //User setting?
     const byte fadeUpSlowSpeed = 10;  //User setting?
 
     int lastOutput = 0;               //The calculated output from the previous loop
     int calculatedOutput = 0;         //The output after fading calculation
-
-    byte fadeValue = 0;               //Temp value for calculations.
-
-    fadeValue = fadeSpeed;            //The value to add or subtract from the pwm value
 
     lastOutput = fadeValueArray[currentPin];
 
     byte fadeSetting = wantedFadeSetting;
 
     //If I remember correctly, this helps the xenon sequencing work:
-      if (wantedOutput < lastOutput){
-        if(previousFadeSetting[currentPin] >= '5'){//Fixes xenon bug.
-          fadeSetting = previousFadeSetting[currentPin]; //xenonFrame[currentPin][functionNumber];
-        }
+    if (wantedOutput < lastOutput){
+      if(previousFadeSetting[currentPin] >= '5'){//Fixes xenon bug.
+        fadeSetting = previousFadeSetting[currentPin];
       }
-      else
-      {
-        fadeSetting = wantedFadeSetting;
-        if (previousFadeSetting[currentPin] < FADEXENON)
-          previousFadeSetting[currentPin] = wantedFadeSetting;
-      }
+    }
+    else
+    {
+      fadeSetting = wantedFadeSetting;
+      if (previousFadeSetting[currentPin] < FADEXENON)
+        previousFadeSetting[currentPin] = wantedFadeSetting;
+    }
 
     switch (fadeSetting)
     {
       case FADEQUICK: //Fast bug less smooth fade (both up and down)
-
         previousFadeSetting[currentPin] = FADEQUICK;
         if (wantedOutput > lastOutput){
           calculatedOutput = min(lastOutput + 20, wantedOutput);}
-        else if (wantedOutput < lastOutput){                         //changed if to else if. untested!
+        else if (wantedOutput < lastOutput){
           calculatedOutput = max(lastOutput - 20, wantedOutput);}
         else{
           calculatedOutput = wantedOutput;}
@@ -400,11 +381,11 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
         }
         break;
 
-    //The xenon fading works in 3 stages.
-    //1: Starting from off, spike the value to a medium-high value.
-    //2: Go quickly down to a low value.
-    //3: Slowly fade up to the wanted output value (probably full, but supports any value).
-    // When turning off, fade out.
+      //The xenon fading works in 3 stages.
+      //1: Starting from off, spike the value to a medium-high value.
+      //2: Go quickly down to a low value.
+      //3: Slowly fade up to the wanted output value (probably full, but supports any value).
+      // When turning off, fade out.
       case FADEXENON:
       case FADEXENON+1:
       case FADEXENON+2:
@@ -450,18 +431,11 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
       default:
         calculatedOutput = wantedOutput;
         previousFadeSetting[currentPin] = 0;
-
         break;
-
     }
 
-    //if (currentPin == 0) Serial.print('\t');if (currentPin == 0) Serial.println(calculatedOutput);
-    //
-
     fadeValueArray[currentPin] = calculatedOutput;
-
     return calculatedOutput;
-
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -509,8 +483,6 @@ byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4])
 void TurnOnLight(int WhatLight)
 {
     digitalWrite(LightPin[WhatLight], HIGH);
-    //PWM_Step[WhatLight] = 255;
-    //FadeOffReset(WhatLight);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -519,8 +491,6 @@ void TurnOnLight(int WhatLight)
 void TurnOffLight(int WhatLight)
 {
     digitalWrite(LightPin[WhatLight], LOW);
-    //PWM_Step[WhatLight] = 0;
-    //XenonReset(WhatLight);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -552,8 +522,6 @@ void BackfireOff()
     // Reset the random backfire timeout for the next event
     backfire_timeout = BF_Time + random(BF_Short, BF_Long);
 }
-
-
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // OVERTAKEOFF - Overtaking time is up

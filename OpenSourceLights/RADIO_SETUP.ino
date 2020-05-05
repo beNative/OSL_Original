@@ -5,7 +5,7 @@ unsigned long TotThrottlePulse = 0;
 unsigned long TotTurnPulse = 0;
 unsigned long TotChannel3Pulse = 0;
 float TempFloat;
-boolean RunSetup = false;
+// boolean RunSetup = false;
 int TypicalPulseCenter = 1500;
 int MaxPossiblePulse = 2250;
 int MinPossiblePulse = 750;

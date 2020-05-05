@@ -79,8 +79,6 @@
         const byte OFF            = 0;
         const byte YES            = 1;
         const byte NO             = 0;
-        // const byte PRESSED        = 0; // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
-        // const byte RELEASED       = 1; // Used for buttons pulled-up to Vcc, who are tied to ground when pressed
 
     // SIMPLE TIMER
     // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -99,13 +97,13 @@
         boolean StoppedLongTime        = false;                 // Have we been stopped for a long time (actual length of time set on the UserConfig tab - LongStopTime_mS)
 
         typedef char DRIVEMODES;
-        #define UNKNOWN      0
-        #define STOP         1
+        #define UNKNOWN    0
+        #define STOP       1
         #define FWD 	     2
-        #define REV          3
-        #define LAST_MODE    REV
+        #define REV        3
+        #define LAST_MODE  REV
 
-        // Little function to help us print out actual drive mode names, rather than numbers.
+        // Little function to help us print out actual drive mode names, rather than numbers. // Updated to latest avr-gcc so it will compile if Debug is enabled.
         // To use, call something like this:  Serial.print(printMode(DriveModeCommand));
         const __FlashStringHelper *printMode(DRIVEMODES Type) {
             if(Type>LAST_MODE) Type=UNKNOWN;
@@ -119,15 +117,15 @@
 
 
         // Throttle
-        boolean ThrottleChannelReverse;                         // Can be used to reverse the throttle channel if they don't have reversing on radio
-        int ThrottleCommand            =     0;                 // A mapped value of ThrottlePulse to (0, MapPulseFwd/Rev) where MapPulseFwd/Rev is the maximum FWD/REV speed (100, or less if governed)
-        int ThrottlePulse;                                      // Positive = Forward, Negative = Reverse <ThrottlePulseCenter - ThrottlePulseMin> to <0> to <ThrottlePulseCenter + ThrottlePulseMax>
-        int ThrottlePulseMin;                                   // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
-        int ThrottlePulseMax;                                   // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
-        int ThrottlePulseCenter;                                // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
-        int ThrottleCenterAdjust       =     0;                 // If small throttle commands do not result in movement due to gearbox/track resistance, increase this number. FOR NOW, LEAVE AT ZERO. IF SET, MUST BE SMALLER THAN THROTTLEDEADBAND
-        int MaxFwdSpeed                =   100;                 //
-        int MaxRevSpeed                =  -100;                 //
+        boolean ThrottleChannelReverse; // Can be used to reverse the throttle channel if they don't have reversing on radio
+        int ThrottleCommand = 0;        // A mapped value of ThrottlePulse to (0, MapPulseFwd/Rev) where MapPulseFwd/Rev is the maximum FWD/REV speed (100, or less if governed)
+        int ThrottlePulse;              // Positive = Forward, Negative = Reverse <ThrottlePulseCenter - ThrottlePulseMin> to <0> to <ThrottlePulseCenter + ThrottlePulseMax>
+        int ThrottlePulseMin;           // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
+        int ThrottlePulseMax;           // Will ultimately be determined by setup procedure to read max travel on stick, or from EEPROM if setup complete
+        int ThrottlePulseCenter;        // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
+        int ThrottleCenterAdjust = 0;   // If small throttle commands do not result in movement due to gearbox/track resistance, increase this number. FOR NOW, LEAVE AT ZERO. IF SET, MUST BE SMALLER THAN THROTTLEDEADBAND
+        int MaxFwdSpeed = 100;
+        int MaxRevSpeed = -100;
 
         // Steering
         boolean SteeringChannelPresent;                         // On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
@@ -198,19 +196,11 @@
         int LightSettings[NumLights][NumStates];                // An array to hold the settings for each state for each light.
         int PriorLightSetting[NumLights][NumStates];            // Sometimes we want to temporarily change the setting for a light. We can store the prior setting here, and revert back to it when the temporary change is over.
 
-        // With changes made by Wombii in October 2019 several of these settings are no longer needed
-//        int Dimmable[NumLights] = {1,1,1,1,1,1,0,0};            // This indicates which of these pins are capable of ouputting PWM, in order. PWM-capable pins on the Arduino are 3, 5, 6, 9, 10, 11
-                                                                // Dimmable must be true in order for the light to be capable of DIM, FADEOFF, or XENON settings
         int PWM_Step[NumLights] = {0,0,0,0,0,0,0,0};            // What is the current PWM value of each light.
 
-        // FadeOff effect
-//        int FadeOff_EffectDone[NumLights] = {0,0,0,0,0,0,0,0};  // For each light, if = 1, then the Fade  effect is done, don't do it again until cleared (Fade_EffectDone = 0)
-
+        // With changes made by Wombii in October 2019 several of these settings are no longer needed
         // Xenon effect
         int Xenon_EffectDone[NumLights] = {0,0,0,0,0,0,0,0};    // For each light, if = 1, then the Xenon effect is done, don't do it again until cleared (Xenon_EffectDone = 0)
-//        int Xenon_Step[NumLights]       = {0,0,0,0,0,0,0,0};    // Save the current step variable for the Xenon light effect
-//        unsigned long Xenon_millis[NumLights] = {0,0,0,0,0,0,0,0};
-//        unsigned long Xenon_interval    = 25;                   // The interval between the various step of the Xenon effect
 
         // Backfire effect
         unsigned long backfire_interval;                        // Will save the random interval for the backfire effect
@@ -361,8 +351,6 @@ void loop()
     static int DriveMode_Previous = STOP;                       // The previous Drive Mode implemented. There is no "previous" when first started, initialize to STOP
     static int DriveModeCommand_Previous = STOP;                // There is no "previous" command when we first start. Initialize to STOP
     static int DriveMode_LastDirection = STOP;
-    static boolean DriveModeTransition = false;                 // Are we in the midst of a drive mode transition event?
-    static int TransitionMode;                                  // Which transition are we doing?
     static int ReverseTaps = 0;
 
     static int ThrottleCommand_Previous;
@@ -399,9 +387,6 @@ void loop()
     // Temp vars
     static unsigned long currentMillis;
     static boolean WhatState = true;
-    int i;
-
-
 
     // STARTUP - RUN ONCE
     // ------------------------------------------------------------------------------------------------------------------------------------------------>

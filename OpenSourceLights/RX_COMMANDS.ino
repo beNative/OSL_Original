@@ -2,7 +2,7 @@
 // Loop speed gain is up to 2-3x
 void GetRxCommands()
 {
-    static int LastThrottleCommand;
+    // static int LastThrottleCommand;
     static uint8_t failsafeCounter = 0;
 
     if (Failsafe)
