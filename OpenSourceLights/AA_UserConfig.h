@@ -1,36 +1,42 @@
 #ifndef AA_USERCONFIG_H
 #define AA_USERCONFIG_H
+#include <Arduino.h>
 // THIS FILE HAS SETTINGS WHICH THE USER CAN CONFIGURE
 
 // NUMBER OF SCHEMES
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define NumSchemes                   2          // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
-                                                  // MAKE SURE THIS NUMBER MATCHES THE NUMBER OF SCHEMES DEFINED IN AA_LIGHT_SETUP !!
+  // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
+  // MAKE SURE THIS NUMBER MATCHES THE NUMBER OF SCHEMES DEFINED IN AA_LIGHT_SETUP !!
+  #define NumSchemes                   2
 
 // STATE SETTINGS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define LongStopTime_mS          30000          // The Stop Delay state only occurs when the vehicle has been stopped for some length of time, which is set here.
-                                                  // Recall that 1000 mS = 1 second (default value is 30 seconds)
+  // The Stop Delay state only occurs when the vehicle has been stopped for some length of time, which is set here.
+  // Recall that 1000 mS = 1 second (default value is 30 seconds)
+  #define LongStopTime_mS          30000
 
 // LIGHT SETTINGS - DIM LEVEL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define DimLevel                    20          // Number from 0-255, with 0 being off, 255 being full on. Often numbers much greater than half (128) are hard to distinguish from full on.
-                                                  // Experiment to get the number that makes your lights as dim as you want them.
-                                                  // - Mode 1, Mode 2, Mode 3, Mode 4, Mode 5 (all from Channel3 switch),
-                                                  // - Forward, Reverse, Stop, Stop Delay, Brake (from Throttle Channel),
-                                                  // - Right Turn, Left Turn (from Turn Channel)
-                                                  // - Accelerating -
-                                                  // - Decelerating - special state that occurs on heavy deceleration (from Throttle Channel)
+  // Number from 0-255, with 0 being off, 255 being full on. Often numbers much greater than half (128) are hard to distinguish from full on.
+  // Experiment to get the number that makes your lights as dim as you want them.
+  // - Mode 1, Mode 2, Mode 3, Mode 4, Mode 5 (all from Channel3 switch),
+  // - Forward, Reverse, Stop, Stop Delay, Brake (from Throttle Channel),
+  // - Right Turn, Left Turn (from Turn Channel)
+  // - Accelerating -
+  // - Decelerating - special state that occurs on heavy deceleration (from Throttle Channel)
+  #define DimLevel                    20
 
 // LIGHT SETTINGS - BLINKING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define BlinkInterval              650          // A value in milliseconds that sets the blink rate for blinking lights set to "BLINK" or "SOFTBLINK" (for example, turn signals). 1000 = 1 second
-  #define FastBlinkInterval           15          // A value in milliseconds that sets the fast blink rate for lights set to "FASTBLINK"
-
-  #define SoftBlinkFadeInDelay         6          // The SOFTBLINK effect fades the light in and out as it blinks. Each fade consists of 20 steps. You can set the amount of delay between each
-  #define SoftBlinkFadeOutDelay       17          // step, and the delay can be different for fade in and out. Take for example a FadeInDelay of 5 mS. There are 20 steps to fade in,
-                                                  // so 20 * 5 = 100mS for the light to fade in. The total amount of time for the fade in + the fade out should not exceed BlinkInterval.
-
+  // A value in milliseconds that sets the blink rate for blinking lights set to "BLINK" or "SOFTBLINK" (for example, turn signals). 1000 = 1 second
+  #define BlinkInterval              650
+  // A value in milliseconds that sets the fast blink rate for lights set to "FASTBLINK"
+  #define FastBlinkInterval           15
+  // The SOFTBLINK effect fades the light in and out as it blinks. Each fade consists of 20 steps. You can set the amount of delay between each
+  #define SoftBlinkFadeInDelay         6
+  // step, and the delay can be different for fade in and out. Take for example a FadeInDelay of 5 mS. There are 20 steps to fade in,
+  // so 20 * 5 = 100mS for the light to fade in. The total amount of time for the fade in + the fade out should not exceed BlinkInterval.
+  #define SoftBlinkFadeOutDelay       17
 
 // LIGHT SETTINGS - TURN SIGNALS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -54,27 +60,33 @@
 
 // DOUBLE TAP REVERSE
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define DoubleTapReverse          false         // Most ESCs require you to tap reverse twice before the car actually goes into reverse.
-                                                  // If yours is like this, set it to true. Most touring cars operate like this.
-                                                  // But if you can shift directly into reverse from forward, set this to false - this is typical of crawlers.
+  // Most ESCs require you to tap reverse twice before the car actually goes into reverse.
+  // If yours is like this, set it to true. Most touring cars operate like this.
+  // But if you can shift directly into reverse from forward, set this to false - this is typical of crawlers.
+  #define DoubleTapReverse          false
 
 // ACCELERATING AND DECELERATING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define AccelPct                    35          // How much does the throttle have to increase (1-100 pct) to be considered a sharp acceleration.
-                                                  // This will trigger the OvertakeTime timer set below, during which your lights will do whatever
-                                                  // setting you put in the Accelerating column (BLINK or FASTBLINK makes sense, like they do in
-                                                  // 24hr Le Mans when overtaking)
-  #define OvertakeTime               500          // How long should the overtake event last in  ms (1000ms = 1 second)
+  // How much does the throttle have to increase (1-100 pct) to be considered a sharp acceleration.
+  // This will trigger the OvertakeTime timer set below, during which your lights will do whatever
+  // setting you put in the Accelerating column (BLINK or FASTBLINK makes sense, like they do in
+  // 24hr Le Mans when overtaking)
+  #define AccelPct                    35
+  // How long should the overtake event last in  ms (1000ms = 1 second)
+  #define OvertakeTime               500
 
-  #define DecelPct                    20          // How much does the throttle need to decrease (1-100 pct) to be considered a sharp deceleration.
-                                                  // This will trigger the Backfire effect for any light in the Decelerating column with the setting
-                                                  // of BACKFIRE. You can put other settings in the Decelerating column besides Backfire, and they will
-                                                  // work, but they will only be enabled for the same length of time as the backfire event
-  #define BF_Time                    170          // How long in milliseconds (1000 ms = 1 second) on average should a backfire event last. It will actually be
-                                                  // a random length of time spanning from (BF_Time - BF_Long) to (BF_Time + BF_Long)
-  #define BF_Short                    10          // BF_Short and BF_Long are the upper and lower limits to the span of time the backfiring LED will blink.
-  #define BF_Long                     60          // In other words, while backfiring the LED will blink randomly on and off for some value between BF_Short and BF_Long
-
+  // How much does the throttle need to decrease (1-100 pct) to be considered a sharp deceleration.
+  // This will trigger the Backfire effect for any light in the Decelerating column with the setting
+  // of BACKFIRE. You can put other settings in the Decelerating column besides Backfire, and they will
+  // work, but they will only be enabled for the same length of time as the backfire event
+  #define DecelPct                    20
+  // How long in milliseconds (1000 ms = 1 second) on average should a backfire event last. It will actually be
+  // a random length of time spanning from (BF_Time - BF_Long) to (BF_Time + BF_Long)
+  #define BF_Time                    170
+  // BF_Short and BF_Long are the upper and lower limits to the span of time the backfiring LED will blink.
+  #define BF_Short                    10
+  // In other words, while backfiring the LED will blink randomly on and off for some value between BF_Short and BF_Long
+  #define BF_Long                     60
 
 // COASTING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -85,11 +97,12 @@
   #define TimeToStop_FWD_mS          500          // An estimate of the time usually spent coasting to a stop from forward. During this time, reverse commands will be counted as braking
   #define TimeToStop_REV_mS          300          // An estimate of the time usually spent coasting to a stop fro reverse. During this time, forward commands will be counted as braking
 
-  #define DragBrake                 true          // If DragBrake = false, the Brake state will be active only when your car is moving one direction, and you command an opposite direction
-                                                  // If DragBrake = true, the Brake state will still occur in the above example, but it will also occur anytime your throttle stick is near center.
-                                                  // In other words, setting this to true essentially has your brakes come on automatically whenever you are coasting. For touring cars, this
-                                                  // can sometimes make for a nice effect going round a track (brake lights should come on in advance of a curve, for example).
-                                                  // NOTE: If you want your brakes to come on automatically whenever you are STOPPED, you should set that in the LIGHT_SETUP tab under the Stop column.
+  // If DragBrake = false, the Brake state will be active only when your car is moving one direction, and you command an opposite direction
+  // If DragBrake = true, the Brake state will still occur in the above example, but it will also occur anytime your throttle stick is near center.
+  // In other words, setting this to true essentially has your brakes come on automatically whenever you are coasting. For touring cars, this
+  // can sometimes make for a nice effect going round a track (brake lights should come on in advance of a curve, for example).
+  // NOTE: If you want your brakes to come on automatically whenever you are STOPPED, you should set that in the LIGHT_SETUP tab under the Stop column.
+  #define DragBrake                 true
 
 // SHIFTING TIME
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
