@@ -40,23 +40,27 @@
 
 // LIGHT SETTINGS - TURN SIGNALS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define BlinkTurnOnlyAtStop       true          // If you only want your turn signal blinkers to come on when the car is Stopped, set this to true.
-                                                  // Turn signals are cool, but they look silly when they start blinking every time you turn the steering wheel while driving.
-                                                  // For that reason, you will probably want to keep this "true"
-                                                  // NOTE: This only applies to a BLINK or SOFTBLINK setting in the "RightTurn" or "LeftTurn" states.
-                                                  // Any setting other than BLINK or SOFTBLINK in the "RightTurn" or "LeftTurn" column will NOT be affected.
-  #define AllTurnSettingsMatch      false         // Set to true to restrict all other turn settings (not just BLINK and SOFTBLINK) to the same conditions imposed by BlinkTurnOnlyAtStop
+  // If you only want your turn signal blinkers to come on when the car is Stopped, set this to true.
+  // Turn signals are cool, but they look silly when they start blinking every time you turn the steering wheel while driving.
+  // For that reason, you will probably want to keep this "true"
+  // NOTE: This only applies to a BLINK or SOFTBLINK setting in the "RightTurn" or "LeftTurn" states.
+  // Any setting other than BLINK or SOFTBLINK in the "RightTurn" or "LeftTurn" column will NOT be affected.
+  #define BlinkTurnOnlyAtStop       true
+  // Set to true to restrict all other turn settings (not just BLINK and SOFTBLINK) to the same conditions imposed by BlinkTurnOnlyAtStop
+  #define AllTurnSettingsMatch      false
 
-  #define TurnSignalDelay_mS        1000          // If BlinkTurnOnlyAtStop = true, this setting further refines when the turn signals can come on. Instead of coming on right when the
-                                                  // car reaches a stop, you can set a delay in milliseconds (1000 mS = 1 second) before they will be enabled. This way, if you come
-                                                  // to a stop while the wheels are turned, the turn signals will not come on instantly, which looks very strange.
-                                                  // Instead there will be a delay of TurnSignalDelay_mS milliseconds after which you can hold the wheels over and the turn signals will come on.
-                                                  // Once again we are trying to prevent the unrealistic engagement of turn signals, but rather have them only engaged when you specifically
-                                                  // want to for display purposes.
-  #define TurnFromStartContinue_mS  1000          // If BlinkTurnOnlyAtStop = true, this setting determines the length of time the turn signal will continue to blink when you begin moving from
-                                                  // a stop with the wheels turned. In a real car, the blinker remains on through the turn but then is cancelled after the steering wheel returns
-                                                  // to center. That is the effect we are trying to mimic, but we don't do it by checking the steering wheel, we simply set a length of time for the
-                                                  // turn signal to continue blinking. If you don't want this effect to happen, set this to 0 (zero).
+  // If BlinkTurnOnlyAtStop = true, this setting further refines when the turn signals can come on. Instead of coming on right when the
+  // car reaches a stop, you can set a delay in milliseconds (1000 mS = 1 second) before they will be enabled. This way, if you come
+  // to a stop while the wheels are turned, the turn signals will not come on instantly, which looks very strange.
+  // Instead there will be a delay of TurnSignalDelay_mS milliseconds after which you can hold the wheels over and the turn signals will come on.
+  // Once again we are trying to prevent the unrealistic engagement of turn signals, but rather have them only engaged when you specifically
+  // want to for display purposes.
+  #define TurnSignalDelay_mS        1000
+  // If BlinkTurnOnlyAtStop = true, this setting determines the length of time the turn signal will continue to blink when you begin moving from
+  // a stop with the wheels turned. In a real car, the blinker remains on through the turn but then is cancelled after the steering wheel returns
+  // to center. That is the effect we are trying to mimic, but we don't do it by checking the steering wheel, we simply set a length of time for the
+  // turn signal to continue blinking. If you don't want this effect to happen, set this to 0 (zero).
+  #define TurnFromStartContinue_mS  1000
 
 // DOUBLE TAP REVERSE
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -130,25 +134,28 @@
 
 // DEBUGGING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define DEBUG                    false          // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
-                                                  // so turn it off when you are done troubleshooting.
-  #define LED_DEBUG                 true          // If this is set to true, the Green LED on the board will be on whenever the car is moving forward,
-                                                  // the Red LED will come on whenever the car is moving in reverse,
-                                                  // both LEDs will turn OFF when the car is stopped,
-                                                  // both LEDs will turn ON when the car is braking,
-                                                  // the Red LED will blink quickly if you are turning left, and
-                                                  // the Green LED will blink quickly if you are turning right.
-                                                  // You can use these to verify the board is working correctly without having any lights connected.
-                                                  // LED_DEBUG does not affect the performance of the circuit, so you can leave it on.
-  #define BLINK_LIGHTS_RX_LOST      true          // If true, all eight LED outputs will blink rapidly when the radio signal has been lost.
-                                                  // If set to false, only the onboard Red and Green LEDs will blink when the radio signal has been lost
-
-  #define RX_STARTUP_DELAY          500           // I found I needed to delay the first read that checks if the Steering and Channel 3 is in use, in order to get reliable startup using those channels.
+  // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
+  // so turn it off when you are done troubleshooting.
+  #define DEBUG                    false
+  // If this is set to true, the Green LED on the board will be on whenever the car is moving forward,
+  // the Red LED will come on whenever the car is moving in reverse,
+  // both LEDs will turn OFF when the car is stopped,
+  // both LEDs will turn ON when the car is braking,
+  // the Red LED will blink quickly if you are turning left, and
+  // the Green LED will blink quickly if you are turning right.
+  // You can use these to verify the board is working correctly without having any lights connected.
+  // LED_DEBUG does not affect the performance of the circuit, so you can leave it on.
+  #define LED_DEBUG                 true
+  // If true, all eight LED outputs will blink rapidly when the radio signal has been lost.
+  // If set to false, only the onboard Red and Green LEDs will blink when the radio signal has been lost
+  #define BLINK_LIGHTS_RX_LOST      true
+  // I found I needed to delay the first read that checks if the Steering and Channel 3 is in use, in order to get reliable startup using those channels.
+  #define RX_STARTUP_DELAY          500
 
 // SERIAL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  #define BaudRate                 38400          // Set baud rate here if you know what you're doing and don't like the default value
-
+  // Set baud rate here if you know what you're doing and don't like the default value
+  #define BaudRate                 38400
 
 // NEW LIGHT FUNCTIONS - Wombii
 // ------------------------------------------------------------------------------------------------------------------------------------------------>

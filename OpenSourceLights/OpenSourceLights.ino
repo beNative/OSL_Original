@@ -53,6 +53,8 @@
 // ====================================================================================================================================================>
   #include "AA_UserConfig.h"
   #include "Defines.h"
+  #include "utilities.h"
+  #include "led.h"
   #include <EEPROM.h>
   #include <OSL_SimpleTimer.h>
   #include <JC_Button.h>
@@ -189,7 +191,7 @@
   int CurrentScheme;                                      // Indicates which scheme is presently selected and active. Number from 1 to NumSchemes.
                                                           // Note that the actual schemes are zero-based (0 to NumSchemes-1) but don't worry about that,
                                                           // the code takes care of it.
-  #define NumLights                    8                  // The number of light outputs available on the board
+  const byte NumLights = 8;                               // The number of light outputs available on the board
   #define NumStates                    14                 // There are 14 possible states a light can be in:
                                                           // - Mode 1, Mode 2, Mode 3, Mode 4, Mode 5 (all from Channel3 switch),
                                                           // - Forward, Reverse, Stop, Stop Delay, Brake (from Throttle Channel),
