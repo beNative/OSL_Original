@@ -120,7 +120,7 @@
   // stopped from  setting off your lights.
   // Note: if you find you need to set these numbers to high values, what you probably need is to run through Radio Setup instead.
   #define ThrottleDeadband            10          // Throttle channel hysteriesis. Values below this will be ignored. Default is 10, number should be small.
-  #define TurnDeadband                15          // Same thing, but for steering channel.
+  #define TurnDeadband                20          // Same thing, but for steering channel.
 
 
 // RC Input Smoothing
@@ -136,7 +136,8 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
   // so turn it off when you are done troubleshooting.
-  #define DEBUG                    false
+  #define DEBUG false
+
   // If this is set to true, the Green LED on the board will be on whenever the car is moving forward,
   // the Red LED will come on whenever the car is moving in reverse,
   // both LEDs will turn OFF when the car is stopped,
@@ -145,12 +146,14 @@
   // the Green LED will blink quickly if you are turning right.
   // You can use these to verify the board is working correctly without having any lights connected.
   // LED_DEBUG does not affect the performance of the circuit, so you can leave it on.
-  #define LED_DEBUG                 true
+  #define LED_DEBUG true
+
   // If true, all eight LED outputs will blink rapidly when the radio signal has been lost.
   // If set to false, only the onboard Red and Green LEDs will blink when the radio signal has been lost
-  #define BLINK_LIGHTS_RX_LOST      true
+  #define BLINK_LIGHTS_RX_LOST true
+
   // I found I needed to delay the first read that checks if the Steering and Channel 3 is in use, in order to get reliable startup using those channels.
-  #define RX_STARTUP_DELAY          500
+  #define RX_STARTUP_DELAY 500
 
 // SERIAL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>

@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 int ReturnDriveMode(int ThrottleCMD)
 {
     if (ThrottleCMD       >  ThrottleDeadband) { return FWD;  }

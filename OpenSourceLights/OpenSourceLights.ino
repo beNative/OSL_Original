@@ -54,9 +54,7 @@
   #include <OSL_SimpleTimer.h>
   #include <JC_Button.h>
   #include <avr/pgmspace.h>
-  #include "eeprom_helpers.h"
   #include "AA_UserConfig.h"
-  #include "Defines.h"
   #include "utilities.h"
   #include "led.h"
 

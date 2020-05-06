@@ -1,3 +1,6 @@
+#include <Arduino.h>
+#include "aa_light_setup.h"
+
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // SETUPLIGHTS - This assigns the various settings to each of the light states. Run once on startup, and each time the scheme is changed.
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
