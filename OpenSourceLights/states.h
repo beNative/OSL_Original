@@ -2,6 +2,7 @@
 #define STATES_H
 
   #include <Arduino.h>
+  #include "AA_UserConfig.h"
 
   // Useful names
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -73,14 +74,6 @@
   // we just wait a short amount of time (user configurable in AA_UserConfig.h, variable TurnFromStartContinue_mS)
   int TurnSignalOverride         =     0;
 
-  // Drive modes
-  typedef char DRIVEMODES;
-  #define UNKNOWN    0
-  #define STOP       1
-  #define FWD 	     2
-  #define REV        3
-  #define LAST_MODE  REV
-
   // Throttle
   // Can be used to reverse the throttle channel if they don't have reversing on radio
   boolean ThrottleChannelReverse;
@@ -129,6 +122,7 @@
   // State of the Channel 3 switch: On (1), Off (0), Disconnected (-1)
   int Channel3 = OFF;
   boolean Channel3Reverse;
+
   // Position defines for Channel 3 switch (can be up to 5 positions)
   const byte Pos1 = 0;
   const byte Pos2 = 1;

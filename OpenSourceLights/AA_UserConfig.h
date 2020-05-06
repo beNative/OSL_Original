@@ -130,8 +130,8 @@
   // This reduces the sensitivity around center stick. The numbers can be 0-100 but should be rather small, like 10. This prevents minor movements of your sticks when
   // stopped from  setting off your lights.
   // Note: if you find you need to set these numbers to high values, what you probably need is to run through Radio Setup instead.
-  #define ThrottleDeadband            10          // Throttle channel hysteriesis. Values below this will be ignored. Default is 10, number should be small.
-  #define TurnDeadband                20          // Same thing, but for steering channel.
+  const byte ThrottleDeadband = 10;     // Throttle channel hysteriesis. Values below this will be ignored. Default is 10, number should be small.
+  const byte TurnDeadband = 20;         // Same thing, but for steering channel.
 
 
 // RC Input Smoothing
