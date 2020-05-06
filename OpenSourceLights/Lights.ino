@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "aa_light_setup.h"
+#include "states.h"
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // SETUPLIGHTS - This assigns the various settings to each of the light states. Run once on startup, and each time the scheme is changed.
@@ -65,7 +66,6 @@ void SetLights(int DriveMode)
       // --------------------------------------------------------------------------------------------------->>
       if (canBackfire)
       {
-//            if (LightSettings[j][StateDecel] != NA) { SaveSetting[j] = BACKFIRE; } // Override setting - we assume the only setting they want during decel is BACKFIRE
           if (LightSettings[j][StateDecel] != NA) { SaveSetting[j] = LightSettings[j][StateDecel]; } // Or we can allow any setting during deceleration
       }
 
@@ -151,14 +151,13 @@ void SetLights(int DriveMode)
   // If braking, both are on.
   // If right turn, green LED blinks quickly
   // If left turn, red LED blinks quickly
-  if (LED_DEBUG)
-  {
-      if (DriveMode == FWD)  { digitalWrite(RedLED , LOW ) ; digitalWrite(GreenLED, HIGH) ; }
-      if (DriveMode == REV)  { digitalWrite(RedLED , HIGH) ; digitalWrite(GreenLED, LOW ) ; }
-      if (DriveMode == STOP) { digitalWrite(RedLED , LOW ) ; digitalWrite(GreenLED, LOW ) ; }
-      if (Braking == true)   { digitalWrite(RedLED , HIGH) ; digitalWrite(GreenLED, HIGH) ; }
-      if (TurnCommand > 0)   { GreenBlink(); }    // Right turn
-      if (TurnCommand < 0)   { RedBlink();   }    // Left turn
+  if (LED_DEBUG) {
+    if (DriveMode == FWD)  { digitalWrite(RedLED , LOW ) ; digitalWrite(GreenLED, HIGH) ; }
+    if (DriveMode == REV)  { digitalWrite(RedLED , HIGH) ; digitalWrite(GreenLED, LOW ) ; }
+    if (DriveMode == STOP) { digitalWrite(RedLED , LOW ) ; digitalWrite(GreenLED, LOW ) ; }
+    if (Braking == true)   { digitalWrite(RedLED , HIGH) ; digitalWrite(GreenLED, HIGH) ; }
+    if (TurnCommand > 0)   { GreenBlink(); }    // Right turn
+    if (TurnCommand < 0)   { RedBlink();   }    // Left turn
   }
 }
 

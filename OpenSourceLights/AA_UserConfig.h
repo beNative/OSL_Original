@@ -7,13 +7,24 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
   // MAKE SURE THIS NUMBER MATCHES THE NUMBER OF SCHEMES DEFINED IN AA_LIGHT_SETUP !!
-  #define NumSchemes                   2
+  #define NumSchemes 2
+
+  // The number of light outputs available on the board
+  const byte NumLights = 8;
 
 // STATE SETTINGS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // The Stop Delay state only occurs when the vehicle has been stopped for some length of time, which is set here.
   // Recall that 1000 mS = 1 second (default value is 30 seconds)
-  #define LongStopTime_mS          30000
+  #define LongStopTime_mS 30000
+
+  // There are 14 possible states a light can be in:
+  // - Mode 1, Mode 2, Mode 3, Mode 4, Mode 5 (all from Channel3 switch),
+  // - Forward, Reverse, Stop, Stop Delay, Brake (from Throttle Channel),
+  // - Right Turn, Left Turn (from Turn Channel)
+  // - Accelerating -
+  // - Decelerating - special state that occurs on heavy deceleration (from Throttle Channel)
+  const byte NumStates = 14;
 
 // LIGHT SETTINGS - DIM LEVEL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
