@@ -51,15 +51,14 @@
 // ====================================================================================================================================================>
 //  INCLUDES
 // ====================================================================================================================================================>
+  #include <OSL_SimpleTimer.h>
+  #include <JC_Button.h>
+  #include <avr/pgmspace.h>
+  #include "eeprom_helpers.h"
   #include "AA_UserConfig.h"
   #include "Defines.h"
   #include "utilities.h"
   #include "led.h"
-  #include <EEPROM.h>
-  #include <OSL_SimpleTimer.h>
-  #include <JC_Button.h>
-  #include <avr/eeprom.h>
-  #include <avr/pgmspace.h>
 
 
 // ====================================================================================================================================================>
@@ -279,27 +278,7 @@
   static boolean State;                                   // If blinking, are they blinking on (true) or off (false)?
   static boolean PriorState;                              // Blinking state in the prior iteration
   static int TimesBlinked;                                // How many times have the lights blinked
-  static boolean ChangeSchemeMode = false;                    // A flag to indicate if we are in Change-Scheme-Mode or not
-
-  // EEPROM
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  const long EEPROM_Init         = 0xAA43;                // Change this any time the EEPROM content changes
-  struct __eeprom_data {                                  // __eeprom_data is the structure that maps all of the data we are storing in EEPROM
-    long E_InitNum;                                       // Number that indicates if EEPROM values have ever been initialized
-    int E_ThrottlePulseMin;
-    int E_ThrottlePulseMax;
-    int E_ThrottlePulseCenter;
-    int E_TurnPulseMin;
-    int E_TurnPulseMax;
-    int E_TurnPulseCenter;
-    int E_Channel3PulseMin;
-    int E_Channel3PulseMax;
-    int E_Channel3PulseCenter;
-    boolean E_ThrottleChannelReverse;
-    boolean E_TurnChannelReverse;
-    boolean E_Channel3Reverse;
-    int E_CurrentScheme;
-  };
+  static boolean ChangeSchemeMode = false;                // A flag to indicate if we are in Change-Scheme-Mode or not
 
   // NEW LIGHT SWITCHING - Wombii
   // ------------------------------------------------------------------------------------------------------------------------------------------------>

@@ -1,3 +1,8 @@
+#include <Arduino.h>
+#include "eeprom_helpers.h"
+#include "Defines.h"
+#include <EEPROM.h>
+#include <avr/eeprom.h>
 
 void Initialize_EEPROM()
 {   // If EEPROM has not been used before, we initialize to some sensible, yet conservative, default values.
@@ -16,11 +21,9 @@ void Initialize_EEPROM()
     eeprom_write(PulseMin, E_Channel3PulseMin);
     eeprom_write(PulseMax, E_Channel3PulseMax);
     eeprom_write(PulseCenter, E_Channel3PulseCenter);
-
     eeprom_write(false, E_ThrottleChannelReverse);
     eeprom_write(false, E_TurnChannelReverse);
     eeprom_write(false, E_Channel3Reverse);
-
     eeprom_write(1, E_CurrentScheme);    // Default to Scheme #1
 
     // This is our initialization constant
@@ -41,14 +44,11 @@ void Load_EEPROM()
     eeprom_read(Channel3PulseMin, E_Channel3PulseMin);
     eeprom_read(Channel3PulseMax, E_Channel3PulseMax);
     eeprom_read(Channel3PulseCenter, E_Channel3PulseCenter);
-
     eeprom_read(ThrottleChannelReverse, E_ThrottleChannelReverse);
     eeprom_read(TurnChannelReverse, E_TurnChannelReverse);
     eeprom_read(Channel3Reverse, E_Channel3Reverse);
-
     eeprom_read(CurrentScheme, E_CurrentScheme);
 }
-
 
 void SaveScheme_To_EEPROM()
 {  // Save the current scheme to EEPROM
