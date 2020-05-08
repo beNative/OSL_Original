@@ -7,7 +7,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
   // MAKE SURE THIS NUMBER MATCHES THE NUMBER OF SCHEMES DEFINED IN AA_LIGHT_SETUP !!
-  #define NumSchemes 2
+  #define NumSchemes 1
 
   // The number of light outputs available on the board
   const byte NumLights = 8;
@@ -35,12 +35,12 @@
   // - Right Turn, Left Turn (from Turn Channel)
   // - Accelerating -
   // - Decelerating - special state that occurs on heavy deceleration (from Throttle Channel)
-  #define DimLevel                    20
+  #define DimLevel                    25
 
 // LIGHT SETTINGS - BLINKING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // A value in milliseconds that sets the blink rate for blinking lights set to "BLINK" or "SOFTBLINK" (for example, turn signals). 1000 = 1 second
-  #define BlinkInterval              650
+  #define BlinkInterval              500
   // A value in milliseconds that sets the fast blink rate for lights set to "FASTBLINK"
   #define FastBlinkInterval           15
   // The SOFTBLINK effect fades the light in and out as it blinks. Each fade consists of 20 steps. You can set the amount of delay between each
@@ -66,12 +66,12 @@
   // Instead there will be a delay of TurnSignalDelay_mS milliseconds after which you can hold the wheels over and the turn signals will come on.
   // Once again we are trying to prevent the unrealistic engagement of turn signals, but rather have them only engaged when you specifically
   // want to for display purposes.
-  #define TurnSignalDelay_mS        1000
+  #define TurnSignalDelay_mS        1500
   // If BlinkTurnOnlyAtStop = true, this setting determines the length of time the turn signal will continue to blink when you begin moving from
   // a stop with the wheels turned. In a real car, the blinker remains on through the turn but then is cancelled after the steering wheel returns
   // to center. That is the effect we are trying to mimic, but we don't do it by checking the steering wheel, we simply set a length of time for the
   // turn signal to continue blinking. If you don't want this effect to happen, set this to 0 (zero).
-  #define TurnFromStartContinue_mS  1000
+  #define TurnFromStartContinue_mS  2000
 
 // DOUBLE TAP REVERSE
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -86,9 +86,9 @@
   // This will trigger the OvertakeTime timer set below, during which your lights will do whatever
   // setting you put in the Accelerating column (BLINK or FASTBLINK makes sense, like they do in
   // 24hr Le Mans when overtaking)
-  #define AccelPct                    35
+  #define AccelPct                    20
   // How long should the overtake event last in  ms (1000ms = 1 second)
-  #define OvertakeTime               500
+  #define OvertakeTime               750
 
   // How much does the throttle need to decrease (1-100 pct) to be considered a sharp deceleration.
   // This will trigger the Backfire effect for any light in the Decelerating column with the setting
@@ -97,7 +97,7 @@
   #define DecelPct                    20
   // How long in milliseconds (1000 ms = 1 second) on average should a backfire event last. It will actually be
   // a random length of time spanning from (BF_Time - BF_Long) to (BF_Time + BF_Long)
-  #define BF_Time                    170
+  #define BF_Time                    500
   // BF_Short and BF_Long are the upper and lower limits to the span of time the backfiring LED will blink.
   #define BF_Short                    10
   // In other words, while backfiring the LED will blink randomly on and off for some value between BF_Short and BF_Long
