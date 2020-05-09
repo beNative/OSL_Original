@@ -10,7 +10,7 @@
   #define NumSchemes 1
 
   // The number of light outputs available on the board
-  const byte NumLights = 8;
+  #define NumLights 8
 
 // STATE SETTINGS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -24,7 +24,7 @@
   // - Right Turn, Left Turn (from Turn Channel)
   // - Accelerating -
   // - Decelerating - special state that occurs on heavy deceleration (from Throttle Channel)
-  const byte NumStates = 14;
+  #define NumStates 14
 
 // LIGHT SETTINGS - DIM LEVEL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -130,8 +130,8 @@
   // This reduces the sensitivity around center stick. The numbers can be 0-100 but should be rather small, like 10. This prevents minor movements of your sticks when
   // stopped from  setting off your lights.
   // Note: if you find you need to set these numbers to high values, what you probably need is to run through Radio Setup instead.
-  const byte ThrottleDeadband = 10;     // Throttle channel hysteriesis. Values below this will be ignored. Default is 10, number should be small.
-  const byte TurnDeadband = 20;         // Same thing, but for steering channel.
+  #define ThrottleDeadband 10     // Throttle channel hysteriesis. Values below this will be ignored. Default is 10, number should be small.
+  #define TurnDeadband 20         // Same thing, but for steering channel.
 
 
 // RC Input Smoothing
@@ -170,17 +170,5 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // Set baud rate here if you know what you're doing and don't like the default value
   #define BaudRate                 38400
-
-// NEW LIGHT FUNCTIONS - Wombii
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-  // Calculate loopsPerCycle: each loop is probably 5-20ms depending on radio, so 50 *20ms = 1 second.
-  const byte blinkLoopsPerCycle       = 40;
-  const byte blinkLoopsOn             = 20;
-
-  const byte softblinkLoopsPerCycle   = 100;
-  const byte softblinkLoopsOn         = 40;
-
-  const byte fastblinkLoopsPerCycle   = 8;
-  const byte fastblinkLoopsOn         = 3;
 
 #endif // ndef AA_USERCONFIG_H

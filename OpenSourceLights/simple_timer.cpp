@@ -1,5 +1,10 @@
-// FUNCTIONS RELATED TO THE SIMPLE TIMER
+#include <Arduino.h>
+#include "simple_timer.h"
+#include "global.h"
+#include "led.h"
 
+OSL_SimpleTimer timer;
+bool TimeUp = true;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // BLINKLIGHTS - This flip/flops our blinker variable
@@ -9,8 +14,6 @@ void BlinkLights()
     Blinker = !Blinker;
 }
 
-
-
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // FASTBLINKLIGHTS - This flip/flops our fast blinker variable
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -18,7 +21,6 @@ void FastBlinkLights()
 {
     FastBlinker = !FastBlinker;
 }
-
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // STARTBLINKING_MS - Used by the Radio_Setup routines, this will blink a given LED a certain number of times and then stop

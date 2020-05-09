@@ -1,9 +1,6 @@
 #ifndef LED_H
 #define LED_H
   #include <Arduino.h>
-  extern const byte GreenLED;
-  extern const byte RedLED;
-  extern const byte NumLights;
 
   void RedLedOn();
   void RedLedOff();

@@ -51,99 +51,70 @@
 // ====================================================================================================================================================>
 //  INCLUDES
 // ====================================================================================================================================================>
-  #include <OSL_SimpleTimer.h>
   #include <JC_Button.h>
-  #include <avr/pgmspace.h>
   #include "led.h"
   #include "drive.h"
+  #include "global.h"
   #include "utilities.h"
-  #include "states.h"
+  #include "simple_timer.h"
+  #include "rx_commands.h"
+  #include "lights.h"
+  #include "aa_light_setup.h"
 
 // ====================================================================================================================================================>
 //  GLOBAL VARIABLES
 // ====================================================================================================================================================>
 
-  // SIMPLE TIMER
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  OSL_SimpleTimer timer;                                  // Instantiate a SimpleTimer named "timer"
-  boolean TimeUp = true;
+// Button Object
+Button InputButton = Button(SetupButton, 25, true, true);   // Initialize a button object. Set pin, internal pullup = true, inverted = true, debounce time = 25 mS
 
-  // Little function to help us print out actual drive mode names, rather than numbers. // Updated to latest avr-gcc so it will compile if Debug is enabled.
-  // To use, call something like this:  Serial.print(printMode(DriveModeCommand));
-  const __FlashStringHelper *printMode(DRIVEMODES Type) {
-    if(Type>LAST_MODE) {
-      Type = UNKNOWN;
-    }
-    const __FlashStringHelper* a = F("UNKNOWN");
-    const __FlashStringHelper* b = F("STOP");
-    const __FlashStringHelper* c = F("FORWARD");
-    const __FlashStringHelper* d = F("REVERSE");
-    const __FlashStringHelper* Names[LAST_MODE+1]={ a, b, c, d };
-    return Names[Type];
-  };
+void DumpDebug()
+{
+  // Channel pulse values
+  Serial.println(F("PULSE:  Min - Ctr - Max"));
+  Serial.print(F("Throttle "));
+  Serial.print(ThrottlePulseMin);
+  PrintSpaceDash();
+  Serial.print(ThrottlePulseCenter);
+  PrintSpaceDash();
+  Serial.println(ThrottlePulseMax);
 
-  // LIGHTS
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  int CurrentScheme;                                      // Indicates which scheme is presently selected and active. Number from 1 to NumSchemes.
-                                                          // Note that the actual schemes are zero-based (0 to NumSchemes-1) but don't worry about that,
-                                                          // the code takes care of it.
+  Serial.print(F("Turn "));
+  Serial.print(TurnPulseMin);
+  PrintSpaceDash();
+  Serial.print(TurnPulseCenter);
+  PrintSpaceDash();
+  Serial.println(TurnPulseMax);
 
-  const int LightPin[NumLights] = {9,10,11,6,5,3,15,16};  // These are the Arduino pins to the 8 lights in order from left to right looking down on the top surface of the board.
-                                                          // Note that the six Arduino analog pins can be referred to by numbers 14-19
+  Serial.print(F("Ch3 "));
+  Serial.print(Channel3PulseMin);
+  PrintSpaceDash();
+  Serial.print(Channel3PulseCenter);
+  PrintSpaceDash();
+  Serial.println(Channel3PulseMax);
 
-  int PWM_Step[NumLights] = {0,0,0,0,0,0,0,0};            // What is the current PWM value of each light.
+  // Channel Reversing
+  Serial.print(F(" - Throttle Channel Reverse: "));
+  PrintTrueFalse(ThrottleChannelReverse);
+  Serial.print(F(" - Turn Channel Reverse: "));
+  PrintTrueFalse(TurnChannelReverse);
+  Serial.print(F(" - Channel 3 Reverse: "));
+  PrintTrueFalse(Channel3Reverse);
 
-  // With changes made by Wombii in October 2019 several of these settings are no longer needed
-  // Xenon effect
-  int Xenon_EffectDone[NumLights] = {0,0,0,0,0,0,0,0};    // For each light, if = 1, then the Xenon effect is done, don't do it again until cleared (Xenon_EffectDone = 0)
+  // Channels disconnected?
+  Serial.print(F("Steering Channel: "));
+  if (!SteeringChannelPresent == true) { Serial.print(F("NOT ")); }
+  Serial.println(F("CONNECTED"));
 
-  // Blinking effect
-  boolean Blinker                =  true;                 // A flip/flop variable used for blinking
-  boolean FastBlinker            =  true;                 // A flip/flop variable used for fast blinking
-  boolean IndividualLightBlinker[NumLights] = {true, true, true, true, true, true, true, true};   // A flip/flop variable but this time one for each light. Used for SoftBlink.
+  Serial.print(F("Channel 3: "));
+  if (!Channel3Present) { Serial.print(F("NOT ")); }
+  Serial.println(F("CONNECTED"));
 
-  // Wombiii timing array
-  byte specialTimingArray[3][4] = {
-    {1,255,blinkLoopsPerCycle,blinkLoopsOn},
-    {1,255,softblinkLoopsPerCycle,softblinkLoopsOn},
-    {1,255,fastblinkLoopsPerCycle,fastblinkLoopsOn}
-  };
-
-  // RC CHANNEL INPUTS
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  const byte ThrottleChannel_Pin =     2;                 // The Arduino pin connected to the throttle channel input
-  const byte SteeringChannel_Pin =    17;                 // The Arduino pin connected to the steering channel input (this is the same as saying pin A3)
-  const byte Channel3_Pin        =     4;                 // The Arduino pin connected to the Channel 3 input
-  boolean Failsafe               = false;                 // If we loose contact with the Rx this flag becomes True
-  unsigned long ServoTimeout     = 30000;                 // Value in microseconds (uS) - length of time to wait for a servo pulse. Measured on Eurgle/HK 3channel at ~20-22ms between pulses
-                                                          // Up to version 2.03 of OSL code this value was 21,000 (21ms) and it worked fine. However with the release of Arduino IDE 1.6.5,
-                                                          // something has changed about the pulseIn function, or perhaps the way it is compiled. At 21ms, pulseIn would return 0 every other read.
-                                                          // Increasing the timeout to 30ms seems to have fixed it. LM - 7/15/2015
-  int PulseMin_Bad               =   700;                 // Pulse widths lower than this amount are considered bad
-  int PulseMax_Bad               =  2300;                 // Pulse widths greater than this amount are considered bad
-
-  // BOARD OBJECTS
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  const byte GreenLED            =    18;                 // The Arduino pin connected to the on-board Green LED (this is the same as saying pin A4)
-  const byte RedLED              =    19;                 // The Arduino pin connected to the on-board Red LED (this is the same as saying pin A5)
-  const byte SetupButton         =    14;                 // The Arduino pin connected to the on-board push button (this is the same as saying pin A0)
-
-  // Button Object
-  Button InputButton = Button(SetupButton, 25, true, true);   // Initialize a button object. Set pin, internal pullup = true, inverted = true, debounce time = 25 mS
-
-  // CHANGE-SCHEME-MODE MENU VARIABLES
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  boolean canChangeScheme     = false;                    // Are we allowed to enter Change Scheme Mode? (This is set to true after being in the STOP state for several seconds)
-  unsigned int BlinkOffID;                                // SimpleTimer ID number for the blinking lights
-  static boolean Blinking;                                // Are the lights blinking?
-  static boolean State;                                   // If blinking, are they blinking on (true) or off (false)?
-  static boolean PriorState;                              // Blinking state in the prior iteration
-  static int TimesBlinked;                                // How many times have the lights blinked
-  static boolean ChangeSchemeMode = false;                // A flag to indicate if we are in Change-Scheme-Mode or not
-
-  // NEW LIGHT SWITCHING - Wombii
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  unsigned long runCount = 0;
+  PrintHorizontalLine();
+  for (int i=1; i <= NumSchemes; i++) {
+    DumpLightSchemeToSerial(i);
+  }
+}
 
 // ====================================================================================================================================================>
 //  SETUP
@@ -272,8 +243,8 @@ void loop()
     canChangeScheme = false;
     ChangeSchemeTimerFlag = false;
     ChangeSchemeMode = false;
-    MaxTurn = (int)((float)MaxRightTurn * 0.9);             // This sets a turn level that is near max, we use sequential back-and-forth max turns to enter Change-Scheme-Mode
-    MinTurn = (int)((float)MaxRightTurn * 0.2);             // This is the minimum amount of steering wheel movement considered to be a command during Change-Scheme-Mode
+    MaxTurn = (int)((float) MaxRightTurn * 0.9);             // This sets a turn level that is near max, we use sequential back-and-forth max turns to enter Change-Scheme-Mode
+    MinTurn = (int)((float) MaxRightTurn * 0.2);             // This is the minimum amount of steering wheel movement considered to be a command during Change-Scheme-Mode
     RightCount = 0;
     LeftCount = 0;
 
@@ -723,51 +694,3 @@ void loop()
   DriveModeCommand_Previous = DriveModeCommand;
   ThrottleCommand_Previous = ThrottleCommand;
 } // End of Loop
-
-void DumpDebug()
-{
-  // Channel pulse values
-  Serial.println(F("PULSE:  Min - Ctr - Max"));
-  Serial.print(F("Throttle "));
-  Serial.print(ThrottlePulseMin);
-  PrintSpaceDash();
-  Serial.print(ThrottlePulseCenter);
-  PrintSpaceDash();
-  Serial.println(ThrottlePulseMax);
-
-  Serial.print(F("Turn "));
-  Serial.print(TurnPulseMin);
-  PrintSpaceDash();
-  Serial.print(TurnPulseCenter);
-  PrintSpaceDash();
-  Serial.println(TurnPulseMax);
-
-  Serial.print(F("Ch3 "));
-  Serial.print(Channel3PulseMin);
-  PrintSpaceDash();
-  Serial.print(Channel3PulseCenter);
-  PrintSpaceDash();
-  Serial.println(Channel3PulseMax);
-
-  // Channel Reversing
-  Serial.print(F(" - Throttle Channel Reverse: "));
-  PrintTrueFalse(ThrottleChannelReverse);
-  Serial.print(F(" - Turn Channel Reverse: "));
-  PrintTrueFalse(TurnChannelReverse);
-  Serial.print(F(" - Channel 3 Reverse: "));
-  PrintTrueFalse(Channel3Reverse);
-
-  // Channels disconnected?
-  Serial.print(F("Steering Channel: "));
-  if (!SteeringChannelPresent == true) { Serial.print(F("NOT ")); }
-  Serial.println(F("CONNECTED"));
-
-  Serial.print(F("Channel 3: "));
-  if (!Channel3Present) { Serial.print(F("NOT ")); }
-  Serial.println(F("CONNECTED"));
-
-  PrintHorizontalLine();
-  for (int i=1; i <= NumSchemes; i++) {
-    DumpLightSchemeToSerial(i);
-  }
-}

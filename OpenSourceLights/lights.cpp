@@ -1,6 +1,25 @@
 #include <Arduino.h>
+#include <avr/pgmspace.h>
+#include "AA_UserConfig.h"
+#include "global.h"
+#include "lights.h"
+#include "simple_timer.h"
+#include "drive.h"
+#include "led.h"
 #include "aa_light_setup.h"
-#include "states.h"
+
+// LIGHTS
+// ------------------------------------------------------------------------------------------------------------------------------------------------>
+int CurrentScheme;                                      // Indicates which scheme is presently selected and active. Number from 1 to NumSchemes.
+                                                        // Note that the actual schemes are zero-based (0 to NumSchemes-1) but don't worry about that,
+                                                        // the code takes care of it.
+
+int PWM_Step[NumLights] = {0,0,0,0,0,0,0,0};            // What is the current PWM value of each light.
+
+// With changes made by Wombii in October 2019 several of these settings are no longer needed
+// Xenon effect
+int Xenon_EffectDone[NumLights] = {0,0,0,0,0,0,0,0};    // For each light, if = 1, then the Xenon effect is done, don't do it again until cleared (Xenon_EffectDone = 0)
+
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // SETUPLIGHTS - This assigns the various settings to each of the light states. Run once on startup, and each time the scheme is changed.
@@ -199,89 +218,90 @@ void SetLight(int WhatLight, int WhatSetting)
 
   static byte pinIsFlashing[NumLights] = {0,0,0,0,0,0,0,0}; //Helper to reset the phase to make sure we start a flash session ON with no delay
 
-  switch (WhatSetting)
+  // Converted from Switch statements to allow use of extern vars
+  if (WhatSetting == ON)
   {
-    case ON:
-      WantedLightState = 1;
-      WantedLightValue = 255;
-      WantedFade = '0';
-      pinIsFlashing[WhatLight] = 0;
-      break;
-
-    case OFF:
-      WantedLightState = 0;
-      WantedLightValue = 0;
-      WantedFade = '0';
-      pinIsFlashing[WhatLight] = 0;
-      break;
-
-    case BLINK:
-      if (pinIsFlashing[WhatLight] == 0) {
-        specialTimingArray[0][1] = 255;
-      }
-      WantedLightState = flashingFunctionStartActiveSimple(0,specialTimingArray[0]);
-      WantedLightValue = WantedLightState * 255;
-      WantedFade = '0';
-      if (LightSettings[WhatLight][Channel3] == DIM) {
-        if(WantedLightState == 0) {
-          WantedLightValue = ActualDimLevel;
-        }
-      }
-      pinIsFlashing[WhatLight] = 1;
-      break;
-
-    case SOFTBLINK:
-      if (pinIsFlashing[WhatLight] == 0) {
-        specialTimingArray[1][1] = 255;             //If new flash session, reset phase
-      }
-      WantedLightState = flashingFunctionStartActiveSimple(1,specialTimingArray[1]);
-      WantedLightValue = WantedLightState * 255;
-      WantedFade = '4';
-      if (LightSettings[WhatLight][Channel3] == DIM) {
-        if(WantedLightState == 0) {
-          WantedLightValue = ActualDimLevel;
-        }
-      }
-      pinIsFlashing[WhatLight] = 1;                                                   //Currently in a flashing session, leave phase alone
-      break;
-
-    case FASTBLINK:
-      if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[2][1] = 255;
-      WantedLightState = flashingFunctionStartActiveSimple(2,specialTimingArray[2]);
-      WantedLightValue = WantedLightState*255;
-      WantedFade = '0';
-      if (LightSettings[WhatLight][Channel3] == DIM)
+    WantedLightState = 1;
+    WantedLightValue = 255;
+    WantedFade = '0';
+    pinIsFlashing[WhatLight] = 0;
+  }
+  else if (WhatSetting == OFF) {
+    WantedLightState = 0;
+    WantedLightValue = 0;
+    WantedFade = '0';
+    pinIsFlashing[WhatLight] = 0;
+  }
+  else if (WhatSetting == BLINK)
+  {
+    if (pinIsFlashing[WhatLight] == 0)
+    {
+      specialTimingArray[0][1] = 255;
+    }
+    WantedLightState = flashingFunctionStartActiveSimple(0,specialTimingArray[0]);
+    WantedLightValue = WantedLightState * 255;
+    WantedFade = '0';
+    if (LightSettings[WhatLight][Channel3] == DIM)
+    {
+      if(WantedLightState == 0)
       {
-        if(WantedLightState == 0)
-          WantedLightValue = ActualDimLevel;
+        WantedLightValue = ActualDimLevel;
       }
-      pinIsFlashing[WhatLight] = 1;
-      break;
-
-    case DIM:
-      WantedLightValue = ActualDimLevel;
-      WantedFade = '0';
-      pinIsFlashing[WhatLight] = 0;
-      break;
-
-    case BACKFIRE: //Unchanged
-      LightBackfire(WhatLight);
-      pinIsFlashing[WhatLight] = 0;
-      break;
-
-    case XENON:
-      WantedLightState = 1;
-      WantedLightValue = 255;
-      WantedFade = '5';
-      pinIsFlashing[WhatLight] = 0;
-      break;
-
-    case FADEOFF:
-      WantedLightState = 0;
-      WantedLightValue = 0;
-      WantedFade = '3';
-      pinIsFlashing[WhatLight] = 0;
-      break;
+    }
+    pinIsFlashing[WhatLight] = 1;
+  }
+  else if (WhatSetting == SOFTBLINK)
+  {
+    if (pinIsFlashing[WhatLight] == 0) {
+      specialTimingArray[1][1] = 255;             //If new flash session, reset phase
+    }
+    WantedLightState = flashingFunctionStartActiveSimple(1,specialTimingArray[1]);
+    WantedLightValue = WantedLightState * 255;
+    WantedFade = '4';
+    if (LightSettings[WhatLight][Channel3] == DIM) {
+      if(WantedLightState == 0) {
+        WantedLightValue = ActualDimLevel;
+      }
+    }
+    pinIsFlashing[WhatLight] = 1;                                                   //Currently in a flashing session, leave phase alone
+  }
+  else if (WhatSetting == FASTBLINK)
+  {
+    if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[2][1] = 255;
+    WantedLightState = flashingFunctionStartActiveSimple(2,specialTimingArray[2]);
+    WantedLightValue = WantedLightState*255;
+    WantedFade = '0';
+    if (LightSettings[WhatLight][Channel3] == DIM)
+    {
+      if(WantedLightState == 0)
+        WantedLightValue = ActualDimLevel;
+    }
+    pinIsFlashing[WhatLight] = 1;
+  }
+  else if (WhatSetting == DIM)
+  {
+    WantedLightValue = ActualDimLevel;
+    WantedFade = '0';
+    pinIsFlashing[WhatLight] = 0;
+  }
+  else if (WhatSetting == BACKFIRE)
+  {
+    LightBackfire(WhatLight);
+    pinIsFlashing[WhatLight] = 0;
+  }
+  else if (WhatSetting == XENON)
+  {
+    WantedLightState = 1;
+    WantedLightValue = 255;
+    WantedFade = '5';
+    pinIsFlashing[WhatLight] = 0;
+  }
+  else if (WhatSetting == FADEOFF)
+  {
+    WantedLightState = 0;
+    WantedLightValue = 0;
+    WantedFade = '3';
+    pinIsFlashing[WhatLight] = 0;
   }
 
   activeLightValue = SimpleFader(WhatLight, WantedFade, WantedLightValue);

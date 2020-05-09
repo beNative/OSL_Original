@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "AA_UserConfig.h"
+#include "global.h"
 #include "drive.h"
 
 int ReturnDriveMode(int ThrottleCMD)

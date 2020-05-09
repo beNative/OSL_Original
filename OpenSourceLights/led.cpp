@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "AA_UserConfig.h"
 #include "led.h"
+#include "global.h"
 
 void TurnOnLight(int WhatLight);
 void TurnOffLight(int WhatLight);

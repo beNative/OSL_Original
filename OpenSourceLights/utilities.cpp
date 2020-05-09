@@ -1,9 +1,13 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <avr/eeprom.h>
+#include "drive.h"
+#include "global.h"
 #include "utilities.h"
 
 // EEPROM
+const long EEPROM_Init         = 0xAA43;                // Change this any time the EEPROM content changes
+
 void Initialize_EEPROM()
 {   // If EEPROM has not been used before, we initialize to some sensible, yet conservative, default values.
     // The first time a radio setup is performed, these will be overwritten with actual values, and never referred to agian.
@@ -59,15 +63,34 @@ void SaveScheme_To_EEPROM()
 // Serial Print
 void PrintSpaceDash()
 {
-    Serial.print(F(" - "));
+  Serial.print(F(" - "));
 }
 
 void PrintHorizontalLine()
 {
-    Serial.println(F("-----------------------------------"));
+  Serial.println(F("-----------------------------------"));
 }
 
 void PrintTrueFalse(boolean boolVal)
 {
-    if (boolVal == true) { Serial.println(F("TRUE")); } else { Serial.println(F("FALSE")); }
+  if (boolVal == true) {
+    Serial.println(F("TRUE"));
+  }
+  else {
+    Serial.println(F("FALSE"));
+  }
 }
+
+// Little function to help us print out actual drive mode names, rather than numbers. // Updated to latest avr-gcc so it will compile if Debug is enabled.
+// To use, call something like this:  Serial.print(printMode(DriveModeCommand));
+const __FlashStringHelper *printMode(DRIVEMODES Type) {
+  if(Type > LAST_MODE) {
+    Type = UNKNOWN;
+  }
+  const __FlashStringHelper* a = F("UNKNOWN");
+  const __FlashStringHelper* b = F("STOP");
+  const __FlashStringHelper* c = F("FORWARD");
+  const __FlashStringHelper* d = F("REVERSE");
+  const __FlashStringHelper* Names[LAST_MODE+1]={ a, b, c, d };
+  return Names[Type];
+};
