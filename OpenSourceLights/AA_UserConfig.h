@@ -86,18 +86,18 @@
   // This will trigger the OvertakeTime timer set below, during which your lights will do whatever
   // setting you put in the Accelerating column (BLINK or FASTBLINK makes sense, like they do in
   // 24hr Le Mans when overtaking)
-  #define AccelPct                    20
+  #define AccelPct                    30
   // How long should the overtake event last in  ms (1000ms = 1 second)
-  #define OvertakeTime               750
+  #define OvertakeTime               350
 
   // How much does the throttle need to decrease (1-100 pct) to be considered a sharp deceleration.
   // This will trigger the Backfire effect for any light in the Decelerating column with the setting
   // of BACKFIRE. You can put other settings in the Decelerating column besides Backfire, and they will
   // work, but they will only be enabled for the same length of time as the backfire event
-  #define DecelPct                    20
+  #define DecelPct                    10
   // How long in milliseconds (1000 ms = 1 second) on average should a backfire event last. It will actually be
   // a random length of time spanning from (BF_Time - BF_Long) to (BF_Time + BF_Long)
-  #define BF_Time                    500
+  #define BF_Time                    350
   // BF_Short and BF_Long are the upper and lower limits to the span of time the backfiring LED will blink.
   #define BF_Short                    10
   // In other words, while backfiring the LED will blink randomly on and off for some value between BF_Short and BF_Long
@@ -109,8 +109,8 @@
   // your car does coast even after you let off the 'gas'. During this time, opposite throttle commands are actually counted as a command to change direction, but instead
   // are counted as braking. Tweak the coast times here to match what you see in real life. They are in milliseconds.
   // 1000 ms = 1 second
-  #define TimeToStop_FWD_mS          500          // An estimate of the time usually spent coasting to a stop from forward. During this time, reverse commands will be counted as braking
-  #define TimeToStop_REV_mS          300          // An estimate of the time usually spent coasting to a stop fro reverse. During this time, forward commands will be counted as braking
+  #define TimeToStop_FWD_mS          10          // An estimate of the time usually spent coasting to a stop from forward. During this time, reverse commands will be counted as braking
+  #define TimeToStop_REV_mS          10          // An estimate of the time usually spent coasting to a stop from reverse. During this time, forward commands will be counted as braking
 
   // If DragBrake = false, the Brake state will be active only when your car is moving one direction, and you command an opposite direction
   // If DragBrake = true, the Brake state will still occur in the above example, but it will also occur anytime your throttle stick is near center.
@@ -123,7 +123,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // How much of a pause is required before changing directions (from forward to reverse or from reverse to forward).
   // For most ESCs this will be close to zero.
-  #define TimeToShift_mS             100          // The pause time in milliseconds that will be required before the vehicle is allowed to change direction
+  #define TimeToShift_mS             10          // The pause time in milliseconds that will be required before the vehicle is allowed to change direction
 
 // DEADBAND
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -164,7 +164,7 @@
   #define BLINK_LIGHTS_RX_LOST true
 
   // I found I needed to delay the first read that checks if the Steering and Channel 3 is in use, in order to get reliable startup using those channels.
-  #define RX_STARTUP_DELAY 500
+  #define RX_STARTUP_DELAY 200
 
 // SERIAL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
