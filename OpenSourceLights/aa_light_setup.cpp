@@ -28,8 +28,8 @@ const uint16_t Schemes[NumSchemes][NumLights][NumStates] PROGMEM =
     {  OFF,  OFF,   XENON, XENON, XENON, NA,      NA,      NA,   NA,        NA,    NA,         NA,        FASTBLINK,    NA         },  // Light 1  -- Headlight
     {  OFF,  XENON, XENON, XENON, XENON, NA,      NA,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 2  -- Fog Light
     {  OFF,  OFF,   DIM,   DIM,   DIM,   NA,      NA,      ON,   NA,        ON,    NA,         NA,        NA,           FASTBLINK  },  // Light 3  -- Break Light
-    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   NA,        NA,    BLINK,      NA,        NA,           NA         },  // Light 4  -- Right Blinker
-    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   NA,        NA,    NA,         BLINK,     NA,           NA         },  // Light 5  -- Left Blinker
+    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   BLINK,     NA,    BLINK,      NA,        NA,           NA         },  // Light 4  -- Right Blinker
+    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   BLINK,     NA,    NA,         BLINK,     NA,           NA         },  // Light 5  -- Left Blinker
     {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      ON,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 6  -- Reverse Lights
     {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 7  --
     {  OFF,  OFF,   OFF,   OFF,   ON,    NA,      NA,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 8  -- Light Bar
