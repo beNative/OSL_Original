@@ -1,7 +1,18 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
   #include <Arduino.h>
-  #include "drive.h"
+
+  // Useful functions
+  #define MIN(x,y) ( x > y ? y : x )
+  #define MAX(x,y) ( x > y ? x : y )
+
+  // Drive modes
+  typedef char DRIVEMODES;
+  #define UNKNOWN    0
+  #define STOP       1
+  #define FWD 	     2
+  #define REV        3
+  #define LAST_MODE  REV
 
   // EEPROM
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -39,9 +50,10 @@
   void PrintHorizontalLine();
   void PrintTrueFalse(boolean boolVal);
   const __FlashStringHelper *printMode(DRIVEMODES Type);
+  void DumpDebug();
 
-  // Useful functions
-  #define MIN(x,y) ( x > y ? y : x )
-  #define MAX(x,y) ( x > y ? x : y )
+  // Drive Functions
+  int ReturnDriveMode(int ThrottleCMD);
+  boolean ReturnBrakeFlag(int DriveModePrev, int DriveModeCMD);
 
 #endif // ndef UTILITIES_H

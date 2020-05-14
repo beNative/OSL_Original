@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "simple_timer.h"
 #include "global.h"
-#include "led.h"
+#include "lights.h"
 
 OSL_SimpleTimer timer;
 bool TimeUp = true;
@@ -11,7 +11,7 @@ bool TimeUp = true;
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void BlinkLights()
 {
-    Blinker = !Blinker;
+  Blinker = !Blinker;
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -19,7 +19,7 @@ void BlinkLights()
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void FastBlinkLights()
 {
-    FastBlinker = !FastBlinker;
+  FastBlinker = !FastBlinker;
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -53,16 +53,16 @@ void StopBlinking(unsigned int TimerID)
 
 unsigned int StartWaiting_mS(int mS)
 {
-    TimeUp = false;
-    return timer.setTimeout(mS, SetTimeUp);    // will call function once after ms duration
+  TimeUp = false;
+  return timer.setTimeout(mS, SetTimeUp);    // will call function once after ms duration
 }
 
 unsigned int StartWaiting_sec(int seconds)
 {
-    return StartWaiting_mS(seconds*1000);
+  return StartWaiting_mS(seconds*1000);
 }
 
 void SetTimeUp()
 {
-    TimeUp = true;
+  TimeUp = true;
 }

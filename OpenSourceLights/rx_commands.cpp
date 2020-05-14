@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "AA_UserConfig.h"
-#include "drive.h"
 #include "global.h"
-#include "led.h"
 #include "lights.h"
 #include "rx_commands.h"
 #include "simple_timer.h"
@@ -54,7 +52,6 @@ void GetRxCommands()
   }
 }
 
-
 boolean CheckChannel3()
 {
     Channel3Pulse = pulseIn(Channel3_Pin, HIGH, ServoTimeout * 2);
@@ -62,14 +59,12 @@ boolean CheckChannel3()
     else { return true; }
 }
 
-
 boolean CheckSteeringChannel()
 {
     TurnPulse = pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout * 2);
     if (TurnPulse == 0) { return false; }
     else { return true; }
 }
-
 
 int GetThrottleCommand()
 {
@@ -125,7 +120,6 @@ int GetThrottleCommand()
     // reverse speeds have been limited by user)
   }
 }
-
 
 int GetTurnCommand()
 {
@@ -221,33 +215,6 @@ int GetChannel3Command()
     if (SmoothChannel3) Channel3Command = smoothChannel3Command(Channel3Command);
 
     return Channel3Command;
-}
-
-// Smoothing code submitted by Wombii
-// https://www.rcgroups.com/forums/showthread.php?1539753-Open-Source-Lights-Arduino-based-RC-Light-Controller/page57#post41145245
-// Takes difference between current and old value, divides difference by none/2/4/8/16 and adds difference to old value (a quick and simple way of averaging)
-
-int smoothThrottleCommand(int rawVal)
-{
-    static int smoothedThrottle = 0;
-    smoothedThrottle = smoothedThrottle + ((rawVal - smoothedThrottle) >> smoothingStrength);
-    return smoothedThrottle;
-}
-
-
-int smoothSteeringCommand(int rawVal)
-{
-    static int smoothedSteer = 0;
-    smoothedSteer = smoothedSteer + ((rawVal - smoothedSteer) >> smoothingStrength);
-    return smoothedSteer;
-}
-
-
-int smoothChannel3Command(int rawVal)
-{
-    static int smoothedCh3 = 0;
-    smoothedCh3 = smoothedCh3 + ((rawVal - smoothedCh3) >> smoothingStrength);
-    return smoothedCh3;
 }
 
 void RadioSetup()
@@ -548,4 +515,29 @@ void RadioSetup()
     Serial.println();
     RedLedOff();
 
+}
+
+// Smoothing code submitted by Wombii
+// https://www.rcgroups.com/forums/showthread.php?1539753-Open-Source-Lights-Arduino-based-RC-Light-Controller/page57#post41145245
+// Takes difference between current and old value, divides difference by none/2/4/8/16 and adds difference to old value (a quick and simple way of averaging)
+
+int smoothThrottleCommand(int rawVal)
+{
+    static int smoothedThrottle = 0;
+    smoothedThrottle = smoothedThrottle + ((rawVal - smoothedThrottle) >> smoothingStrength);
+    return smoothedThrottle;
+}
+
+int smoothSteeringCommand(int rawVal)
+{
+    static int smoothedSteer = 0;
+    smoothedSteer = smoothedSteer + ((rawVal - smoothedSteer) >> smoothingStrength);
+    return smoothedSteer;
+}
+
+int smoothChannel3Command(int rawVal)
+{
+    static int smoothedCh3 = 0;
+    smoothedCh3 = smoothedCh3 + ((rawVal - smoothedCh3) >> smoothingStrength);
+    return smoothedCh3;
 }

@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <avr/eeprom.h>
-#include "drive.h"
 #include "global.h"
 #include "utilities.h"
+#include "lights.h"
 
 // EEPROM
 const long EEPROM_Init         = 0xAA43;                // Change this any time the EEPROM content changes
@@ -84,7 +84,8 @@ void PrintTrueFalse(boolean boolVal)
 // Little function to help us print out actual drive mode names, rather than numbers. // Updated to latest avr-gcc so it will compile if Debug is enabled.
 // To use, call something like this:  Serial.print(printMode(DriveModeCommand));
 const __FlashStringHelper *printMode(DRIVEMODES Type) {
-  if(Type > LAST_MODE) {
+  if(Type > LAST_MODE)
+  {
     Type = UNKNOWN;
   }
   const __FlashStringHelper* a = F("UNKNOWN");
@@ -94,3 +95,87 @@ const __FlashStringHelper *printMode(DRIVEMODES Type) {
   const __FlashStringHelper* Names[LAST_MODE+1]={ a, b, c, d };
   return Names[Type];
 };
+
+void DumpDebug()
+{
+  // Channel pulse values
+  Serial.println(F("PULSE:  Min - Ctr - Max"));
+  Serial.print(F("Throttle "));
+  Serial.print(ThrottlePulseMin);
+  PrintSpaceDash();
+  Serial.print(ThrottlePulseCenter);
+  PrintSpaceDash();
+  Serial.println(ThrottlePulseMax);
+
+  Serial.print(F("Turn "));
+  Serial.print(TurnPulseMin);
+  PrintSpaceDash();
+  Serial.print(TurnPulseCenter);
+  PrintSpaceDash();
+  Serial.println(TurnPulseMax);
+
+  Serial.print(F("Ch3 "));
+  Serial.print(Channel3PulseMin);
+  PrintSpaceDash();
+  Serial.print(Channel3PulseCenter);
+  PrintSpaceDash();
+  Serial.println(Channel3PulseMax);
+
+  // Channel Reversing
+  Serial.print(F(" - Throttle Channel Reverse: "));
+  PrintTrueFalse(ThrottleChannelReverse);
+  Serial.print(F(" - Turn Channel Reverse: "));
+  PrintTrueFalse(TurnChannelReverse);
+  Serial.print(F(" - Channel 3 Reverse: "));
+  PrintTrueFalse(Channel3Reverse);
+
+  // Channels disconnected?
+  Serial.print(F("Steering Channel: "));
+  if (!SteeringChannelPresent == true) { Serial.print(F("NOT ")); }
+  Serial.println(F("CONNECTED"));
+
+  Serial.print(F("Channel 3: "));
+  if (!Channel3Present) { Serial.print(F("NOT ")); }
+  Serial.println(F("CONNECTED"));
+
+  PrintHorizontalLine();
+  for (int i=1; i <= NumSchemes; i++) {
+    DumpLightSchemeToSerial(i);
+  }
+}
+
+int ReturnDriveMode(int ThrottleCMD)
+{
+    if (ThrottleCMD       >  ThrottleDeadband) { return FWD;  }
+    else if (ThrottleCMD  < -ThrottleDeadband) { return REV;  }
+    else                                       { return STOP; }
+}
+
+boolean ReturnBrakeFlag(int DriveModePrev, int DriveModeCMD)
+{
+  boolean Brake;
+  Brake = false;
+
+  // This function basically compares the drive mode we currently exist in (conveniently captured by DriveModePrev variable)
+  // with the Commands being received ( conveniently summarized by DriveModeCMD)
+  // We then determine if a braking command is being given
+
+  // Change of direction from forwad to reverse
+  if (DriveModePrev == FWD && DriveModeCMD == REV)
+  {
+    if (TimeToShift_mS > 0 || DoubleTapReverse == true) Brake = true;
+  }
+  // Change of direction from reverse to forward
+  if (DriveModePrev == REV && DriveModeCMD == FWD)
+  {
+    if (TimeToShift_mS > 0) Brake = true;
+  }
+
+  // If we have DragBrake = true, then the Brake state will also be active anytime the throttle stick is near center.
+  if ((DragBrake == true) && (DriveModePrev != STOP) && (DriveModeCMD != FWD) && (DriveModeCMD != REV))
+  {
+    Brake = true;
+  }
+
+  return Brake;
+}

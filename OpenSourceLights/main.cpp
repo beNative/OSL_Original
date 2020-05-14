@@ -52,69 +52,15 @@
 //  INCLUDES
 // ====================================================================================================================================================>
   #include <JC_Button.h>
-  #include "led.h"
-  #include "drive.h"
   #include "global.h"
-  #include "utilities.h"
-  #include "simple_timer.h"
-  #include "rx_commands.h"
-  #include "lights.h"
   #include "aa_light_setup.h"
-
-// ====================================================================================================================================================>
-//  GLOBAL VARIABLES
-// ====================================================================================================================================================>
+  #include "lights.h"
+  #include "rx_commands.h"
+  #include "simple_timer.h"
+  #include "utilities.h"
 
 // Button Object
 Button InputButton = Button(SetupButton, 25, true, true);   // Initialize a button object. Set pin, internal pullup = true, inverted = true, debounce time = 25 mS
-
-void DumpDebug()
-{
-  // Channel pulse values
-  Serial.println(F("PULSE:  Min - Ctr - Max"));
-  Serial.print(F("Throttle "));
-  Serial.print(ThrottlePulseMin);
-  PrintSpaceDash();
-  Serial.print(ThrottlePulseCenter);
-  PrintSpaceDash();
-  Serial.println(ThrottlePulseMax);
-
-  Serial.print(F("Turn "));
-  Serial.print(TurnPulseMin);
-  PrintSpaceDash();
-  Serial.print(TurnPulseCenter);
-  PrintSpaceDash();
-  Serial.println(TurnPulseMax);
-
-  Serial.print(F("Ch3 "));
-  Serial.print(Channel3PulseMin);
-  PrintSpaceDash();
-  Serial.print(Channel3PulseCenter);
-  PrintSpaceDash();
-  Serial.println(Channel3PulseMax);
-
-  // Channel Reversing
-  Serial.print(F(" - Throttle Channel Reverse: "));
-  PrintTrueFalse(ThrottleChannelReverse);
-  Serial.print(F(" - Turn Channel Reverse: "));
-  PrintTrueFalse(TurnChannelReverse);
-  Serial.print(F(" - Channel 3 Reverse: "));
-  PrintTrueFalse(Channel3Reverse);
-
-  // Channels disconnected?
-  Serial.print(F("Steering Channel: "));
-  if (!SteeringChannelPresent == true) { Serial.print(F("NOT ")); }
-  Serial.println(F("CONNECTED"));
-
-  Serial.print(F("Channel 3: "));
-  if (!Channel3Present) { Serial.print(F("NOT ")); }
-  Serial.println(F("CONNECTED"));
-
-  PrintHorizontalLine();
-  for (int i=1; i <= NumSchemes; i++) {
-    DumpLightSchemeToSerial(i);
-  }
-}
 
 // ====================================================================================================================================================>
 //  SETUP
