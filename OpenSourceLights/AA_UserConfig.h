@@ -117,7 +117,7 @@
   // In other words, setting this to true essentially has your brakes come on automatically whenever you are coasting. For touring cars, this
   // can sometimes make for a nice effect going round a track (brake lights should come on in advance of a curve, for example).
   // NOTE: If you want your brakes to come on automatically whenever you are STOPPED, you should set that in the LIGHT_SETUP tab under the Stop column.
-  #define DragBrake                 true
+  #define DragBrake                 false
 
 // SHIFTING TIME
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
