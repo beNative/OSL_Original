@@ -7,7 +7,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
   // MAKE SURE THIS NUMBER MATCHES THE NUMBER OF SCHEMES DEFINED IN AA_LIGHT_SETUP !!
-  #define NumSchemes 1
+  #define NumSchemes 2
 
   // The number of light outputs available on the board
   #define NumLights 8
@@ -16,7 +16,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // The Stop Delay state only occurs when the vehicle has been stopped for some length of time, which is set here.
   // Recall that 1000 mS = 1 second (default value is 30 seconds)
-  #define LongStopTime_mS 30000
+  #define LongStopTime_mS 3000
 
   // There are 14 possible states a light can be in:
   // - Mode 1, Mode 2, Mode 3, Mode 4, Mode 5 (all from Channel3 switch),
@@ -40,7 +40,7 @@
 // LIGHT SETTINGS - BLINKING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // A value in milliseconds that sets the blink rate for blinking lights set to "BLINK" or "SOFTBLINK" (for example, turn signals). 1000 = 1 second
-  #define BlinkInterval              500
+  #define BlinkInterval              750
   // A value in milliseconds that sets the fast blink rate for lights set to "FASTBLINK"
   #define FastBlinkInterval           15
   // The SOFTBLINK effect fades the light in and out as it blinks. Each fade consists of 20 steps. You can set the amount of delay between each
@@ -71,7 +71,7 @@
   // a stop with the wheels turned. In a real car, the blinker remains on through the turn but then is cancelled after the steering wheel returns
   // to center. That is the effect we are trying to mimic, but we don't do it by checking the steering wheel, we simply set a length of time for the
   // turn signal to continue blinking. If you don't want this effect to happen, set this to 0 (zero).
-  #define TurnFromStartContinue_mS  2000
+  #define TurnFromStartContinue_mS  3000
 
 // DOUBLE TAP REVERSE
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -86,18 +86,18 @@
   // This will trigger the OvertakeTime timer set below, during which your lights will do whatever
   // setting you put in the Accelerating column (BLINK or FASTBLINK makes sense, like they do in
   // 24hr Le Mans when overtaking)
-  #define AccelPct                    30
+  #define AccelPct                    35
   // How long should the overtake event last in  ms (1000ms = 1 second)
-  #define OvertakeTime               350
+  #define OvertakeTime               500
 
   // How much does the throttle need to decrease (1-100 pct) to be considered a sharp deceleration.
   // This will trigger the Backfire effect for any light in the Decelerating column with the setting
   // of BACKFIRE. You can put other settings in the Decelerating column besides Backfire, and they will
   // work, but they will only be enabled for the same length of time as the backfire event
-  #define DecelPct                    10
+  #define DecelPct                    20
   // How long in milliseconds (1000 ms = 1 second) on average should a backfire event last. It will actually be
   // a random length of time spanning from (BF_Time - BF_Long) to (BF_Time + BF_Long)
-  #define BF_Time                    350
+  #define BF_Time                    170
   // BF_Short and BF_Long are the upper and lower limits to the span of time the backfiring LED will blink.
   #define BF_Short                    10
   // In other words, while backfiring the LED will blink randomly on and off for some value between BF_Short and BF_Long
@@ -109,8 +109,8 @@
   // your car does coast even after you let off the 'gas'. During this time, opposite throttle commands are actually counted as a command to change direction, but instead
   // are counted as braking. Tweak the coast times here to match what you see in real life. They are in milliseconds.
   // 1000 ms = 1 second
-  #define TimeToStop_FWD_mS          10          // An estimate of the time usually spent coasting to a stop from forward. During this time, reverse commands will be counted as braking
-  #define TimeToStop_REV_mS          10          // An estimate of the time usually spent coasting to a stop from reverse. During this time, forward commands will be counted as braking
+  #define TimeToStop_FWD_mS          500          // An estimate of the time usually spent coasting to a stop from forward. During this time, reverse commands will be counted as braking
+  #define TimeToStop_REV_mS          500          // An estimate of the time usually spent coasting to a stop from reverse. During this time, forward commands will be counted as braking
 
   // If DragBrake = false, the Brake state will be active only when your car is moving one direction, and you command an opposite direction
   // If DragBrake = true, the Brake state will still occur in the above example, but it will also occur anytime your throttle stick is near center.
@@ -123,15 +123,15 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // How much of a pause is required before changing directions (from forward to reverse or from reverse to forward).
   // For most ESCs this will be close to zero.
-  #define TimeToShift_mS             10          // The pause time in milliseconds that will be required before the vehicle is allowed to change direction
+  #define TimeToShift_mS             100          // The pause time in milliseconds that will be required before the vehicle is allowed to change direction
 
 // DEADBAND
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // This reduces the sensitivity around center stick. The numbers can be 0-100 but should be rather small, like 10. This prevents minor movements of your sticks when
   // stopped from  setting off your lights.
   // Note: if you find you need to set these numbers to high values, what you probably need is to run through Radio Setup instead.
-  #define ThrottleDeadband 15     // Throttle channel hysteriesis. Values below this will be ignored. Default is 10, number should be small.
-  #define TurnDeadband 70         // Same thing, but for steering channel.
+  #define ThrottleDeadband 10     // Throttle channel hysteriesis. Values below this will be ignored. Default is 10, number should be small.
+  #define TurnDeadband     70     // Same thing, but for steering channel.
 
 
 // RC Input Smoothing
@@ -147,7 +147,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // Set this to true to receive debugging messages out the serial port. NOTE: This will make the program less responsive,
   // so turn it off when you are done troubleshooting.
-  #define DEBUG false
+  #define DEBUG true
 
   // If this is set to true, the Green LED on the board will be on whenever the car is moving forward,
   // the Red LED will come on whenever the car is moving in reverse,
@@ -171,4 +171,4 @@
   // Set baud rate here if you know what you're doing and don't like the default value
   #define BaudRate                 38400
 
-#endif // ndef AA_USERCONFIG_H
+#endif // endef AA_USERCONFIG_H

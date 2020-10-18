@@ -9,27 +9,28 @@
 
 // LIGHTS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-int CurrentScheme;                                      // Indicates which scheme is presently selected and active. Number from 1 to NumSchemes.
-                                                        // Note that the actual schemes are zero-based (0 to NumSchemes-1) but don't worry about that,
-                                                        // the code takes care of it.
+int CurrentScheme; // Indicates which scheme is presently selected and active. Number from 1 to NumSchemes.
+                   // Note that the actual schemes are zero-based (0 to NumSchemes-1) but don't worry about that,
+                   // the code takes care of it.
 
-int PWM_Step[NumLights] = {0,0,0,0,0,0,0,0};            // What is the current PWM value of each light.
+int PWM_Step[NumLights] = {0, 0, 0, 0, 0, 0, 0, 0}; // What is the current PWM value of each light.
 
 // With changes made by Wombii in October 2019 several of these settings are no longer needed
 // Xenon effect
-int Xenon_EffectDone[NumLights] = {0,0,0,0,0,0,0,0};    // For each light, if = 1, then the Xenon effect is done, don't do it again until cleared (Xenon_EffectDone = 0)
-
+int Xenon_EffectDone[NumLights] = {0, 0, 0, 0, 0, 0, 0, 0}; // For each light, if = 1, then the Xenon effect is done, don't do it again until cleared (Xenon_EffectDone = 0)
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // SETUPLIGHTS - This assigns the various settings to each of the light states. Run once on startup, and each time the scheme is changed.
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void SetupLights(int WhatScheme)
 {
-  for (int i=0; i<NumLights; i++) {
-    for (int j=0; j<NumStates; j++) {
+  for (int i = 0; i < NumLights; i++)
+  {
+    for (int j = 0; j < NumStates; j++)
+    {
       // WhatScheme is minus -1 because Schemes are zero-based. We let the user use
       // one-based numbers for convenience
-      LightSettings[i][j] = pgm_read_word_near(&(Schemes[WhatScheme-1][i][j]));
+      LightSettings[i][j] = pgm_read_word_near(&(Schemes[WhatScheme - 1][i][j]));
 
       // Save this to "prior" too. In case we temporarily change a state,
       // this lets us know what we should revert back to.
@@ -47,116 +48,164 @@ void SetLights(int DriveMode)
   int j;
 
   // Loop through each light, assign the setting appropriate to its state
-  for (j=0; j<NumLights; j++)
+  for (j = 0; j < NumLights; j++)
   {
-      // We will use the temporary variable SaveSetting to assign the setting for this light.
-      // A light could have multiple settings apply at one time, be we can only set it to one thing.
-      // Therefore each setting is ranked by importance. If multiple settings apply to a light,
-      // the setting applied LAST will be the one used (each check can overwrite the prior one).
-      // You can re-order the checks below, the least important should come first, and most important last.
+    // We will use the temporary variable SaveSetting to assign the setting for this light.
+    // A light could have multiple settings apply at one time, be we can only set it to one thing.
+    // Therefore each setting is ranked by importance. If multiple settings apply to a light,
+    // the setting applied LAST will be the one used (each check can overwrite the prior one).
+    // You can re-order the checks below, the least important should come first, and most important last.
 
+    // Least important - does this light have a setting related to Channel 3?
+    // --------------------------------------------------------------------------------------------------->>
+    SaveSetting[j] = LightSettings[j][Channel3];
 
-      // Least important - does this light have a setting related to Channel 3?
-      // --------------------------------------------------------------------------------------------------->>
-      SaveSetting[j] = LightSettings[j][Channel3];
-
-
-      // Next - does this light have a setting related to Drive Mode? (Forward, reverse, stop)
-      // --------------------------------------------------------------------------------------------------->>
-      switch (DriveMode) {
-          case FWD:
-              if (LightSettings[j][StateFwd]  != NA) { SaveSetting[j] = LightSettings[j][StateFwd]; }
-              break;
-          case REV:
-              if (LightSettings[j][StateRev]  != NA) { SaveSetting[j] = LightSettings[j][StateRev]; }
-              break;
-          case STOP:
-              // We have two stop states:
-              // StateStop occurs when the vehicle stops
-              // StateStopDelay occurs when the vehicle has been stopped for LongStopTime_mS and will supersede StateStop when it occurs (if not NA)
-              if (LightSettings[j][StateStop] != NA) { SaveSetting[j] = LightSettings[j][StateStop]; }
-              if (LightSettings[j][StateStopDelay] != NA && StoppedLongTime == true) { SaveSetting[j] = LightSettings[j][StateStopDelay]; }
-              break;
-      }
-
-
-      // Next - does this light come on during deceleration (probably Backfiring?)
-      // --------------------------------------------------------------------------------------------------->>
-      if (canBackfire)
+    // Next - does this light have a setting related to Drive Mode? (Forward, reverse, stop)
+    // --------------------------------------------------------------------------------------------------->>
+    switch (DriveMode)
+    {
+    case FWD:
+      if (LightSettings[j][StateFwd] != NA)
       {
-          if (LightSettings[j][StateDecel] != NA) { SaveSetting[j] = LightSettings[j][StateDecel]; } // Or we can allow any setting during deceleration
+        SaveSetting[j] = LightSettings[j][StateFwd];
       }
-
-      // Next -
-      // --------------------------------------------------------------------------------------------------->>
-      if (Overtaking)
+      break;
+    case REV:
+      if (LightSettings[j][StateRev] != NA)
       {
-          if (LightSettings[j][StateAccel] != NA) { SaveSetting[j] = LightSettings[j][StateAccel]; }
+        SaveSetting[j] = LightSettings[j][StateRev];
       }
-
-      // Next - does this light come on during braking?
-      // --------------------------------------------------------------------------------------------------->>
-      if (Braking)
+      break;
+    case STOP:
+      // We have two stop states:
+      // StateStop occurs when the vehicle stops
+      // StateStopDelay occurs when the vehicle has been stopped for LongStopTime_mS and will supersede StateStop when it occurs (if not NA)
+      if (LightSettings[j][StateStop] != NA)
       {
-          if (LightSettings[j][StateBrake] != NA) { SaveSetting[j] = LightSettings[j][StateBrake]; }
+        SaveSetting[j] = LightSettings[j][StateStop];
       }
-
-
-      // Next - does this light come on during turns?
-      // --------------------------------------------------------------------------------------------------->>
-      if (TurnCommand > 0 || TurnSignalOverride > 0)    // Right Turn
+      if (LightSettings[j][StateStopDelay] != NA && StoppedLongTime == true)
       {
-          // If we have a blink command on right turn, and if we have the BlinkTurnOnlyAtStop = true,
-          // then we only appy the turn signal if we are stopped AND if the turn signal delay has expired (TurnSignal_Enable = true)
-          if ((LightSettings[j][StateRT] == BLINK || LightSettings[j][StateRT] == SOFTBLINK) && (BlinkTurnOnlyAtStop == true))
-          {
-              if ((DriveMode == STOP) && (TurnSignal_Enable == true)) { SaveSetting[j] = LightSettings[j][StateRT]; }
-          }
-          // Same as above except for all other settings under turn
-          else if (LightSettings[j][StateRT] != NA && AllTurnSettingsMatch == true )
-          {
-              if ((DriveMode == STOP) && (TurnSignal_Enable == true)) { SaveSetting[j] = LightSettings[j][StateRT]; }
-          }
-          // Otherwise if it is any other setting, or if the BlinkTurnOnlyAtStop flag and the AllTurnSettingsMatch are not true, then we apply the setting normally
-          else if (LightSettings[j][StateRT] != NA) { SaveSetting[j] = LightSettings[j][StateRT]; }
+        SaveSetting[j] = LightSettings[j][StateStopDelay];
       }
-      if (TurnSignalOverride > 0) // Artificial Right Turn
-      {
-          // In this case we want to artificially create a turn signal even though the wheel may or may not be turned.
-          // We ignore driving state or TurnSignal_Enable state
-          if (LightSettings[j][StateRT] == BLINK || LightSettings[j][StateRT] == SOFTBLINK) { SaveSetting[j] = LightSettings[j][StateRT]; }
-          // We may also want to artificially create any setting assigned to the turn state
-          else if (AllTurnSettingsMatch)                                                    { SaveSetting[j] = LightSettings[j][StateRT]; }
-      }
+      break;
+    }
 
-      if (TurnCommand < 0 || TurnSignalOverride < 0)    // Left Turn
+    // Next - does this light come on during deceleration (probably Backfiring?)
+    // --------------------------------------------------------------------------------------------------->>
+    if (canBackfire)
+    {
+      if (LightSettings[j][StateDecel] != NA)
       {
-          // If we have a blink command on left turn, and if we have the BlinkTurnOnlyAtStop = true,
-          // then we only appy the turn signal if we are stopped AND if the turn signal delay has expired (TurnSignal_Enable = true)
-          if ((LightSettings[j][StateLT] == BLINK || LightSettings[j][StateLT] == SOFTBLINK) && (BlinkTurnOnlyAtStop == true))
-          {
-              if ((DriveMode == STOP) && (TurnSignal_Enable == true)) { SaveSetting[j] = LightSettings[j][StateLT]; }
-          }
-          // Same as above except for all other settings under turn
-          else if (LightSettings[j][StateLT] != NA && AllTurnSettingsMatch == true )
-          {
-              if ((DriveMode == STOP) && (TurnSignal_Enable == true)) { SaveSetting[j] = LightSettings[j][StateLT]; }
-          }
-          // Otherwise if it is any other setting, or if the BlinkTurnOnlyAtStop flag and the AllTurnSettingsMatch are not true, then we apply the setting normally
-          else if (LightSettings[j][StateLT] != NA) { SaveSetting[j] = LightSettings[j][StateLT]; }
-      }
-      if (TurnSignalOverride < 0) // Artificial Left Turn
-      {
-          // In this case we want to artificially create a turn signal even though the wheel may or may not be turned.
-          // We ignore driving state or TurnSignal_Enable state
-          if (LightSettings[j][StateLT] == BLINK || LightSettings[j][StateLT] == SOFTBLINK) { SaveSetting[j] = LightSettings[j][StateLT]; }
-          // We may also want to artificially create any setting assigned to the turn state
-          else if (AllTurnSettingsMatch)                                                    { SaveSetting[j] = LightSettings[j][StateLT]; }
-      }
+        SaveSetting[j] = LightSettings[j][StateDecel];
+      } // Or we can allow any setting during deceleration
+    }
 
-      // Light "j" now has a single setting = SaveSetting[j]
-      // We call the function that will set this light to that setting
-      SetLight(j, SaveSetting[j]);
+    // Next -
+    // --------------------------------------------------------------------------------------------------->>
+    if (Overtaking)
+    {
+      if (LightSettings[j][StateAccel] != NA)
+      {
+        SaveSetting[j] = LightSettings[j][StateAccel];
+      }
+    }
+
+    // Next - does this light come on during braking?
+    // --------------------------------------------------------------------------------------------------->>
+    if (Braking)
+    {
+      if (LightSettings[j][StateBrake] != NA)
+      {
+        SaveSetting[j] = LightSettings[j][StateBrake];
+      }
+    }
+
+    // Next - does this light come on during turns?
+    // --------------------------------------------------------------------------------------------------->>
+    if (TurnCommand > 0 || TurnSignalOverride > 0) // Right Turn
+    {
+      // If we have a blink command on right turn, and if we have the BlinkTurnOnlyAtStop = true,
+      // then we only appy the turn signal if we are stopped AND if the turn signal delay has expired (TurnSignal_Enable = true)
+      if ((LightSettings[j][StateRT] == BLINK || LightSettings[j][StateRT] == SOFTBLINK) && (BlinkTurnOnlyAtStop == true))
+      {
+        if ((DriveMode == STOP) && (TurnSignal_Enable == true))
+        {
+          SaveSetting[j] = LightSettings[j][StateRT];
+        }
+      }
+      // Same as above except for all other settings under turn
+      else if (LightSettings[j][StateRT] != NA && AllTurnSettingsMatch == true)
+      {
+        if ((DriveMode == STOP) && (TurnSignal_Enable == true))
+        {
+          SaveSetting[j] = LightSettings[j][StateRT];
+        }
+      }
+      // Otherwise if it is any other setting, or if the BlinkTurnOnlyAtStop flag and the AllTurnSettingsMatch are not true, then we apply the setting normally
+      else if (LightSettings[j][StateRT] != NA)
+      {
+        SaveSetting[j] = LightSettings[j][StateRT];
+      }
+    }
+    if (TurnSignalOverride > 0) // Artificial Right Turn
+    {
+      // In this case we want to artificially create a turn signal even though the wheel may or may not be turned.
+      // We ignore driving state or TurnSignal_Enable state
+      if (LightSettings[j][StateRT] == BLINK || LightSettings[j][StateRT] == SOFTBLINK)
+      {
+        SaveSetting[j] = LightSettings[j][StateRT];
+      }
+      // We may also want to artificially create any setting assigned to the turn state
+      else if (AllTurnSettingsMatch)
+      {
+        SaveSetting[j] = LightSettings[j][StateRT];
+      }
+    }
+
+    if (TurnCommand < 0 || TurnSignalOverride < 0) // Left Turn
+    {
+      // If we have a blink command on left turn, and if we have the BlinkTurnOnlyAtStop = true,
+      // then we only appy the turn signal if we are stopped AND if the turn signal delay has expired (TurnSignal_Enable = true)
+      if ((LightSettings[j][StateLT] == BLINK || LightSettings[j][StateLT] == SOFTBLINK) && (BlinkTurnOnlyAtStop == true))
+      {
+        if ((DriveMode == STOP) && (TurnSignal_Enable == true))
+        {
+          SaveSetting[j] = LightSettings[j][StateLT];
+        }
+      }
+      // Same as above except for all other settings under turn
+      else if (LightSettings[j][StateLT] != NA && AllTurnSettingsMatch == true)
+      {
+        if ((DriveMode == STOP) && (TurnSignal_Enable == true))
+        {
+          SaveSetting[j] = LightSettings[j][StateLT];
+        }
+      }
+      // Otherwise if it is any other setting, or if the BlinkTurnOnlyAtStop flag and the AllTurnSettingsMatch are not true, then we apply the setting normally
+      else if (LightSettings[j][StateLT] != NA)
+      {
+        SaveSetting[j] = LightSettings[j][StateLT];
+      }
+    }
+    if (TurnSignalOverride < 0) // Artificial Left Turn
+    {
+      // In this case we want to artificially create a turn signal even though the wheel may or may not be turned.
+      // We ignore driving state or TurnSignal_Enable state
+      if (LightSettings[j][StateLT] == BLINK || LightSettings[j][StateLT] == SOFTBLINK)
+      {
+        SaveSetting[j] = LightSettings[j][StateLT];
+      }
+      // We may also want to artificially create any setting assigned to the turn state
+      else if (AllTurnSettingsMatch)
+      {
+        SaveSetting[j] = LightSettings[j][StateLT];
+      }
+    }
+
+    // Light "j" now has a single setting = SaveSetting[j]
+    // We call the function that will set this light to that setting
+    SetLight(j, SaveSetting[j]);
   }
 
   // Now we have done looping through all the lights, and setting them all.
@@ -169,13 +218,36 @@ void SetLights(int DriveMode)
   // If braking, both are on.
   // If right turn, green LED blinks quickly
   // If left turn, red LED blinks quickly
-  if (LED_DEBUG) {
-    if (DriveMode == FWD)  { digitalWrite(RedLED , LOW ) ; digitalWrite(GreenLED, HIGH) ; }
-    if (DriveMode == REV)  { digitalWrite(RedLED , HIGH) ; digitalWrite(GreenLED, LOW ) ; }
-    if (DriveMode == STOP) { digitalWrite(RedLED , LOW ) ; digitalWrite(GreenLED, LOW ) ; }
-    if (Braking == true)   { digitalWrite(RedLED , HIGH) ; digitalWrite(GreenLED, HIGH) ; }
-    if (TurnCommand > 0)   { GreenBlink(); }    // Right turn
-    if (TurnCommand < 0)   { RedBlink();   }    // Left turn
+  if (LED_DEBUG)
+  {
+    if (DriveMode == FWD)
+    {
+      digitalWrite(RedLED, LOW);
+      digitalWrite(GreenLED, HIGH);
+    }
+    if (DriveMode == REV)
+    {
+      digitalWrite(RedLED, HIGH);
+      digitalWrite(GreenLED, LOW);
+    }
+    if (DriveMode == STOP)
+    {
+      digitalWrite(RedLED, LOW);
+      digitalWrite(GreenLED, LOW);
+    }
+    if (Braking == true)
+    {
+      digitalWrite(RedLED, HIGH);
+      digitalWrite(GreenLED, HIGH);
+    }
+    if (TurnCommand > 0)
+    {
+      GreenBlink();
+    } // Right turn
+    if (TurnCommand < 0)
+    {
+      RedBlink();
+    } // Left turn
   }
 }
 
@@ -184,17 +256,20 @@ void SetLights(int DriveMode)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void DumpLightSchemeToSerial(int WhatScheme)
 {
-  if (WhatScheme <= NumSchemes) {
+  if (WhatScheme <= NumSchemes)
+  {
     // Schemes are zero-based, so if they pass Scheme 1 what we really want to show is Scheme 0
     WhatScheme -= 1;
     Serial.print(F("SCHEME: "));
-    Serial.print(WhatScheme+1);
+    Serial.print(WhatScheme + 1);
     Serial.println();
-    for (int i=0; i<NumLights; i++) {
+    for (int i = 0; i < NumLights; i++)
+    {
       Serial.print(F("Light #"));
-      Serial.print(i+1);
+      Serial.print(i + 1);
       Serial.print(F(" States: "));
-      for (int j=0; j<NumStates; j++) {
+      for (int j = 0; j < NumStates; j++)
+      {
         int MySetting = pgm_read_word_near(&(Schemes[WhatScheme][i][j]));
         Serial.print(MySetting, DEC);
         Serial.print(F("  "));
@@ -215,7 +290,7 @@ void SetLight(int WhatLight, int WhatSetting)
   byte WantedFade = '0';
   byte activeLightValue = 0;
 
-  static byte pinIsFlashing[NumLights] = {0,0,0,0,0,0,0,0}; //Helper to reset the phase to make sure we start a flash session ON with no delay
+  static byte pinIsFlashing[NumLights] = {0, 0, 0, 0, 0, 0, 0, 0}; //Helper to reset the phase to make sure we start a flash session ON with no delay
 
   // Converted from Switch statements to allow use of extern vars
   if (WhatSetting == ON)
@@ -225,7 +300,8 @@ void SetLight(int WhatLight, int WhatSetting)
     WantedFade = '0';
     pinIsFlashing[WhatLight] = 0;
   }
-  else if (WhatSetting == OFF) {
+  else if (WhatSetting == OFF)
+  {
     WantedLightState = 0;
     WantedLightValue = 0;
     WantedFade = '0';
@@ -237,12 +313,12 @@ void SetLight(int WhatLight, int WhatSetting)
     {
       specialTimingArray[0][1] = 255;
     }
-    WantedLightState = flashingFunctionStartActiveSimple(0,specialTimingArray[0]);
+    WantedLightState = flashingFunctionStartActiveSimple(0, specialTimingArray[0]);
     WantedLightValue = WantedLightState * 255;
     WantedFade = '0';
     if (LightSettings[WhatLight][Channel3] == DIM)
     {
-      if(WantedLightState == 0)
+      if (WantedLightState == 0)
       {
         WantedLightValue = ActualDimLevel;
       }
@@ -251,28 +327,32 @@ void SetLight(int WhatLight, int WhatSetting)
   }
   else if (WhatSetting == SOFTBLINK)
   {
-    if (pinIsFlashing[WhatLight] == 0) {
-      specialTimingArray[1][1] = 255;             //If new flash session, reset phase
+    if (pinIsFlashing[WhatLight] == 0)
+    {
+      specialTimingArray[1][1] = 255; //If new flash session, reset phase
     }
-    WantedLightState = flashingFunctionStartActiveSimple(1,specialTimingArray[1]);
+    WantedLightState = flashingFunctionStartActiveSimple(1, specialTimingArray[1]);
     WantedLightValue = WantedLightState * 255;
     WantedFade = '4';
-    if (LightSettings[WhatLight][Channel3] == DIM) {
-      if(WantedLightState == 0) {
+    if (LightSettings[WhatLight][Channel3] == DIM)
+    {
+      if (WantedLightState == 0)
+      {
         WantedLightValue = ActualDimLevel;
       }
     }
-    pinIsFlashing[WhatLight] = 1;                                                   //Currently in a flashing session, leave phase alone
+    pinIsFlashing[WhatLight] = 1; //Currently in a flashing session, leave phase alone
   }
   else if (WhatSetting == FASTBLINK)
   {
-    if (pinIsFlashing[WhatLight] == 0)  specialTimingArray[2][1] = 255;
-    WantedLightState = flashingFunctionStartActiveSimple(2,specialTimingArray[2]);
-    WantedLightValue = WantedLightState*255;
+    if (pinIsFlashing[WhatLight] == 0)
+      specialTimingArray[2][1] = 255;
+    WantedLightState = flashingFunctionStartActiveSimple(2, specialTimingArray[2]);
+    WantedLightValue = WantedLightState * 255;
     WantedFade = '0';
     if (LightSettings[WhatLight][Channel3] == DIM)
     {
-      if(WantedLightState == 0)
+      if (WantedLightState == 0)
         WantedLightValue = ActualDimLevel;
     }
     pinIsFlashing[WhatLight] = 1;
@@ -305,16 +385,8 @@ void SetLight(int WhatLight, int WhatSetting)
 
   activeLightValue = SimpleFader(WhatLight, WantedFade, WantedLightValue);
 
-  //Actually write to the pins: (Could do all with analogWrite, but can do the digitalWrite parts to possibly save some time)
-  if (activeLightValue == 0) {
-    digitalWrite(LightPin[WhatLight],LOW);
-  }
-  else if (activeLightValue == 255) {
-    digitalWrite(LightPin[WhatLight],HIGH);
-  }
-  else {
-    analogWrite(LightPin[WhatLight],activeLightValue);
-  }
+  //Actually write to the pins:
+  analogWrite(LightPin[WhatLight], activeLightValue);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -324,138 +396,152 @@ void SetLight(int WhatLight, int WhatSetting)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
 {
-  #define FADEDISABLED  '0'
-  #define FADEQUICK     '1'
-  #define FADEUP        '2'
-  #define FADEDOWN      '3'
-  #define FADEBOTH      '4'
-  #define FADEXENON     '5'
+#define FADEDISABLED '0'
+#define FADEQUICK '1'
+#define FADEUP '2'
+#define FADEDOWN '3'
+#define FADEBOTH '4'
+#define FADEXENON '5'
   //5+1 and 5+2 is reserved for xenon stages. continue with fade sinewave at 8 when implemented.
 
-  static byte fadeValueArray[NumLights] = {0,0,0,0,0,0,0,0};      //Stores the current pwm value per pin
-  static byte previousFadeSetting[NumLights] = {0,0,0,0,0,0,0,0}; //Stores the previously used fade setting
+  static byte fadeValueArray[NumLights] = {0, 0, 0, 0, 0, 0, 0, 0};      //Stores the current pwm value per pin
+  static byte previousFadeSetting[NumLights] = {0, 0, 0, 0, 0, 0, 0, 0}; //Stores the previously used fade setting
 
-  const byte fadeUpSlowSpeed = 10;  //User setting?
+  const byte fadeUpSlowSpeed = 10; //User setting?
 
-  int lastOutput = 0;               //The calculated output from the previous loop
-  int calculatedOutput = 0;         //The output after fading calculation
+  int lastOutput = 0;       //The calculated output from the previous loop
+  int calculatedOutput = 0; //The output after fading calculation
 
   lastOutput = fadeValueArray[currentPin];
 
   byte fadeSetting = wantedFadeSetting;
 
   //If I remember correctly, this helps the xenon sequencing work:
-  if (wantedOutput < lastOutput) {
-    if(previousFadeSetting[currentPin] >= '5'){//Fixes xenon bug.
+  if (wantedOutput < lastOutput)
+  {
+    if (previousFadeSetting[currentPin] >= '5')
+    { //Fixes xenon bug.
       fadeSetting = previousFadeSetting[currentPin];
     }
   }
-  else {
+  else
+  {
     fadeSetting = wantedFadeSetting;
-    if (previousFadeSetting[currentPin] < FADEXENON) {
+    if (previousFadeSetting[currentPin] < FADEXENON)
+    {
       previousFadeSetting[currentPin] = wantedFadeSetting;
     }
   }
 
   switch (fadeSetting)
   {
-    case FADEQUICK: //Fast bug less smooth fade (both up and down)
-      previousFadeSetting[currentPin] = FADEQUICK;
-      if (wantedOutput > lastOutput) {
-        calculatedOutput = min(lastOutput + 20, wantedOutput);
-      }
-      else if (wantedOutput < lastOutput) {
-        calculatedOutput = max(lastOutput - 20, wantedOutput);
-      }
-      else {
-        calculatedOutput = wantedOutput;
-      }
-      break;
-
-    case FADEUP: //Fade when going up, no fade when going down.
-      previousFadeSetting[currentPin] = FADEUP;
-      if (wantedOutput > lastOutput) {
-        calculatedOutput = min(lastOutput + fadeUpSlowSpeed, wantedOutput);
-      }
-      else {
-        calculatedOutput = wantedOutput;
-      }
-      break;
-
-    case FADEDOWN: //Fade when going down, no fade when going up. //Currently multiplies instead of subtracts, to get a better curve
-      previousFadeSetting[currentPin] = FADEDOWN;
-      if (wantedOutput < lastOutput) {
-        calculatedOutput = max(0.9*lastOutput,wantedOutput);
-      }
-      else {
-        calculatedOutput = wantedOutput;
-      }
-      break;
-
-    case FADEBOTH: // Fade both up and down //optimize here?
-      previousFadeSetting[currentPin] = FADEBOTH;
-      if (wantedOutput > lastOutput) {
-        calculatedOutput = min(lastOutput + fadeUpSlowSpeed, wantedOutput);
-      }
-      else if (wantedOutput < lastOutput) {
-        calculatedOutput = max(0.95*lastOutput,wantedOutput);// - fadeValue, wantedOutput);
-      }
-      else {
-        calculatedOutput = wantedOutput;
-      }
-      break;
-
-    //The xenon fading works in 3 stages.
-    //1: Starting from off, spike the value to a medium-high value.
-    //2: Go quickly down to a low value.
-    //3: Slowly fade up to the wanted output value (probably full, but supports any value).
-    // When turning off, fade out.
-    case FADEXENON:
-    case FADEXENON+1:
-    case FADEXENON+2:
-
-      if (wantedOutput > lastOutput)
-      {
-        byte flashMax = wantedOutput - (wantedOutput>>2);
-        if ((previousFadeSetting[currentPin] == (FADEXENON + 0)) || (previousFadeSetting[currentPin] == 0))
-        {
-          calculatedOutput = lastOutput + (wantedOutput>>2);// = min(lastOutput + 30,flashMax); // last variable is the max value for the ignition flash// calculated is now 60 instead of 40 on run 2 if wanted is 40? FIX!
-          //calculatedOutput = min(calculatedOutput,wantedOutput); //fixed
-          if (calculatedOutput >= flashMax)
-          {
-            previousFadeSetting[currentPin]=FADEXENON + 1;
-            calculatedOutput = flashMax;
-          }
-        }
-        else if (previousFadeSetting[currentPin] == (FADEXENON + 1))
-        {
-          previousFadeSetting[currentPin]= FADEXENON + 2;
-          calculatedOutput = 1;
-        }
-        else if (previousFadeSetting[currentPin] == (FADEXENON + 2))
-        {
-          calculatedOutput = lastOutput + 1; //min(lastOutput + 1,wantedOutput);
-          if (calculatedOutput >= wantedOutput)
-          {
-            previousFadeSetting[currentPin] = FADEXENON;
-          }
-        }
-      }
-      else if (wantedOutput < lastOutput)
-      {
-        calculatedOutput = max(0.9*lastOutput,wantedOutput); //change to sine wave fade?
-        previousFadeSetting[currentPin] = FADEXENON;
-      }
-      else if (wantedOutput == lastOutput)
-      {
-        calculatedOutput = wantedOutput;
-        previousFadeSetting[currentPin] = FADEXENON;
-      }
-      break;
-    default:
+  case FADEQUICK: //Fast bug less smooth fade (both up and down)
+    previousFadeSetting[currentPin] = FADEQUICK;
+    if (wantedOutput > lastOutput)
+    {
+      calculatedOutput = min(lastOutput + 20, wantedOutput);
+    }
+    else if (wantedOutput < lastOutput)
+    {
+      calculatedOutput = max(lastOutput - 20, wantedOutput);
+    }
+    else
+    {
       calculatedOutput = wantedOutput;
-      previousFadeSetting[currentPin] = 0;
-      break;
+    }
+    break;
+
+  case FADEUP: //Fade when going up, no fade when going down.
+    previousFadeSetting[currentPin] = FADEUP;
+    if (wantedOutput > lastOutput)
+    {
+      calculatedOutput = min(lastOutput + fadeUpSlowSpeed, wantedOutput);
+    }
+    else
+    {
+      calculatedOutput = wantedOutput;
+    }
+    break;
+
+  case FADEDOWN: //Fade when going down, no fade when going up. //Currently multiplies instead of subtracts, to get a better curve
+    previousFadeSetting[currentPin] = FADEDOWN;
+    if (wantedOutput < lastOutput)
+    {
+      calculatedOutput = max(0.9 * lastOutput, wantedOutput);
+    }
+    else
+    {
+      calculatedOutput = wantedOutput;
+    }
+    break;
+
+  case FADEBOTH: // Fade both up and down //optimize here?
+    previousFadeSetting[currentPin] = FADEBOTH;
+    if (wantedOutput > lastOutput)
+    {
+      calculatedOutput = min(lastOutput + fadeUpSlowSpeed, wantedOutput);
+    }
+    else if (wantedOutput < lastOutput)
+    {
+      calculatedOutput = max(0.95 * lastOutput, wantedOutput); // - fadeValue, wantedOutput);
+    }
+    else
+    {
+      calculatedOutput = wantedOutput;
+    }
+    break;
+
+  //The xenon fading works in 3 stages.
+  //1: Starting from off, spike the value to a medium-high value.
+  //2: Go quickly down to a low value.
+  //3: Slowly fade up to the wanted output value (probably full, but supports any value).
+  // When turning off, fade out.
+  case FADEXENON:
+  case FADEXENON + 1:
+  case FADEXENON + 2:
+
+    if (wantedOutput > lastOutput)
+    {
+      byte flashMax = wantedOutput - (wantedOutput >> 2);
+      if ((previousFadeSetting[currentPin] == (FADEXENON + 0)) || (previousFadeSetting[currentPin] == 0))
+      {
+        calculatedOutput = lastOutput + (wantedOutput >> 2); // = min(lastOutput + 30,flashMax); // last variable is the max value for the ignition flash// calculated is now 60 instead of 40 on run 2 if wanted is 40? FIX!
+        //calculatedOutput = min(calculatedOutput,wantedOutput); //fixed
+        if (calculatedOutput >= flashMax)
+        {
+          previousFadeSetting[currentPin] = FADEXENON + 1;
+          calculatedOutput = flashMax;
+        }
+      }
+      else if (previousFadeSetting[currentPin] == (FADEXENON + 1))
+      {
+        previousFadeSetting[currentPin] = FADEXENON + 2;
+        calculatedOutput = 1;
+      }
+      else if (previousFadeSetting[currentPin] == (FADEXENON + 2))
+      {
+        calculatedOutput = lastOutput + 1; //min(lastOutput + 1,wantedOutput);
+        if (calculatedOutput >= wantedOutput)
+        {
+          previousFadeSetting[currentPin] = FADEXENON;
+        }
+      }
+    }
+    else if (wantedOutput < lastOutput)
+    {
+      calculatedOutput = max(0.9 * lastOutput, wantedOutput); //change to sine wave fade?
+      previousFadeSetting[currentPin] = FADEXENON;
+    }
+    else if (wantedOutput == lastOutput)
+    {
+      calculatedOutput = wantedOutput;
+      previousFadeSetting[currentPin] = FADEXENON;
+    }
+    break;
+  default:
+    calculatedOutput = wantedOutput;
+    previousFadeSetting[currentPin] = 0;
+    break;
   }
 
   fadeValueArray[currentPin] = calculatedOutput;
@@ -475,7 +561,7 @@ byte SimpleFader(byte currentPin, byte wantedFadeSetting, byte wantedOutput)
 //   numberOfFrames is the wavelength/period/cycle time.
 //   numberOfActiveFrames is the High pulse width.
 //   phase is the delay before the rising edge.
-byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4]) // -Wombii
+byte flashingFunctionStartActiveSimple(byte functionNumber, byte tempArray[4]) // -Wombii
 {
   byte phase = tempArray[1];
   byte numberOfFrames = tempArray[2];
@@ -483,8 +569,9 @@ byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4])
   byte flasherState = 0;
 
   //set phase if this is a new blinking session to always start ON
-  if (phase == 255) {
-    phase = numberOfFrames - (runCount % numberOfFrames );
+  if (phase == 255)
+  {
+    phase = numberOfFrames - (runCount % numberOfFrames);
     specialTimingArray[functionNumber][1] = phase;
   }
 
@@ -492,7 +579,8 @@ byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4])
   //numberOfFrames = number of loops per light cycle
   //numberOfActiveFrames = number of loops per light cycle that should be ON.
   //phase = number of frames to wait before starting the ON part.
-  if ((runCount + phase)%numberOfFrames < numberOfActiveFrames ) {
+  if ((runCount + phase) % numberOfFrames < numberOfActiveFrames)
+  {
     flasherState = 1;
   }
 
@@ -522,13 +610,19 @@ void TurnOffLight(int WhatLight)
 void LightBackfire(int WhatLight)
 {
   // Has enough time passed to flicker the backfire LED?
-  if (canBackfire) {
+  if (canBackfire)
+  {
     // Save time for next check
-    if(millis() - Backfire_millis > backfire_interval) {
+    if (millis() - Backfire_millis > backfire_interval)
+    {
       Backfire_millis = millis();
       // Change state of backfire LED
-      for (int i=0; i<NumLights; i++) {
-        if (LightSettings[i][StateDecel] == BACKFIRE) {ReverseLight(i); }
+      for (int i = 0; i < NumLights; i++)
+      {
+        if (LightSettings[i][StateDecel] == BACKFIRE)
+        {
+          ReverseLight(i);
+        }
       }
       // Calculate new random interval for the next flicker
       backfire_interval = random(BF_Short, BF_Long);
@@ -552,9 +646,11 @@ void OvertakeOff()
   // Time up - stop the overtake effects
   Overtaking = false;
   // The overtaking effect can cause a Xenon effect to re-start, so in the event a Xenon effect is defined for this same light,
-  for (int i=0; i<NumLights; i++) {
+  for (int i = 0; i < NumLights; i++)
+  {
     // we go ahead and flag it complete.
-    if (LightSettings[i][StateAccel] != NA) {
+    if (LightSettings[i][StateAccel] != NA)
+    {
       Xenon_EffectDone[i] = 1;
     }
   }
@@ -584,10 +680,12 @@ void FastBlinkLight(int WhatLight)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void FixDimLevel()
 {
-  if (DimLevel < 2) {
+  if (DimLevel < 2)
+  {
     ActualDimLevel = 2;
   }
-  else {
+  else
+  {
     ActualDimLevel = DimLevel;
   }
 }
@@ -598,13 +696,14 @@ void FixDimLevel()
 void TwinkleLights(int Seconds)
 {
   StartWaiting_sec(Seconds);
-  do {
-    for (int j=0; j<NumLights; j++) {
+  do
+  {
+    for (int j = 0; j < NumLights; j++)
+    {
       FastBlinkLight(j);
     }
     timer.run();
-  }
-  while(!TimeUp);
+  } while (!TimeUp);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -612,13 +711,17 @@ void TwinkleLights(int Seconds)
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 void BlinkAllLights(int HowManyTimes)
 {
-  if (Blinking) {
-    if (State) {
-      if (!PriorState) {
+  if (Blinking)
+  {
+    if (State)
+    {
+      if (!PriorState)
+      {
         // Turn everything on
         GreenLedOn();
         RedLedOn();
-        for (int j=0; j<NumLights; j++){
+        for (int j = 0; j < NumLights; j++)
+        {
           TurnOnLight(j);
         }
         PriorState = true;
@@ -626,18 +729,23 @@ void BlinkAllLights(int HowManyTimes)
         timer.setTimeout(130, BlinkOn);
       }
     }
-    else {
-      if (PriorState) {
+    else
+    {
+      if (PriorState)
+      {
         // Turn everything off
         GreenLedOff();
         RedLedOff();
-        for (int j=0; j<NumLights; j++)
-        {   TurnOffLight(j); }
+        for (int j = 0; j < NumLights; j++)
+        {
+          TurnOffLight(j);
+        }
         PriorState = false;
         BlinkOffID = timer.setTimeout(160, BlinkOff);
       }
 
-      if (TimesBlinked >= HowManyTimes) {
+      if (TimesBlinked >= HowManyTimes)
+      {
         TimesBlinked = 0;
         Blinking = false;
         timer.setTimeout(1000, BlinkWait);
@@ -694,7 +802,7 @@ void GreenLedOn()
 
 void GreenLedOff()
 {
-  digitalWrite(GreenLED , LOW);
+  digitalWrite(GreenLED, LOW);
 }
 
 void GreenBlink()
@@ -723,10 +831,10 @@ void ToggleAllLights()
   if (BLINK_LIGHTS_RX_LOST)
   {
     // Flip flop every other external light
-    for (int j=0; j<NumLights; j += 2)
+    for (int j = 0; j < NumLights; j += 2)
     {
-        Status ? TurnOnLight(j) : TurnOffLight(j);
-        Status ? TurnOffLight(j+1) : TurnOnLight(j+1);
+      Status ? TurnOnLight(j) : TurnOffLight(j);
+      Status ? TurnOffLight(j + 1) : TurnOnLight(j + 1);
     }
   }
 
@@ -736,37 +844,43 @@ void ToggleAllLights()
 
 void GreenBlinkSlow(int HowMany)
 {
-  for (int i=1; i<=HowMany; i++)
+  for (int i = 1; i <= HowMany; i++)
   {
     GreenLedOn();
     delay(750);
     GreenLedOff();
     if (i < HowMany)
-    { delay(500);  }
+    {
+      delay(500);
+    }
   }
 }
 
 void RedBlinkFast(int HowMany)
 {
-  for (int i=1; i<=HowMany; i++)
+  for (int i = 1; i <= HowMany; i++)
   {
     RedLedOn();
     delay(100);
     RedLedOff();
     if (i < HowMany)
-    { delay(90); }
+    {
+      delay(90);
+    }
   }
 }
 
 void GreenBlinkFast(int HowMany)
 {
-  for (int i=1; i<=HowMany; i++)
+  for (int i = 1; i <= HowMany; i++)
   {
     GreenLedOn();
     delay(100);
     GreenLedOff();
     if (i < HowMany)
-    { delay(90); }
+    {
+      delay(90);
+    }
   }
 }
 

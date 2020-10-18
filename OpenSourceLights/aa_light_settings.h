@@ -67,20 +67,35 @@
 // OK, YOU'RE READY. TRY NOT TO MESS UP THE LAYOUT. JUST CHANGE THE SETTINGS. REMEMBER THE POSSIBLE VALUES:
 // ON, OFF, FADEOFF, BLINK, FASTBLINK, DIM, XENON, FADEOFF, NA
 
-const uint16_t Schemes[NumSchemes][NumLights][NumStates] PROGMEM =
+const int Schemes[NumSchemes][NumLights][NumStates] PROGMEM =
 {
-  {
-  //    IF CHANNEL 3 is only 3-position switch, values in Pos2 and Pos4 will be ignored (just use Pos1, Pos3, Pos5)
-  //    SCHEME 1 - Cruising
-  //  Pos 1  Pos 2  Pos 3  Pos 4  Pos 5  Forward  Reverse  Stop  StopDelay  Brake  Right Turn  Left Turn  Accelerating  Decelerating
-  // ------------------------------------------------------------------------------------------------------------------------------------------------
-    {  OFF,  OFF,   XENON, XENON, XENON, NA,      NA,      NA,   NA,        NA,    NA,         NA,        FASTBLINK,    NA         },  // Light 1  -- Headlight
-    {  OFF,  XENON, XENON, XENON, XENON, NA,      NA,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 2  -- Fog Light
-    {  OFF,  OFF,   DIM,   DIM,   DIM,   NA,      NA,      ON,   NA,        ON,    NA,         NA,        NA,           FASTBLINK  },  // Light 3  -- Break Light
-    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   BLINK,     NA,    BLINK,      NA,        NA,           NA         },  // Light 4  -- Right Blinker
-    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   BLINK,     NA,    NA,         BLINK,     NA,           NA         },  // Light 5  -- Left Blinker
-    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      ON,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 6  -- Reverse Lights
-    {  OFF,  OFF,   OFF,   OFF,   OFF,   NA,      NA,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 7  --
-    {  OFF,  OFF,   OFF,   ON,    ON,    NA,      NA,      NA,   NA,        NA,    NA,         NA,        NA,           NA         },  // Light 8  -- Light Bar
-  }
+
+ {
+        //                                     IF CHANNEL 3 is only 3-position switch, values in Pos2 and Pos4 will be ignored (just use Pos1, Pos3, Pos5)
+        //     SCHEME 1
+        //     Pos 1      Pos 2      Pos 3      Pos 4       Pos 5     Forward     Reverse     Stop      StopDelay   Brake     Right Turn     Left Turn      Accelerating   Decelerating
+        // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            {  ON,        ON,        ON,        ON,         ON,        NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 1   W-- Headlight One - XENON on when Channel 3 is in the middle-to-far position - FASTBLINK on overtaking
+            {  ON,        ON,        ON,        ON,         ON,        NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 2   O--
+            {  ON,        ON,        ON,        ON,         ON,        NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 3   O-- NC
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            BLINK,        NA,            NA       },  // Light 4   B-- Left
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       BLINK,         NA,           NA,            NA       },  // Light 5   W-- Right
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         ON,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 6   Y-- Reverse
+            {  DIM,       DIM,       DIM,       DIM,        DIM,       NA,         NA,         ON,       DIM,       ON,       NA,            NA,           NA,            ON       },  // Light 7   G-- Brake
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         ON,       OFF,       ON,       NA,            NA,           NA,            ON       }   // Light 8   R-- Brake
+
+        },
+        {
+        //     SCHEME TWO - BLANK
+        //     Pos 1      Pos 2      Pos 3      Pos 4       Pos 5     Forward     Reverse     Stop      StopDelay   Brake     Right Turn     Left Turn      Accelerating   Decelerating
+        // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 1    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 2    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 3    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 4    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 5    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 6    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       },  // Light 7    --
+            {  OFF,       OFF,       OFF,       OFF,        OFF,       NA,         NA,         NA,       NA,        NA,       NA,            NA,           NA,            NA       }   // Light 8    --
+        }
 };
