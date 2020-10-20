@@ -500,7 +500,7 @@ void loop()
   {
     Decelerating = false;
   }
-
+/*
   // BACKFIRE Enable
   // -------------------------------------------------------------------------------------------------------------------------------------------->
   // The last backfire is over, and we have started decelerating again. Enable the backfire effect.
@@ -513,7 +513,7 @@ void loop()
   else if (canBackfire && !timer.isEnabled(BackfireTimerID)) {
     canBackfire = false;
   }
-
+*/
   // ACCELERATING
   // -------------------------------------------------------------------------------------------------------------------------------------------->
   // Here we are trying to identify sharp acceleration commands.
@@ -533,7 +533,7 @@ void loop()
   {
     Accelerating = false;
   }
-
+/*
   // OVERTAKE Enable
   // -------------------------------------------------------------------------------------------------------------------------------------------->
   // Overtaking is simply a timed event that occurs when a heavy acceleration is detected. The length of time the Overtake event lasts is set in
@@ -550,7 +550,7 @@ void loop()
   else if (Overtaking && !timer.isEnabled(OvertakeTimerID)) {
     Overtaking = false;
   }
-
+*/
   // COMMAND BRAKE
   // -------------------------------------------------------------------------------------------------------------------------------------------->
   // If we are braking, turn on the brake light

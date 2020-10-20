@@ -125,12 +125,12 @@ int GetThrottleCommand()
       if (ThrottleChannelReverse == false)
       {
         // Without channel reversing, we consider PPM pulse values less than Center to be reverse throttle commands. We now map the radio command to our reverse throttle range
-        ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxRevSpeed, ThrottleCenterAdjust); // TS
+        ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxRevSpeed, ThrottleCenterAdjust);
       }
       else
       {
         // With channel reversing, we consider PPM pulse values less than Center to be forward throttle commands. We now map the radio command to our forward throttle range
-        ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxFwdSpeed, -ThrottleCenterAdjust); // TS
+        ThrottleCommand = map(ThrottlePulse, ThrottlePulseMin, (ThrottlePulseCenter - ThrottleDeadband), MaxFwdSpeed, -ThrottleCenterAdjust);
       }
     }
     else
