@@ -153,21 +153,21 @@ const byte Pos5 = 4;
 
 // RC CHANNEL INPUTS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-const byte ThrottleChannel_Pin =    11;                 // The Arduino pin connected to the throttle channel input
-const byte SteeringChannel_Pin =    12;                 // The Arduino pin connected to the steering channel input (this is the same as saying pin A3)
-const byte Channel3_Pin        =    10;                 // The Arduino pin connected to the Channel 3 input
-unsigned long ServoTimeout     = 30000;                 // Value in microseconds (uS) - length of time to wait for a servo pulse. Measured on Eurgle/HK 3channel at ~20-22ms between pulses
-                                                        // Up to version 2.03 of OSL code this value was 21,000 (21ms) and it worked fine. However with the release of Arduino IDE 1.6.5,
-                                                        // something has changed about the pulseIn function, or perhaps the way it is compiled. At 21ms, pulseIn would return 0 every other read.
+const byte ThrottleChannel_Pin =    11; // The Arduino pin connected to the throttle channel input
+const byte SteeringChannel_Pin =    12; // The Arduino pin connected to the steering channel input (this is the same as saying pin A3)
+const byte Channel3_Pin        =    10; // The Arduino pin connected to the Channel 3 input
+unsigned long ServoTimeout     = 30000; // Value in microseconds (uS) - length of time to wait for a servo pulse. Measured on Eurgle/HK 3channel at ~20-22ms between pulses
+                                        // Up to version 2.03 of OSL code this value was 21,000 (21ms) and it worked fine. However with the release of Arduino IDE 1.6.5,
+                                        // something has changed about the pulseIn function, or perhaps the way it is compiled. At 21ms, pulseIn would return 0 every other read.
 // Increasing the timeout to 30ms seems to have fixed it. LM - 7/15/2015
-int PulseMin_Bad               =   700;                 // Pulse widths lower than this amount are considered bad
-int PulseMax_Bad               =  2400;                 // Pulse widths greater than this amount are considered bad
+int PulseMin_Bad               =   700; // Pulse widths lower than this amount are considered bad
+int PulseMax_Bad               =  2400; // Pulse widths greater than this amount are considered bad
 
 // BOARD OBJECTS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-const byte GreenLED            =    17;                 // The Arduino pin connected to the on-board Green LED (this is the same as saying pin A4)
-const byte RedLED              =    16;                 // The Arduino pin connected to the on-board Red LED (this is the same as saying pin A5)
-const byte SetupButton         =    14;                 // The Arduino pin connected to the on-board push button (this is the same as saying pin A0)
+const byte GreenLED            =    17; // The Arduino pin connected to the on-board Green LED (this is the same as saying pin A4)
+const byte RedLED              =    16; // The Arduino pin connected to the on-board Red LED (this is the same as saying pin A5)
+const byte SetupButton         =    14; // The Arduino pin connected to the on-board push button (this is the same as saying pin A0)
 
 // These are the Arduino pins to the 8 lights in order from left to right looking down on the top surface of the board.
 // Note that the six Arduino analog pins can be referred to by numbers 14-19

@@ -76,7 +76,6 @@
   extern bool FastBlinker;
   extern bool IndividualLightBlinker[NumLights];
 
-
     // Variables
   extern int ThrottlePulse;
   extern int ThrottlePulseMin;
@@ -101,7 +100,6 @@
   extern bool Channel3Present;
   extern bool Channel3Reverse;
   extern int CurrentScheme;
-
   extern const byte Pos1;
   extern const byte Pos2;
   extern const byte Pos3;

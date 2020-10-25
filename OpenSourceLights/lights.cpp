@@ -110,7 +110,6 @@ void SetLights(int DriveMode)
         SaveSetting[j] = LightSettings[j][StateAccel];
       }
     }
-
     // Next - does this light come on during braking?
     // --------------------------------------------------------------------------------------------------->>
     if (Braking)
@@ -367,8 +366,7 @@ void SetLight(int WhatLight, int WhatSetting)
   {
     LightBackfire(WhatLight);
     pinIsFlashing[WhatLight] = 0;
-  }
-  else if (WhatSetting == XENON)
+  }  else if (WhatSetting == XENON)
   {
     WantedLightState = 1;
     WantedLightValue = 255;
@@ -604,6 +602,7 @@ void TurnOffLight(int WhatLight)
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
+// ------------------------------------------------------------------------------------------------------------------------------------------------>
 // LIGHTBACKFIRE - briefly and randomly light a led
 // All credit for backfiring code goes to Sergio Pizzotti
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -657,7 +656,7 @@ void OvertakeOff()
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-// TURN SIGNAL - Artificial turn signal cancel
+// TURN SIGNAL - Artificial turn signal cancel// TURN SIGNAL - Artificial turn signal cancel
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // If TurnSignalOverride is not zero, then it acts as an artificial turn signal command, keeping the turn signals on even after the car has begun
 // to move forward. But it only does so for a brief period of time (set by the user in TurnFromStartContinue_mS in UserConfig.h). When that time

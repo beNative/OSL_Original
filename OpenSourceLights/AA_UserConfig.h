@@ -7,7 +7,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // The number of lighting schemes implemented. Theoretically it can be anything up the memory limit. Defaults to 2.
   // MAKE SURE THIS NUMBER MATCHES THE NUMBER OF SCHEMES DEFINED IN AA_LIGHT_SETUP !!
-  #define NumSchemes 2
+  #define NumSchemes 6
 
   // The number of light outputs available on the board
   #define NumLights 8
@@ -141,7 +141,6 @@
   #define SmoothSteering            false
   #define SmoothChannel3            false
   #define smoothingStrength         3             // Number from 0-4. Change this value to set strength of smoothing. Use minimum acceptable value.
-
 
 // DEBUGGING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>

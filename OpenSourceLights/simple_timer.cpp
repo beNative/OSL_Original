@@ -27,39 +27,57 @@ void FastBlinkLights()
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 unsigned int StartBlinking_ms(int LED, int BlinkTimes, int ms)
 {
-    switch (BlinkTimes)
+  switch (BlinkTimes)
+  {
+  case 1:
+    if (LED == GreenLED)
     {
-        case 1:
-            if (LED == GreenLED) { return timer.setInterval(ms, GreenBlinkOne); }
-            if (LED == RedLED)   { return timer.setInterval(ms, RedBlinkOne);   }
-            break;
-        case 2:
-            if (LED == GreenLED) { return timer.setInterval(ms, GreenBlinkTwo); }
-            if (LED == RedLED)   { return timer.setInterval(ms, RedBlinkTwo);   }
-            break;
-        case 3:
-            if (LED == GreenLED) { return timer.setInterval(ms, GreenBlinkThree); }
-            if (LED == RedLED)   { return timer.setInterval(ms, RedBlinkThree);   }
-            break;
-        default:
-            break;
+      return timer.setInterval(ms, GreenBlinkOne);
     }
+    if (LED == RedLED)
+    {
+      return timer.setInterval(ms, RedBlinkOne);
+    }
+    break;
+  case 2:
+    if (LED == GreenLED)
+    {
+      return timer.setInterval(ms, GreenBlinkTwo);
+    }
+    if (LED == RedLED)
+    {
+      return timer.setInterval(ms, RedBlinkTwo);
+    }
+    break;
+  case 3:
+    if (LED == GreenLED)
+    {
+      return timer.setInterval(ms, GreenBlinkThree);
+    }
+    if (LED == RedLED)
+    {
+      return timer.setInterval(ms, RedBlinkThree);
+    }
+    break;
+  default:
+    break;
+  }
 }
 
 void StopBlinking(unsigned int TimerID)
 {
-    timer.deleteTimer(TimerID);
+  timer.deleteTimer(TimerID);
 }
 
 unsigned int StartWaiting_mS(int mS)
 {
   TimeUp = false;
-  return timer.setTimeout(mS, SetTimeUp);    // will call function once after ms duration
+  return timer.setTimeout(mS, SetTimeUp); // will call function once after ms duration
 }
 
 unsigned int StartWaiting_sec(int seconds)
 {
-  return StartWaiting_mS(seconds*1000);
+  return StartWaiting_mS(seconds * 1000);
 }
 
 void SetTimeUp()

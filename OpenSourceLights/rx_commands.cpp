@@ -16,7 +16,6 @@ void GetRxCommands()
   if (Failsafe)
   {
     failsafeCounter++;
-    //if (DEBUG) Serial.println(F("RX: Lost packet"));
     while (failsafeCounter > 4) // Don't go into failsafe until we've missed 4 sequential packets
     {
       if (DEBUG)

@@ -122,8 +122,7 @@ void setup()
   // we need to initialize them for the first event.
   randomSeed(analogRead(0));
   backfire_interval = random(BF_Short, BF_Long);
-  backfire_timeout = BF_Time + random(BF_Short, BF_Long);
-}
+  backfire_timeout = BF_Time + random(BF_Short, BF_Long);}
 
 // ====================================================================================================================================================>
 //  MAIN LOOP
@@ -477,7 +476,7 @@ void loop()
     // If we are stopped and have been stopped, we are also no longer decelerating, so reset these flags.
     Decelerating = false;
     Accelerating = false;
-    canBackfire = false;
+    //canBackfire = false;
   }
 
   // DECELERATING
@@ -513,8 +512,7 @@ void loop()
   else if (canBackfire && !timer.isEnabled(BackfireTimerID)) {
     canBackfire = false;
   }
-*/
-  // ACCELERATING
+*/  // ACCELERATING
   // -------------------------------------------------------------------------------------------------------------------------------------------->
   // Here we are trying to identify sharp acceleration commands.
   // The "if" statement says:
@@ -550,8 +548,7 @@ void loop()
   else if (Overtaking && !timer.isEnabled(OvertakeTimerID)) {
     Overtaking = false;
   }
-*/
-  // COMMAND BRAKE
+*/  // COMMAND BRAKE
   // -------------------------------------------------------------------------------------------------------------------------------------------->
   // If we are braking, turn on the brake light
   Braking = ReturnBrakeFlag(DriveMode_Previous, DriveModeCommand);
@@ -685,7 +682,7 @@ void loop()
     }
   }
 
-  // DEBUGING
+  // DEBUGGING
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   if ((DEBUG == true) && (DriveModeCommand_Previous != DriveModeCommand))
   {
