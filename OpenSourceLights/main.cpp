@@ -227,11 +227,11 @@ void loop()
   // GET COMMANDS FROM RECEIVER
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   GetRxCommands();
-
   // DETECT IF THE USER WANTS TO ENTER CHANGE-SCHEME-MODE
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // To enter scheme-change-mode, the user needs to turn the steering wheel all the way back and forth at least six times (three each way) in quick succession (within ChangeModeTime_mS milliseconds)
-  if (SteeringChannelPresent && canChangeScheme && (abs(TurnCommand) >= MaxTurn) && !ChangeSchemeMode)
+  //if (SteeringChannelPresent && canChangeScheme && (abs(TurnCommand) >= MaxTurn) && !ChangeSchemeMode)
+  if (SteeringChannelPresent && canChangeScheme && !ChangeSchemeMode)
   { // Here we save how many times they have turned the wheel in each direction.
     if ((TurnCommand > 0) && (WhatState == false))
     {
@@ -476,7 +476,7 @@ void loop()
     // If we are stopped and have been stopped, we are also no longer decelerating, so reset these flags.
     Decelerating = false;
     Accelerating = false;
-    //canBackfire = false;
+    canBackfire = false;
   }
 
   // DECELERATING
