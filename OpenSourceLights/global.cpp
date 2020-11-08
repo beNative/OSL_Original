@@ -8,13 +8,13 @@ int MaxRevSpeed  = -100;
 int MaxRightTurn = 100;
 int MaxLeftTurn  = -100;
 
-bool Failsafe = false;                 // If we loose contact with the Rx this flag becomes True
+bool Failsafe = false; // If we loose contact with the Rx this flag becomes True
 
-unsigned long runCount = 0;
+unsigned long RunCount = 0;
 
 // CHANGE-SCHEME-MODE MENU VARIABLES
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-bool canChangeScheme     = false; // Are we allowed to enter Change Scheme Mode? (This is set to true after being in the STOP state for several seconds)
+bool CanChangeScheme     = false; // Are we allowed to enter Change Scheme Mode? (This is set to true after being in the STOP state for several seconds)
 unsigned int BlinkOffID;          // SimpleTimer ID number for the blinking lights
 bool Blinking;                    // Are the lights blinking?
 bool State;                       // If blinking, are they blinking on (true) or off (false)?
@@ -64,7 +64,7 @@ int ActualDimLevel; // We allow the user to enter a Dim level from 0-255. Actual
                     // In practice, it is unlikely a user would want a dim level of 1 anyway, as it would be probably invisible.
 // STARTUP
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-bool Startup                =  true; // This lets us run a few things in the main loop only once instead of over and over
+bool Startup = true; // This lets us run a few things in the main loop only once instead of over and over
 
 // DRIVING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -77,26 +77,27 @@ bool StoppedLongTime = false; // Have we been stopped for a long time (actual le
 unsigned long backfire_interval;     // Will save the random interval for the backfire effect
 unsigned long backfire_timeout;      // Will save the random timeout interval to turn off the LED
 unsigned long Backfire_millis  =  0; // Will store last time LED was updated
-bool canBackfire            = false; // Is the backfiring effect currently active?
+bool CanBackfire            = false; // Is the backfiring effect currently active?
 
 // Overtaking effect
-bool Overtaking             = false;
+bool Overtaking = false;
 
 // If the user decides to restrict turn signals only to when the car is stopped, they can further add a delay that begins
 // when the car first stops, and until this delay is complete, the turn signals won't come on. This flag indicates if the delay
 // is up. Initialize to true, otherwise turn signals won't work until the car has driven forward once and stopped.
-bool TurnSignal_Enable      =  true;
+bool TurnSignal_Enable =  true;
 
 // The other situation we want to modify the turn signal is when starting from a stop, while turning. In this case we leave the turn signals on
 // for a period of time even after the car has started moving (typically turn signals are disabled while moving). This mimics a real car where
 // the turn signal isn't cancelled until after the steering wheel turns back the opposite way. In our case we don't check the steering wheel,
 // we just wait a short amount of time (user configurable in AA_UserConfig.h, variable TurnFromStartContinue_mS)
-int TurnSignalOverride         =     0;
+int TurnSignalOverride = 0;
 
 // Blinking effect
-bool Blinker                =  true;                 // A flip/flop variable used for blinking
-bool FastBlinker            =  true;                 // A flip/flop variable used for fast blinking
-bool IndividualLightBlinker[NumLights] = {true, true, true, true, true, true, true, true};   // A flip/flop variable but this time one for each light. Used for SoftBlink.
+bool Blinker     = true; // A flip/flop variable used for blinking
+bool FastBlinker = true; // A flip/flop variable used for fast blinking
+// A flip/flop variable but this time one for each light. Used for SoftBlink.
+bool IndividualLightBlinker[NumLights] = {true, true, true, true, true, true, true, true};
 
 // Throttle
 // Can be used to reverse the throttle channel if they don't have reversing on radio
@@ -111,7 +112,8 @@ int ThrottlePulseMin;
 int ThrottlePulseMax;
 // EX: 1000 + ((2000-1000)/2) = 1500. If Pulse = 1000 then -500, 1500 = 0, 2000 = 500
 int ThrottlePulseCenter;
-// If small throttle commands do not result in movement due to gearbox/track resistance, increase this number. FOR NOW, LEAVE AT ZERO. IF SET, MUST BE SMALLER THAN THROTTLEDEADBAND
+// If small throttle commands do not result in movement due to gearbox/track resistance, increase this number.
+// FOR NOW, LEAVE AT ZERO. IF SET, MUST BE SMALLER THAN THROTTLEDEADBAND
 int ThrottleCenterAdjust = 0;
 
 // Steering
@@ -140,7 +142,7 @@ int Channel3PulseMin;
 int Channel3PulseMax;
 int Channel3PulseCenter;
 
-// State of the Channel 3 switch: On (1), Off (0), Disconnected (-1)
+// State of the Channel 3 switch: ON (1), OFF (0), Disconnected (-1)
 int Channel3 = OFF;
 bool Channel3Reverse;
 
@@ -156,18 +158,20 @@ const byte Pos5 = 4;
 const byte ThrottleChannel_Pin =    11; // The Arduino pin connected to the throttle channel input
 const byte SteeringChannel_Pin =    12; // The Arduino pin connected to the steering channel input
 const byte Channel3_Pin        =    10; // The Arduino pin connected to the Channel 3 input
-unsigned long ServoTimeout     = 30000; // Value in microseconds (uS) - length of time to wait for a servo pulse. Measured on Eurgle/HK 3channel at ~20-22ms between pulses
+//const byte Channel4_Pin        =    13; // The Arduino pin connected to the Channel 4 input
+unsigned long ServoTimeout     = 30000; // Value in microseconds (µS) - length of time to wait for a servo pulse. Measured on Eurgle/HK 3channel at ~20-22ms between pulses
                                         // Up to version 2.03 of OSL code this value was 21,000 (21ms) and it worked fine. However with the release of Arduino IDE 1.6.5,
                                         // something has changed about the pulseIn function, or perhaps the way it is compiled. At 21ms, pulseIn would return 0 every other read.
-// Increasing the timeout to 30ms seems to have fixed it. LM - 7/15/2015
-int PulseMin_Bad               =   700; // Pulse widths lower than this amount are considered bad
-int PulseMax_Bad               =  2400; // Pulse widths greater than this amount are considered bad
+                                        // Increasing the timeout to 30ms seems to have fixed it. LM - 7/15/2015
+int PulseMin_Bad               =   500; // Pulse widths lower than this amount are considered bad (default: 700)
+int PulseMax_Bad               =  2800; // Pulse widths greater than this amount are considered bad (default: 2400)
 
 // BOARD OBJECTS
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-const byte GreenLED            =    17; // The Arduino pin connected to the on-board Green LED
-const byte RedLED              =    16; // The Arduino pin connected to the on-board Red LED
-const byte SetupButton         =    14; // The Arduino pin connected to the on-board push button
+const byte GreenLed_Pin        =    17; // The Arduino pin connected to the on-board Green LED
+const byte RedLed_Pin          =    16; // The Arduino pin connected to the on-board Red LED
+const byte SetupButton_Pin     =    14; // The Arduino pin connected to the on-board push button
+//const byte AuxButton_Pin       =    15; // The Arduino pin connected to an optional button
 
 // These are the Arduino pins to the 8 lights in order from left to right looking down on the top surface of the board.
 // Note that the six Arduino analog pins can be referred to by numbers 14-19

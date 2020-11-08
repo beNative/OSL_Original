@@ -1,14 +1,14 @@
 /* Open Source Lights - Simple Timer Library
- * 
- * This library has been modified to fix some bugs. It now returns 
+ *
+ * This library has been modified to fix some bugs. It now returns
  * a unique ID for each timer created (unsigned int). This prevents
  * routines from inadvertently deleting timers that are not theirs,
- * but which have re-used the same slot number. 
+ * but which have re-used the same slot number.
  *
  * The library has also been renamed from SimpleTimer to OSL_SimpleTimer
  * to prevent any conflicts with other SimpleTimer libraries you may
- * have installed. 
- * 
+ * have installed.
+ *
  * May 2015 - Luke Middleton
  */
 
@@ -38,7 +38,6 @@
  *
  */
 
-
 #ifndef OSL_SIMPLETIMER_H
 #define OSL_SIMPLETIMER_H
 
@@ -48,9 +47,7 @@
 #include <WProgram.h>
 #endif
 
-
 typedef void (*timer_callback)(void);
-
 class OSL_SimpleTimer {
 
 public:
@@ -100,7 +97,7 @@ public:
 
     // returns the number of available timers
     int getNumAvailableTimers() { return MAX_TIMERS - numTimers; };
-	
+
 	// Gets the timer number (0-MAX_TIMERS) by ID
 	int getTimerNum(unsigned int ID);
 
@@ -137,7 +134,7 @@ private:
 
 	// IDs for each timer (not equal to the timer number)
 	unsigned int timerID[MAX_TIMERS];
-	unsigned int NextID;	
+	unsigned int NextID;
 
     // actual number of timers in use
     int numTimers;

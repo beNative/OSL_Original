@@ -11,7 +11,7 @@
   void StopBlinking(unsigned int TimerID);
   void FastBlinkLights();
   unsigned int StartBlinking_ms(int LED, int BlinkTimes, int ms);
-  unsigned int StartWaiting_mS(int mS);
+  unsigned int StartWaiting_mS(long mS);
   unsigned int StartWaiting_sec(int seconds);
 
-#endif // ndef SIMPLE_TIMER_H
+#endif // endef SIMPLE_TIMER_H

@@ -3,8 +3,10 @@
 #include "aa_light_setup.h"
 #include <avr/pgmspace.h>
 
-// For each of the 8 states the light can have the following settings: On, Off, NA, Blink, FastBlink, or Dim. On/Off are defined below
-// These give us numerical values to these names which makes coding easier, we can just type in the name instead of the number.
+// For each of the 8 states the light can have the following settings:
+// ON, OFF, NA, BLINK, FASTBLINK, or DIM. OF/OFF are defined below
+// These give us numerical values to these names which makes coding easier,
+// we can just type in the name instead of the number.
 const int NA        = -1;
 const int BLINK     = -2;
 const int FASTBLINK = -3;

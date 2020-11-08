@@ -18,7 +18,8 @@
   void TurnOffLight(int WhatLight);
   void LightBackfire(int WhatLight);
   void BackfireOff();
-  void OvertakeOff();  void ClearBlinkerOverride(void);
+  void OvertakeOff();
+  void ClearBlinkerOverride(void);
   void FastBlinkLight(int WhatLight);
   void FixDimLevel();
   void TwinkleLights(int Seconds);

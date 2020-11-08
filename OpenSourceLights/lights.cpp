@@ -93,7 +93,7 @@ void SetLights(int DriveMode)
 
     // Next - does this light come on during deceleration (probably Backfiring?)
     // --------------------------------------------------------------------------------------------------->>
-    if (canBackfire)
+    if (CanBackfire)
     {
       if (LightSettings[j][StateDecel] != NA)
       {
@@ -221,23 +221,23 @@ void SetLights(int DriveMode)
   {
     if (DriveMode == FWD)
     {
-      digitalWrite(RedLED, LOW);
-      digitalWrite(GreenLED, HIGH);
+      digitalWrite(RedLed_Pin, LOW);
+      digitalWrite(GreenLed_Pin, HIGH);
     }
     if (DriveMode == REV)
     {
-      digitalWrite(RedLED, HIGH);
-      digitalWrite(GreenLED, LOW);
+      digitalWrite(RedLed_Pin, HIGH);
+      digitalWrite(GreenLed_Pin, LOW);
     }
     if (DriveMode == STOP)
     {
-      digitalWrite(RedLED, LOW);
-      digitalWrite(GreenLED, LOW);
+      digitalWrite(RedLed_Pin, LOW);
+      digitalWrite(GreenLed_Pin, LOW);
     }
     if (Braking == true)
     {
-      digitalWrite(RedLED, HIGH);
-      digitalWrite(GreenLED, HIGH);
+      digitalWrite(RedLed_Pin, HIGH);
+      digitalWrite(GreenLed_Pin, HIGH);
     }
     if (TurnCommand > 0)
     {
@@ -366,7 +366,8 @@ void SetLight(int WhatLight, int WhatSetting)
   {
     LightBackfire(WhatLight);
     pinIsFlashing[WhatLight] = 0;
-  }  else if (WhatSetting == XENON)
+  }
+  else if (WhatSetting == XENON)
   {
     WantedLightState = 1;
     WantedLightValue = 255;
@@ -569,7 +570,7 @@ byte flashingFunctionStartActiveSimple(byte functionNumber, byte tempArray[4]) /
   //set phase if this is a new blinking session to always start ON
   if (phase == 255)
   {
-    phase = numberOfFrames - (runCount % numberOfFrames);
+    phase = numberOfFrames - (RunCount % numberOfFrames);
     specialTimingArray[functionNumber][1] = phase;
   }
 
@@ -577,7 +578,7 @@ byte flashingFunctionStartActiveSimple(byte functionNumber, byte tempArray[4]) /
   //numberOfFrames = number of loops per light cycle
   //numberOfActiveFrames = number of loops per light cycle that should be ON.
   //phase = number of frames to wait before starting the ON part.
-  if ((runCount + phase) % numberOfFrames < numberOfActiveFrames)
+  if ((RunCount + phase) % numberOfFrames < numberOfActiveFrames)
   {
     flasherState = 1;
   }
@@ -609,7 +610,7 @@ void TurnOffLight(int WhatLight)
 void LightBackfire(int WhatLight)
 {
   // Has enough time passed to flicker the backfire LED?
-  if (canBackfire)
+  if (CanBackfire)
   {
     // Save time for next check
     if (millis() - Backfire_millis > backfire_interval)
@@ -632,7 +633,7 @@ void LightBackfire(int WhatLight)
 void BackfireOff()
 {
   // Time up - stop backfire effect
-  canBackfire = false;
+  CanBackfire = false;
   // Reset the random backfire timeout for the next event
   backfire_timeout = BF_Time + random(BF_Short, BF_Long);
 }
@@ -656,7 +657,7 @@ void OvertakeOff()
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
-// TURN SIGNAL - Artificial turn signal cancel// TURN SIGNAL - Artificial turn signal cancel
+// TURN SIGNAL - Artificial turn signal cancel
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // If TurnSignalOverride is not zero, then it acts as an artificial turn signal command, keeping the turn signals on even after the car has begun
 // to move forward. But it only does so for a brief period of time (set by the user in TurnFromStartContinue_mS in UserConfig.h). When that time
@@ -786,22 +787,22 @@ void ReverseLight(int WhatLight)
 
 void RedLedOn()
 {
-  digitalWrite(RedLED, HIGH);
+  digitalWrite(RedLed_Pin, HIGH);
 }
 
 void RedLedOff()
 {
-  digitalWrite(RedLED, LOW);
+  digitalWrite(RedLed_Pin, LOW);
 }
 
 void GreenLedOn()
 {
-  digitalWrite(GreenLED, HIGH);
+  digitalWrite(GreenLed_Pin, HIGH);
 }
 
 void GreenLedOff()
 {
-  digitalWrite(GreenLED, LOW);
+  digitalWrite(GreenLed_Pin, LOW);
 }
 
 void GreenBlink()

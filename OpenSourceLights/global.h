@@ -7,12 +7,14 @@
   extern const byte ThrottleChannel_Pin;
   extern const byte SteeringChannel_Pin;
   extern const byte Channel3_Pin;
+//  extern const byte Channel4_Pin;
   extern unsigned long ServoTimeout;
   extern int PulseMin_Bad;
   extern int PulseMax_Bad;
-  extern const byte GreenLED;
-  extern const byte RedLED;
-  extern const byte SetupButton;
+  extern const byte GreenLed_Pin;
+  extern const byte RedLed_Pin;
+  extern const byte SetupButton_Pin;
+//  extern const byte AuxButton_Pin;
   extern const int LightPin[NumLights];
 
   extern const byte blinkLoopsPerCycle;
@@ -28,8 +30,8 @@
   extern int MaxRightTurn;
   extern int MaxLeftTurn;
   extern bool Failsafe;
-  extern unsigned long runCount;
-  extern bool canChangeScheme;
+  extern unsigned long RunCount;
+  extern bool CanChangeScheme;
   extern unsigned int BlinkOffID;
   extern bool Blinking;
   extern bool State;
@@ -67,7 +69,7 @@
   extern unsigned long backfire_interval;
   extern unsigned long backfire_timeout;
   extern unsigned long Backfire_millis;
-  extern bool canBackfire;
+  extern bool CanBackfire;
   extern bool Overtaking;
   extern bool TurnSignal_Enable;
   extern int TurnSignalOverride;

@@ -73,73 +73,73 @@ const int Schemes[NumSchemes][NumLights][NumStates] PROGMEM =
   { // SCHEME 1: DEFAULT
     // POS1  POS2  POS3  POS4  POS5  FWD   REV   STP   STPD  BRAKE RIGHT LEFT  ACCEL DECEL
     // ---------------------------------------------------------------------------------------------------------------
-    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L1 Low/High beam
-    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L2 parking lights
-    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L3 NC
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  }, // L4 Left
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  }, // L5 Right
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L6 Reverse
-    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   ON,   DIM,  ON,   NA,   NA,   NA,   ON  }, // L7 Brake
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   OFF,  ON,   NA,   NA,   NA,   ON  }  // L8 Brake
+    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L1~ Low/High beam
+    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L2  Parking lights
+    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L3  NC
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  }, // L4~ Left turn signals
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  }, // L5~ Right turn signals
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L6  Reverse lights
+    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   ON,   DIM,  ON,   NA,   NA,   NA,   ON  }, // L7~ Brake/Tail lights
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   OFF,  ON,   NA,   NA,   NA,   ON  }  // L8  Brake lights
   },
   { // SCHEME 2: Same as default, but CH3 is used to switch hazard lights
     // POS1  POS2  POS3  POS4  POS5  FWD   REV   STP   STPD  BRAKE RIGHT LEFT  ACCEL DECEL
     // ---------------------------------------------------------------------------------------------------------------
-    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L1   W-- Headlight One
-    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L2   O--
-    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L3   O-- NC
-    {  OFF,  OFF,  OFF,  OFF,  BLINK,NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  }, // L4   B-- Left
-    {  OFF,  OFF,  OFF,  OFF,  BLINK,NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  }, // L5   W-- Right
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L6   Y-- Reverse
-    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   ON,   DIM,  ON,   NA,   NA,   NA,   ON  }, // L7   G-- Brake
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   OFF,  ON,   NA,   NA,   NA,   ON  }  // L8   R-- Brake
+    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L1~ Low/High beam
+    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L2  Parking lights
+    {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L3  NC
+    {  OFF,  OFF,  OFF,  OFF,  BLINK,NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  }, // L4~ Left turn signals
+    {  OFF,  OFF,  OFF,  OFF,  BLINK,NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  }, // L5~ Right turn signals
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L6  Reverse
+    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   ON,   DIM,  ON,   NA,   NA,   NA,   ON  }, // L7~ Brake/Tail lights
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   OFF,  ON,   NA,   NA,   NA,   ON  }  // L8  Brake lights
   },
   { // SCHEME 3: LANDROVER MN MODEL
     // POS1  POS2  POS3  POS4  POS5  FWD   REV   STP   STPD  BRAKE RIGHT LEFT  ACCEL DECEL
     // ---------------------------------------------------------------------------------------------------------------
-    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1
+    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1~
     {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L2
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   ON,   NA,   NA,   NA,   NA,   NA  },  // L3
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  },  // L4 Left
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  },  // L5 Right
-    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   ON,   DIM,  ON,   NA,   NA,   NA,   NA  },  // L6 Brake
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  },  // L4~ Left
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  },  // L5~ Right
+    {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   ON,   DIM,  ON,   NA,   NA,   NA,   NA  },  // L6  Brake
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7~
     {  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM,  DIM },  // L8
   },
   { // SCHEME 4: BLANK
     // POS1  POS2  POS3  POS4  POS5  FWD   REV   STP   STPD  BRAKE RIGHT LEFT  ACCEL DECEL
     // ---------------------------------------------------------------------------------------------------------------
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1~
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L2
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L3
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  },  // L4   B-- Left
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  },  // L5   W-- Right
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L6   Y-- Reverse
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   OFF,  ON,   NA,   NA,   NA,   ON  }   // L8   R-- Brake
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  },  // L4~ Left
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  },  // L5~ Right
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L6  Reverse
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7~
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   OFF,  ON,   NA,   NA,   NA,   ON  }   // L8  Brake
   },
   { // SCHEME 5: BLANK
     // POS1  POS2  POS3  POS4  POS5  FWD   REV   STP   STPD  BRAKE RIGHT LEFT  ACCEL DECEL
     // ---------------------------------------------------------------------------------------------------------------
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1~
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L2
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L3
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L4
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L5
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L4~
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L5~
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L6
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7~
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }   // L8
   },
   { // SCHEME 6: BLANK
     // POS1  POS2  POS3  POS4  POS5  FWD   REV   STP   STPD  BRAKE RIGHT LEFT  ACCEL DECEL
     // ---------------------------------------------------------------------------------------------------------------
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L1~
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L2
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L3
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L4
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L5
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L4~
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L5~
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L6
-    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7
+    {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  },  // L7~
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }   // L8
   }
 };

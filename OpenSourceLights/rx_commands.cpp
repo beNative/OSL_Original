@@ -10,7 +10,6 @@
 // Loop speed gain is up to 2-3x
 void GetRxCommands()
 {
-  // static int LastThrottleCommand;
   static uint8_t failsafeCounter = 0;
 
   if (Failsafe)
@@ -33,7 +32,7 @@ void GetRxCommands()
   }
 
   byte channelSelector;
-  channelSelector = runCount % 4;
+  channelSelector = RunCount % 4;
   switch (channelSelector)
   {
   case 0:
@@ -207,7 +206,6 @@ int GetChannel3Command()
 
   if (Channel3Pulse == 0)
   { // In this case, there was no signal found
-    // Channel3Present = false;
     Channel3Command = Pos1; // If no Channel3, we always set the mode to 1
   }
   else
@@ -261,13 +259,13 @@ void RadioSetup()
 {
   int Count;
   unsigned long TotThrottlePulse = 0;
-  unsigned long TotTurnPulse = 0;
+  unsigned long TotTurnPulse     = 0;
   unsigned long TotChannel3Pulse = 0;
   float TempFloat;
-  // boolean RunSetup = false;
+
   int TypicalPulseCenter = 1500;
-  int MaxPossiblePulse = 2250;
-  int MinPossiblePulse = 750;
+  int MaxPossiblePulse   = 2250;
+  int MinPossiblePulse   = 750;
 
   int GreenBlinker; // We'll use this to create a SimpleTimer for the green led, that flashes to represent which stage we are in.
 
@@ -293,17 +291,18 @@ void RadioSetup()
   delay(2000);
   GreenLedOff();
   delay(2000);
-
+  TimeUp = false;
   // Start green LED blinking for stage one: one blink every 1200 ms
-  GreenBlinker = StartBlinking_ms(GreenLED, 1, 1200); // Blip the GreenLED once every 1200ms
-  StartWaiting_sec(15);
+  GreenBlinker = StartBlinking_ms(GreenLed_Pin, 1, 1200); // Blip the GreenLED once every 1200ms
+  StartWaiting_sec(15); // default 15
   Serial.println(F("Reading..."));
+  Serial.println(F("Started reading"));
 
   // We initialize every min and max value to TypicalPulseCenter. In the loop below we will record deviations from the center.
   ThrottlePulseMin = TypicalPulseCenter;
   ThrottlePulseMax = TypicalPulseCenter;
-  TurnPulseMin = TypicalPulseCenter;
-  TurnPulseMax = TypicalPulseCenter;
+  TurnPulseMin     = TypicalPulseCenter;
+  TurnPulseMax     = TypicalPulseCenter;
   Channel3PulseMin = TypicalPulseCenter;
   Channel3PulseMax = TypicalPulseCenter;
 
@@ -312,8 +311,9 @@ void RadioSetup()
   {
     // Read channel while the user moves the sticks to the extremes
     ThrottlePulse = pulseIn(ThrottleChannel_Pin, HIGH, ServoTimeout);
-    TurnPulse = pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
+    TurnPulse     = pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
     Channel3Pulse = pulseIn(Channel3_Pin, HIGH, ServoTimeout);
+
     // Each time through the loop, only save the extreme values if they are greater than the last time through the loop.
     // At the end we should have the true min and max for each channel.
     if (ThrottlePulse > ThrottlePulseMax)
@@ -341,10 +341,14 @@ void RadioSetup()
     {
       Channel3PulseMin = Channel3Pulse;
     }
-
+    //delay(100);
     // Refresh the timer
     timer.run();
+    Serial.print(".");
   } while (!TimeUp); // Keep looping until time's up
+
+  Serial.println(F("Stopped reading"));
+
   StopBlinking(GreenBlinker);
 
   // Sanity check in case something weird happened (like Tx turned off during setup, or some channels disconnected)
@@ -419,14 +423,15 @@ void RadioSetup()
 
   // Initialize some variables
   TotThrottlePulse = 0;
-  TotTurnPulse = 0;
+  TotTurnPulse     = 0;
   TotChannel3Pulse = 0;
-  Count = 0;
+  Count            = 0;
 
   // Start green LED blinking for stage two: two blinks every 1200 ms
-  GreenBlinker = StartBlinking_ms(GreenLED, 2, 1200); // Blip the GreenLED twice every 1200ms
-  StartWaiting_sec(6);                                // For the first bit of time we don't take any readings, this lets the user get the sticks centered
+  GreenBlinker = StartBlinking_ms(GreenLed_Pin, 2, 1200); // Blip the GreenLED twice every 1200ms
+  StartWaiting_sec(6); // For the first bit of time we don't take any readings, this lets the user get the sticks centered
   Serial.println(F("Reading..."));
+  Serial.println(F("Started reading"));
   do
   {
     delay(100);
@@ -435,8 +440,9 @@ void RadioSetup()
   StartWaiting_sec(4); // Now for the next four seconds we check the sticks
   do
   {
+    Serial.print(".");
     TotThrottlePulse += pulseIn(ThrottleChannel_Pin, HIGH, ServoTimeout);
-    TotTurnPulse += pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
+    TotTurnPulse     += pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
     TotChannel3Pulse += pulseIn(Channel3_Pin, HIGH, ServoTimeout);
     // Increment reading count
     Count++;
@@ -444,14 +450,15 @@ void RadioSetup()
     // Refresh the timer
     timer.run();
   } while (!TimeUp); // Keep looping until time's up
+  Serial.println(F("Started reading"));
   StopBlinking(GreenBlinker);
 
   // Finally we record our readings
-  TempFloat = (float)TotThrottlePulse / (float)Count;
+  TempFloat           = (float)TotThrottlePulse / (float)Count;
   ThrottlePulseCenter = (int)lround(TempFloat);
-  TempFloat = (float)TotTurnPulse / (float)Count;
-  TurnPulseCenter = (int)lround(TempFloat);
-  TempFloat = (float)TotChannel3Pulse / (float)Count;
+  TempFloat           = (float)TotTurnPulse / (float)Count;
+  TurnPulseCenter     = (int)lround(TempFloat);
+  TempFloat           = (float)TotChannel3Pulse / (float)Count;
   Channel3PulseCenter = (int)lround(TempFloat);
 
   // Sanity check in case something weird happened (like Tx turned off during setup, or some channels disconnected)
@@ -518,9 +525,10 @@ void RadioSetup()
   Channel3Reverse = false;
 
   // Start green LED blinking for stage three: three blinks every 1200 ms
-  GreenBlinker = StartBlinking_ms(GreenLED, 3, 1200); // Blip the GreenLED three times every 1200ms
+  GreenBlinker = StartBlinking_ms(GreenLed_Pin, 3, 1200); // Blip the GreenLED three times every 1200ms
   StartWaiting_sec(6);                                // For the first bit of time we don't take any readings, this lets the user get the sticks centered
   Serial.println(F("Reading..."));
+  Serial.println(F("Started reading"));
   while (!TimeUp)
   {
     timer.run();
@@ -529,9 +537,10 @@ void RadioSetup()
   StartWaiting_sec(4); // Now for the next four seconds we check the sticks
   do
   {
+    Serial.print(".");
     // Add to our readings
     TotThrottlePulse += pulseIn(ThrottleChannel_Pin, HIGH, ServoTimeout);
-    TotTurnPulse += pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
+    TotTurnPulse     += pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout);
     TotChannel3Pulse += pulseIn(Channel3_Pin, HIGH, ServoTimeout);
     // Increment count
     Count++;
@@ -539,6 +548,7 @@ void RadioSetup()
     // Refresh the timer
     timer.run();
   } while (!TimeUp); // Keep looping until time's up
+  Serial.println(F("Stopped reading"));
   StopBlinking(GreenBlinker);
 
   // Get the average of our readings
@@ -611,21 +621,21 @@ void RadioSetup()
 
 int smoothThrottleCommand(int rawVal)
 {
-  static int smoothedThrottle = 0;
-  smoothedThrottle = smoothedThrottle + ((rawVal - smoothedThrottle) >> smoothingStrength);
-  return smoothedThrottle;
+  static int SmoothedThrottle = 0;
+  SmoothedThrottle = SmoothedThrottle + ((rawVal - SmoothedThrottle) >> SmoothingStrength);
+  return SmoothedThrottle;
 }
 
 int smoothSteeringCommand(int rawVal)
 {
-  static int smoothedSteer = 0;
-  smoothedSteer = smoothedSteer + ((rawVal - smoothedSteer) >> smoothingStrength);
-  return smoothedSteer;
+  static int SmoothedSteer = 0;
+  SmoothedSteer = SmoothedSteer + ((rawVal - SmoothedSteer) >> SmoothingStrength);
+  return SmoothedSteer;
 }
 
 int smoothChannel3Command(int rawVal)
 {
-  static int smoothedCh3 = 0;
-  smoothedCh3 = smoothedCh3 + ((rawVal - smoothedCh3) >> smoothingStrength);
-  return smoothedCh3;
+  static int SmoothedCh3 = 0;
+  SmoothedCh3 = SmoothedCh3 + ((rawVal - SmoothedCh3) >> SmoothingStrength);
+  return SmoothedCh3;
 }

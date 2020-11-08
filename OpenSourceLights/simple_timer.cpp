@@ -30,31 +30,31 @@ unsigned int StartBlinking_ms(int LED, int BlinkTimes, int ms)
   switch (BlinkTimes)
   {
   case 1:
-    if (LED == GreenLED)
+    if (LED == GreenLed_Pin)
     {
       return timer.setInterval(ms, GreenBlinkOne);
     }
-    if (LED == RedLED)
+    if (LED == RedLed_Pin)
     {
       return timer.setInterval(ms, RedBlinkOne);
     }
     break;
   case 2:
-    if (LED == GreenLED)
+    if (LED == GreenLed_Pin)
     {
       return timer.setInterval(ms, GreenBlinkTwo);
     }
-    if (LED == RedLED)
+    if (LED == RedLed_Pin)
     {
       return timer.setInterval(ms, RedBlinkTwo);
     }
     break;
   case 3:
-    if (LED == GreenLED)
+    if (LED == GreenLed_Pin)
     {
       return timer.setInterval(ms, GreenBlinkThree);
     }
-    if (LED == RedLED)
+    if (LED == RedLed_Pin)
     {
       return timer.setInterval(ms, RedBlinkThree);
     }
@@ -69,7 +69,7 @@ void StopBlinking(unsigned int TimerID)
   timer.deleteTimer(TimerID);
 }
 
-unsigned int StartWaiting_mS(int mS)
+unsigned int StartWaiting_mS(long mS)
 {
   TimeUp = false;
   return timer.setTimeout(mS, SetTimeUp); // will call function once after ms duration

@@ -60,7 +60,10 @@
 #include "utilities.h"
 
 // Button Object
-Button InputButton = Button(SetupButton, 25, true, true); // Initialize a button object. Set pin, internal pullup = true, inverted = true, debounce time = 25 mS
+// Initialize a button objects.
+// pin, internal pullup = true, inverted = true, debounce time = 25 mS
+Button SetupButton = Button(SetupButton_Pin, 25, true, true);
+//Button AuxButton   = Button(AuxButton_Pin, 25, true, true);
 
 // ====================================================================================================================================================>
 //  SETUP
@@ -73,8 +76,8 @@ void setup()
 
   // PINS
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  pinMode(RedLED, OUTPUT);   // Set RedLED pin to output
-  pinMode(GreenLED, OUTPUT); // Set GreenLED pin to output
+  pinMode(RedLed_Pin, OUTPUT);   // Set RedLED pin to output
+  pinMode(GreenLed_Pin, OUTPUT); // Set GreenLED pin to output
   RedLedOff();               // Turn off board LEDs to begin with
   GreenLedOff();
 
@@ -87,7 +90,9 @@ void setup()
   pinMode(ThrottleChannel_Pin, INPUT_PULLUP); // Set these pins to input, with internal pullup resistors enabled
   pinMode(SteeringChannel_Pin, INPUT_PULLUP);
   pinMode(Channel3_Pin, INPUT_PULLUP);
-  pinMode(SetupButton, INPUT_PULLUP);
+  //pinMode(Channel4_Pin, INPUT_PULLUP);
+  pinMode(SetupButton_Pin, INPUT_PULLUP);
+//  pinMode(AuxButton_Pin, INPUT_PULLUP);
 
   // CONNECT TO RECEIVER
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -122,7 +127,8 @@ void setup()
   // we need to initialize them for the first event.
   randomSeed(analogRead(0));
   backfire_interval = random(BF_Short, BF_Long);
-  backfire_timeout = BF_Time + random(BF_Short, BF_Long);}
+  backfire_timeout = BF_Time + random(BF_Short, BF_Long);
+}
 
 // ====================================================================================================================================================>
 //  MAIN LOOP
@@ -192,7 +198,7 @@ void loop()
     TurnSignal_Enable = false;
     StoppedLongTime = false;
 
-    canChangeScheme = false;
+    CanChangeScheme = false;
     ChangeSchemeTimerFlag = false;
     ChangeSchemeMode = false;
     MaxTurn = (int)((float)MaxRightTurn * 0.9); // This sets a turn level that is near max, we use sequential back-and-forth max turns to enter Change-Scheme-Mode
@@ -209,16 +215,16 @@ void loop()
   // New light and radio things - Wombii
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
 
-  runCount++; //loopcounter (Used for the new light switching functions and radio read sequencing
+  RunCount++; //loopcounter (Used for the new light switching functions and radio read sequencing
 
   // UPDATE TIMER/BUTTON STATE
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   timer.run();
-  InputButton.read();
+  SetupButton.read();
 
   // USER WANTS TO RUN SETUPS
   // -------------------------------------------------------------------------------------------------------------------------------------------------->
-  if (InputButton.pressedFor(2000))
+  if (SetupButton.pressedFor(2000))
   {
     // User has held down the input button for two seconds. We are going to enter the radio setup routine.
     RadioSetup();
@@ -231,7 +237,7 @@ void loop()
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // To enter scheme-change-mode, the user needs to turn the steering wheel all the way back and forth at least six times (three each way) in quick succession (within ChangeModeTime_mS milliseconds)
   //if (SteeringChannelPresent && canChangeScheme && (abs(TurnCommand) >= MaxTurn) && !ChangeSchemeMode)
-  if (SteeringChannelPresent && canChangeScheme && !ChangeSchemeMode)
+  if (SteeringChannelPresent && CanChangeScheme && !ChangeSchemeMode)
   { // Here we save how many times they have turned the wheel in each direction.
     if ((TurnCommand > 0) && (WhatState == false))
     {
@@ -441,7 +447,7 @@ void loop()
     // If the user is not commanding Stop, reset the TurnSignal_Enable flag.
     TurnSignal_Enable = false;
     // Also reset the canChangeScheme flag, we don't want to enter ChangeScheme mode while moving forward
-    canChangeScheme = false;
+    CanChangeScheme = false;
     // And finally, reset the StoppedLongTime flag because we are no longer stopped
     StoppedLongTime = false;
   }
@@ -454,7 +460,7 @@ void loop()
     TurnSignal_Enable = false;
     TimeStopped = millis();
     // We use this same timer to delay the option of entering ChangeScheme mode
-    canChangeScheme = false;
+    CanChangeScheme = false;
   }
   // We have been stopped already. Check to see if the turn signal signal timer is up - if so, we will permit a turn command (while still stopped)
   else if ((DriveMode == STOP) && (DriveMode_Previous == STOP))
@@ -464,7 +470,7 @@ void loop()
     {
       TurnSignal_Enable = true;
       // After this much time has passed being stopped, we also allow the user to enter ChangeScheme mode if they want
-      canChangeScheme = true;
+      CanChangeScheme = true;
     }
 
     // Check to see if we have been stopped a "long" time, this will enable stop-delay effects
@@ -476,7 +482,7 @@ void loop()
     // If we are stopped and have been stopped, we are also no longer decelerating, so reset these flags.
     Decelerating = false;
     Accelerating = false;
-    canBackfire = false;
+    CanBackfire  = false;
   }
 
   // DECELERATING
@@ -699,7 +705,7 @@ void loop()
   //  SAVE COMMANDS FOR NEXT ITERATION
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   // Set previous variables to current
-  DriveMode_Previous = DriveMode;
+  DriveMode_Previous        = DriveMode;
   DriveModeCommand_Previous = DriveModeCommand;
-  ThrottleCommand_Previous = ThrottleCommand;
+  ThrottleCommand_Previous  = ThrottleCommand;
 } // End of Loop
