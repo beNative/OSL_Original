@@ -158,7 +158,7 @@ const byte Pos5 = 4;
 const byte ThrottleChannel_Pin =    11; // The Arduino pin connected to the throttle channel input
 const byte SteeringChannel_Pin =    12; // The Arduino pin connected to the steering channel input
 const byte Channel3_Pin        =    10; // The Arduino pin connected to the Channel 3 input
-//const byte Channel4_Pin        =    13; // The Arduino pin connected to the Channel 4 input
+const byte Channel4_Pin        =    13; // The Arduino pin connected to the Channel 4 input
 unsigned long ServoTimeout     = 30000; // Value in microseconds (µS) - length of time to wait for a servo pulse. Measured on Eurgle/HK 3channel at ~20-22ms between pulses
                                         // Up to version 2.03 of OSL code this value was 21,000 (21ms) and it worked fine. However with the release of Arduino IDE 1.6.5,
                                         // something has changed about the pulseIn function, or perhaps the way it is compiled. At 21ms, pulseIn would return 0 every other read.
@@ -171,7 +171,7 @@ int PulseMax_Bad               =  2800; // Pulse widths greater than this amount
 const byte GreenLed_Pin        =    17; // The Arduino pin connected to the on-board Green LED
 const byte RedLed_Pin          =    16; // The Arduino pin connected to the on-board Red LED
 const byte SetupButton_Pin     =    14; // The Arduino pin connected to the on-board push button
-//const byte AuxButton_Pin       =    15; // The Arduino pin connected to an optional button
+const byte AuxButton_Pin       =    15; // The Arduino pin connected to an optional button
 
 // These are the Arduino pins to the 8 lights in order from left to right looking down on the top surface of the board.
 // Note that the six Arduino analog pins can be referred to by numbers 14-19

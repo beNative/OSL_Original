@@ -90,9 +90,9 @@ void setup()
   pinMode(ThrottleChannel_Pin, INPUT_PULLUP); // Set these pins to input, with internal pullup resistors enabled
   pinMode(SteeringChannel_Pin, INPUT_PULLUP);
   pinMode(Channel3_Pin, INPUT_PULLUP);
-  //pinMode(Channel4_Pin, INPUT_PULLUP);
+  pinMode(Channel4_Pin, INPUT_PULLUP);
   pinMode(SetupButton_Pin, INPUT_PULLUP);
-//  pinMode(AuxButton_Pin, INPUT_PULLUP);
+  pinMode(AuxButton_Pin, INPUT_PULLUP);
 
   // CONNECT TO RECEIVER
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -224,7 +224,7 @@ void loop()
 
   // USER WANTS TO RUN SETUPS
   // -------------------------------------------------------------------------------------------------------------------------------------------------->
-  if (SetupButton.pressedFor(2000))
+  if (SetupButton.pressedFor(5000))
   {
     // User has held down the input button for two seconds. We are going to enter the radio setup routine.
     RadioSetup();

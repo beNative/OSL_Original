@@ -7,14 +7,14 @@
   extern const byte ThrottleChannel_Pin;
   extern const byte SteeringChannel_Pin;
   extern const byte Channel3_Pin;
-//  extern const byte Channel4_Pin;
+  extern const byte Channel4_Pin;
   extern unsigned long ServoTimeout;
   extern int PulseMin_Bad;
   extern int PulseMax_Bad;
   extern const byte GreenLed_Pin;
   extern const byte RedLed_Pin;
   extern const byte SetupButton_Pin;
-//  extern const byte AuxButton_Pin;
+  extern const byte AuxButton_Pin;
   extern const int LightPin[NumLights];
 
   extern const byte blinkLoopsPerCycle;
