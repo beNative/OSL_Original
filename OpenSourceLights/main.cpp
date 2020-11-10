@@ -63,7 +63,7 @@
 // Initialize a button objects.
 // pin, internal pullup = true, inverted = true, debounce time = 25 mS
 Button SetupButton = Button(SetupButton_Pin, 25, true, true);
-//Button AuxButton   = Button(AuxButton_Pin, 25, true, true);
+Button AuxButton   = Button(AuxButton_Pin, 25, true, true);
 
 // ====================================================================================================================================================>
 //  SETUP
@@ -692,13 +692,15 @@ void loop()
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   if ((DEBUG == true) && (DriveModeCommand_Previous != DriveModeCommand))
   {
-    Serial.print(F("Drive Command: "));
+    //Serial.print(F("Drive Command: "));
+    Serial.print(F("Command = "));
     Serial.println(printMode(DriveModeCommand));
   }
 
   if ((DEBUG == true) && (DriveMode_Previous != DriveMode))
   {
-    Serial.print(F("Actual Drive Mode: "));
+    //Serial.print(F("Actual Drive Mode: "));
+    Serial.print(F("Mode = "));
     Serial.println(printMode(DriveMode));
   }
 

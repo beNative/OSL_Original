@@ -88,8 +88,8 @@ const int Schemes[NumSchemes][NumLights][NumStates] PROGMEM =
     {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L1~ Low/High beam
     {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L2  Parking lights
     {  ON,   ON,   ON,   ON,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L3  NC
-    {  OFF,  OFF,  OFF,  OFF,  BLINK,NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  }, // L4~ Left turn signals
-    {  OFF,  OFF,  OFF,  OFF,  BLINK,NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  }, // L5~ Right turn signals
+    {  OFF,  OFF,  OFF,  BLINK,BLINK,NA,   NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA  }, // L4~ Left turn signals
+    {  OFF,  OFF,  OFF,  BLINK,BLINK,NA,   NA,   NA,   NA,   NA,   BLINK,NA,   NA,   NA  }, // L5~ Right turn signals
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   ON,   NA,   NA,   NA,   NA,   NA,   NA,   NA  }, // L6  Reverse
     {  DIM,  DIM,  DIM,  DIM,  DIM,  NA,   NA,   ON,   DIM,  ON,   NA,   NA,   NA,   ON  }, // L7~ Brake/Tail lights
     {  OFF,  OFF,  OFF,  OFF,  OFF,  NA,   NA,   ON,   OFF,  ON,   NA,   NA,   NA,   ON  }  // L8  Brake lights
