@@ -120,14 +120,6 @@ void setup()
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
   SetupLights(CurrentScheme); // Set the lights to the Scheme last saved in EEPROM
   FixDimLevel();              // Takes care of a bug that only occurs if a user sets the Dim level to 1 (unlikely)
-
-  // INITIATE BACKFIRE settings
-  // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  // Activate the random Seed and set inital random values. These will be set to new random values each time a backfire event occurs, but
-  // we need to initialize them for the first event.
-  randomSeed(analogRead(0));
-  backfire_interval = random(BF_Short, BF_Long);
-  backfire_timeout = BF_Time + random(BF_Short, BF_Long);
 }
 
 // ====================================================================================================================================================>
@@ -170,6 +162,9 @@ void loop()
   static boolean TimeoutFlag;
   static boolean HoldFlag;
   static unsigned long HoldStart;
+
+  static bool LastBraking;
+  static bool LastStoppedLongTime;
 
   // Backfire
   static unsigned int BackfireTimerID = 0;
@@ -478,83 +473,9 @@ void loop()
     {
       StoppedLongTime = true;
     }
-
-    // If we are stopped and have been stopped, we are also no longer decelerating, so reset these flags.
-    Decelerating = false;
-    Accelerating = false;
-    CanBackfire  = false;
   }
 
-  // DECELERATING
-  // -------------------------------------------------------------------------------------------------------------------------------------------->
-  // Here we are trying to identify sharp deceleration commands (user quickly letting off the throttle).
-  // The "if" statement says:
-  // - if we are not already decelerating, and
-  // - if we are presently moving forward, and
-  // - if the user is not commanding a reverse throttle, and
-  // - if the current throttle command is less than the prior command minus 20 (means, we have let off at least DecelPct steps of throttle since last time - there are 100 steps possible)
-  // Then if all this is true, we set the Decelerating flag
-  // We are decelerating
-  if ((DriveMode == FWD) && (ThrottleCommand >= 0) && (ThrottleCommand < ThrottleCommand_Previous - DecelPct))
-  {
-    // cppcheck-suppress redundantAssignment
-    Decelerating = true;
-  }
-  // We are not decelerating, clear
-  else
-  {
-    Decelerating = false;
-  }
-/*
-  // BACKFIRE Enable
-  // -------------------------------------------------------------------------------------------------------------------------------------------->
-  // The last backfire is over, and we have started decelerating again. Enable the backfire effect.
-  if (Decelerating && !canBackfire) {
-    canBackfire = true;
-    // Each backfire event lasts a random length of time.
-    BackfireTimerID = timer.setTimeout(backfire_timeout, BackfireOff);
-  }
-  // disable Backfire effect if the timer has run out
-  else if (canBackfire && !timer.isEnabled(BackfireTimerID)) {
-    canBackfire = false;
-  }
-*/  // ACCELERATING
-  // -------------------------------------------------------------------------------------------------------------------------------------------->
-  // Here we are trying to identify sharp acceleration commands.
-  // The "if" statement says:
-  // - if we are not already accelerating, and
-  // - if we are presently moving forward, and
-  // - if the user is not commanding a reverse throttle, and
-  // - if the current throttle command is greater than the prior command plus AccelPct (means, we have increased AccelPct throttle since last time)
-  // Then if all this is true, we set the Accelerating flag
-  // We are accelerating
-  if ((DriveMode == FWD) && (ThrottleCommand >= 0) && (ThrottleCommand > ThrottleCommand_Previous + AccelPct))
-  {
-    Accelerating = true;
-  }
-  // We are not accelerating, clear
-  else
-  {
-    Accelerating = false;
-  }
-/*
-  // OVERTAKE Enable
-  // -------------------------------------------------------------------------------------------------------------------------------------------->
-  // Overtaking is simply a timed event that occurs when a heavy acceleration is detected. The length of time the Overtake event lasts is set in
-  // UserConfig. During that time, any settings specified under the Acceleration column will take effect. When the timer is up, the lights will
-  // revert back to whatever they were previously.
-  // Use this with a FASTBLINK setting under the Accelerating column for your headlights, to simulate the overtaking flash as seen in 24hr Le Mans races
-  // The last overtaking is over, and we have started accelerating again. Enable the Overtaking timer again.
-  if (Accelerating && !Overtaking) {
-    Overtaking = true;
-    // This will set a timer of OvertakeTime length long, and when the timer expires, it will call the OvertakeOff function
-    OvertakeTimerID = timer.setTimeout(OvertakeTime, OvertakeOff);
-  }
-  // disable Backfire effect if the timer has run out
-  else if (Overtaking && !timer.isEnabled(OvertakeTimerID)) {
-    Overtaking = false;
-  }
-*/  // COMMAND BRAKE
+  // COMMAND BRAKE
   // -------------------------------------------------------------------------------------------------------------------------------------------->
   // If we are braking, turn on the brake light
   Braking = ReturnBrakeFlag(DriveMode_Previous, DriveModeCommand);
@@ -687,19 +608,30 @@ void loop()
       ReverseTaps = 2;
     }
   }
+  if (DEBUG)
+  {
+    if (LastBraking != Braking)
+    {
+      Serial.print(F("Braking = "));
+      Serial.println(Braking);
+    }
 
+    if (LastStoppedLongTime != StoppedLongTime)
+    {
+      Serial.print(F("StoppedLongTime = "));
+      Serial.println(StoppedLongTime);
+    }
+  }
   // DEBUGGING
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  if ((DEBUG == true) && (DriveModeCommand_Previous != DriveModeCommand))
+  if (DEBUG && (DriveModeCommand_Previous != DriveModeCommand))
   {
-    //Serial.print(F("Drive Command: "));
     Serial.print(F("Command = "));
     Serial.println(printMode(DriveModeCommand));
   }
 
-  if ((DEBUG == true) && (DriveMode_Previous != DriveMode))
+  if (DEBUG && (DriveMode_Previous != DriveMode))
   {
-    //Serial.print(F("Actual Drive Mode: "));
     Serial.print(F("Mode = "));
     Serial.println(printMode(DriveMode));
   }
@@ -710,4 +642,7 @@ void loop()
   DriveMode_Previous        = DriveMode;
   DriveModeCommand_Previous = DriveModeCommand;
   ThrottleCommand_Previous  = ThrottleCommand;
+
+  LastBraking = Braking;
+  LastStoppedLongTime = StoppedLongTime;
 } // End of Loop

@@ -43,7 +43,6 @@
 // - FASTBLINK        Will blink at the fast rate set in UserConfig.h
 // - DIM            * Will dim to the level set in UserConfig.h
 // - XENON          * Turns a light on but with a special effect that looks like a xenon bulb turning on
-// - BACKFIRE         Special effect that blinks a light randomly for a short period of time (only works under Decelerating state - use for tailpipe LEDs)
 //
 // Settings Notes:
 // - For the positions determined by Channel 3, it is best to specify an explicit setting, in other words, you probably don't want any of them to be NA -

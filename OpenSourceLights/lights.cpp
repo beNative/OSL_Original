@@ -91,25 +91,6 @@ void SetLights(int DriveMode)
       break;
     }
 
-    // Next - does this light come on during deceleration (probably Backfiring?)
-    // --------------------------------------------------------------------------------------------------->>
-    if (CanBackfire)
-    {
-      if (LightSettings[j][StateDecel] != NA)
-      {
-        SaveSetting[j] = LightSettings[j][StateDecel];
-      } // Or we can allow any setting during deceleration
-    }
-
-    // Next -
-    // --------------------------------------------------------------------------------------------------->>
-    if (Overtaking)
-    {
-      if (LightSettings[j][StateAccel] != NA)
-      {
-        SaveSetting[j] = LightSettings[j][StateAccel];
-      }
-    }
     // Next - does this light come on during braking?
     // --------------------------------------------------------------------------------------------------->>
     if (Braking)
@@ -362,11 +343,6 @@ void SetLight(int WhatLight, int WhatSetting)
     WantedFade = '0';
     pinIsFlashing[WhatLight] = 0;
   }
-  else if (WhatSetting == BACKFIRE)
-  {
-    LightBackfire(WhatLight);
-    pinIsFlashing[WhatLight] = 0;
-  }
   else if (WhatSetting == XENON)
   {
     WantedLightState = 1;
@@ -600,60 +576,6 @@ void TurnOnLight(int WhatLight)
 void TurnOffLight(int WhatLight)
 {
   digitalWrite(LightPin[WhatLight], LOW);
-}
-
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// LIGHTBACKFIRE - briefly and randomly light a led
-// All credit for backfiring code goes to Sergio Pizzotti
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-void LightBackfire(int WhatLight)
-{
-  // Has enough time passed to flicker the backfire LED?
-  if (CanBackfire)
-  {
-    // Save time for next check
-    if (millis() - Backfire_millis > backfire_interval)
-    {
-      Backfire_millis = millis();
-      // Change state of backfire LED
-      for (int i = 0; i < NumLights; i++)
-      {
-        if (LightSettings[i][StateDecel] == BACKFIRE)
-        {
-          ReverseLight(i);
-        }
-      }
-      // Calculate new random interval for the next flicker
-      backfire_interval = random(BF_Short, BF_Long);
-    }
-  }
-}
-
-void BackfireOff()
-{
-  // Time up - stop backfire effect
-  CanBackfire = false;
-  // Reset the random backfire timeout for the next event
-  backfire_timeout = BF_Time + random(BF_Short, BF_Long);
-}
-
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// OVERTAKEOFF - Overtaking time is up
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-void OvertakeOff()
-{
-  // Time up - stop the overtake effects
-  Overtaking = false;
-  // The overtaking effect can cause a Xenon effect to re-start, so in the event a Xenon effect is defined for this same light,
-  for (int i = 0; i < NumLights; i++)
-  {
-    // we go ahead and flag it complete.
-    if (LightSettings[i][StateAccel] != NA)
-    {
-      Xenon_EffectDone[i] = 1;
-    }
-  }
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------>

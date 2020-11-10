@@ -51,8 +51,6 @@
   extern const byte StateBrake;
   extern const byte StateRT;
   extern const byte StateLT;
-  extern const byte StateAccel;
-  extern const byte StateDecel;
 
   extern int LightSettings[NumLights][NumStates];
 
@@ -62,15 +60,8 @@
   extern bool Startup;
 
   extern bool Braking;
-  extern bool Decelerating;
-  extern bool Accelerating;
   extern bool StoppedLongTime;
 
-  extern unsigned long backfire_interval;
-  extern unsigned long backfire_timeout;
-  extern unsigned long Backfire_millis;
-  extern bool CanBackfire;
-  extern bool Overtaking;
   extern bool TurnSignal_Enable;
   extern int TurnSignalOverride;
 
@@ -108,4 +99,4 @@
   extern const byte Pos4;
   extern const byte Pos5;
 
-#endif // ndef GLOBAL_H
+#endif // endif GLOBAL_H

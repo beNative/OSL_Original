@@ -16,9 +16,6 @@
   byte flashingFunctionStartActiveSimple ( byte functionNumber, byte tempArray[4]);
   void TurnOnLight(int WhatLight);
   void TurnOffLight(int WhatLight);
-  void LightBackfire(int WhatLight);
-  void BackfireOff();
-  void OvertakeOff();
   void ClearBlinkerOverride(void);
   void FastBlinkLight(int WhatLight);
   void FixDimLevel();
@@ -47,4 +44,4 @@
   void RedBlinkTwo();
   void RedBlinkThree();
 
-#endif // ndef LIGHTS_H
+#endif // endif LIGHTS_H

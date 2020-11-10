@@ -14,7 +14,6 @@ const int8_t SOFTBLINK = -4;
 const int8_t DIM       = -5;
 const int8_t FADEOFF   = -6;
 const int8_t XENON     = -7;
-const int8_t BACKFIRE  = -8;
 
 const int8_t ON  = 1;
 const int8_t OFF = 0;

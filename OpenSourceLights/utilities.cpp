@@ -98,6 +98,23 @@ const __FlashStringHelper *printMode(DRIVEMODES Type) {
 
 void DumpDebug()
 {
+  extern const byte ThrottleChannel_Pin;
+  extern const byte SteeringChannel_Pin;
+  extern const byte Channel3_Pin;
+  extern const byte Channel4_Pin;
+
+  Serial.print(F("ThrottleChannel_Pin = "));
+  Serial.println(ThrottleChannel_Pin);
+
+  Serial.print(F("SteeringChannel_Pin = "));
+  Serial.println(SteeringChannel_Pin);
+
+  Serial.print(F("Channel3_Pin = "));
+  Serial.println(Channel3_Pin);
+
+  Serial.print(F("Channel4_Pin = "));
+  Serial.println(Channel4_Pin);
+
   // Channel pulse values
   Serial.println(F("PULSE:  Min - Ctr - Max"));
   Serial.print(F("Throttle "));

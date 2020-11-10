@@ -80,29 +80,6 @@
 // But if you can shift directly into reverse from forward, set this to false - this is typical of crawlers.
 #define DoubleTapReverse          false
 
-// ACCELERATING AND DECELERATING
-// ------------------------------------------------------------------------------------------------------------------------------------------------>
-// How much does the throttle have to increase (1-100 pct) to be considered a sharp acceleration.
-// This will trigger the OvertakeTime timer set below, during which your lights will do whatever
-// setting you put in the Accelerating column (BLINK or FASTBLINK makes sense, like they do in
-// 24hr Le Mans when overtaking)
-#define AccelPct                    35
-// How long should the overtake event last in  ms (1000ms = 1 second)
-#define OvertakeTime               500
-
-// How much does the throttle need to decrease (1-100 pct) to be considered a sharp deceleration.
-// This will trigger the Backfire effect for any light in the Decelerating column with the setting
-// of BACKFIRE. You can put other settings in the Decelerating column besides Backfire, and they will
-// work, but they will only be enabled for the same length of time as the backfire event
-#define DecelPct                    20
-// How long in milliseconds (1000 ms = 1 second) on average should a backfire event last. It will actually be
-// a random length of time spanning from (BF_Time - BF_Long) to (BF_Time + BF_Long)
-#define BF_Time                    170
-// BF_Short and BF_Long are the upper and lower limits to the span of time the backfiring LED will blink.
-#define BF_Short                    10
-// In other words, while backfiring the LED will blink randomly on and off for some value between BF_Short and BF_Long
-#define BF_Long                     60
-
 // COASTING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // If we didn't allow any time for the car to coast to a stop, there would be no need for braking, and your brake lights would never come on. However in real life,

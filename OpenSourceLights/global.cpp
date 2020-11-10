@@ -53,8 +53,6 @@ const byte StateStopDelay = 8;  // Stopped for a user-defined length of time
 const byte StateBrake     = 9;  // Braking
 const byte StateRT        = 10; // Right turn
 const byte StateLT        = 11; // Left turn
-const byte StateAccel     = 12; // Acceleration
-const byte StateDecel     = 13; // Deceleration
 
 int LightSettings[NumLights][NumStates]; // An array to hold the settings for each state for each light.
 
@@ -69,18 +67,7 @@ bool Startup = true; // This lets us run a few things in the main loop only once
 // DRIVING
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 bool Braking         = false; // Are we braking
-bool Decelerating    = false; // Are we sharply decelerating
-bool Accelerating    = true;  // Are we sharply accelerating
 bool StoppedLongTime = false; // Have we been stopped for a long time (actual length of time set on the UserConfig tab - LongStopTime_mS)
-
-// Backfire effect
-unsigned long backfire_interval;     // Will save the random interval for the backfire effect
-unsigned long backfire_timeout;      // Will save the random timeout interval to turn off the LED
-unsigned long Backfire_millis  =  0; // Will store last time LED was updated
-bool CanBackfire            = false; // Is the backfiring effect currently active?
-
-// Overtaking effect
-bool Overtaking = false;
 
 // If the user decides to restrict turn signals only to when the car is stopped, they can further add a delay that begins
 // when the car first stops, and until this delay is complete, the turn signals won't come on. This flag indicates if the delay
