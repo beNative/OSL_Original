@@ -7,19 +7,19 @@
 // ON, OFF, NA, BLINK, FASTBLINK, or DIM. OF/OFF are defined below
 // These give us numerical values to these names which makes coding easier,
 // we can just type in the name instead of the number.
-const int NA        = -1;
-const int BLINK     = -2;
-const int FASTBLINK = -3;
-const int SOFTBLINK = -4;
-const int DIM       = -5;
-const int FADEOFF   = -6;
-const int XENON     = -7;
-const int BACKFIRE  = -8;
+const int8_t NA        = -1;
+const int8_t BLINK     = -2;
+const int8_t FASTBLINK = -3;
+const int8_t SOFTBLINK = -4;
+const int8_t DIM       = -5;
+const int8_t FADEOFF   = -6;
+const int8_t XENON     = -7;
+const int8_t BACKFIRE  = -8;
 
-const byte ON  = 1;
-const byte OFF = 0;
+const int8_t ON  = 1;
+const int8_t OFF = 0;
 
-const byte YES = 1;
-const byte NO  = 0;
+const int8_t YES = 1;
+const int8_t NO  = 0;
 
 #include "aa_light_settings.h"

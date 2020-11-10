@@ -1,19 +1,19 @@
 #include <Arduino.h>
 #include <avr/pgmspace.h>
 
-extern const int NA;
-extern const int BLINK;
-extern const int FASTBLINK;
-extern const int SOFTBLINK;
-extern const int DIM;
-extern const int FADEOFF;
-extern const int XENON;
-extern const int BACKFIRE;
+extern const int8_t NA;
+extern const int8_t BLINK;
+extern const int8_t FASTBLINK;
+extern const int8_t SOFTBLINK;
+extern const int8_t DIM;
+extern const int8_t FADEOFF;
+extern const int8_t XENON;
+extern const int8_t BACKFIRE;
 
-extern const byte ON;
-extern const byte OFF;
+extern const int8_t ON;
+extern const int8_t OFF;
 
-extern const byte YES;
-extern const byte NO;
+extern const int8_t YES;
+extern const int8_t NO;
 
 extern const int Schemes[NumSchemes][NumLights][NumStates] PROGMEM;
