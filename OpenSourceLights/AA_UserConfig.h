@@ -144,6 +144,6 @@
 // SERIAL
 // ------------------------------------------------------------------------------------------------------------------------------------------------>
 // Set baud rate here if you know what you're doing and don't like the default value
-#define BaudRate 230400 //115200 // (default: 38400)
+#define BAUD_RATE 230400 //115200 // (default: 38400)
 //230400
 #endif // endif AA_USERCONFIG_H

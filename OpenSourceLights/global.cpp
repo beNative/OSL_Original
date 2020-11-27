@@ -129,6 +129,14 @@ int Channel3PulseMin;
 int Channel3PulseMax;
 int Channel3PulseCenter;
 
+// Channel 4
+// On startup we check to see if this channel is connected, if not, this variable gets set to False and we don't bother checking for it again until reboot
+bool Channel4Present;
+int Channel4Pulse;
+int Channel4PulseMin;
+int Channel4PulseMax;
+int Channel4PulseCenter;
+
 // State of the Channel 3 switch: ON (1), OFF (0), Disconnected (-1)
 int Channel3 = OFF;
 bool Channel3Reverse;

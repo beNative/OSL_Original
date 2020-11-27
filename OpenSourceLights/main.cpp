@@ -72,7 +72,7 @@ void setup()
 {
   // SERIAL
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
-  Serial.begin(BaudRate);
+  Serial.begin(BAUD_RATE);
 
   // PINS
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -101,6 +101,7 @@ void setup()
   GetRxCommands();                                 // If a throttle signal is measured, Failsafe will turn off
   SteeringChannelPresent = CheckSteeringChannel(); // Check for the presence of a steering channel. If we don't find it here, we won't be checking for it again until the board is rebooted
   Channel3Present = CheckChannel3();               // Check for the presence of Channel 3. If we don't find it here, we won't be checking for it again until the board is rebooted
+  Channel4Present = CheckChannel4();               // Check for the presence of Channel 4. If we don't find it here, we won't be checking for it again until the board is rebooted
 
   // LOAD VALUES FROM EEPROM
   // ------------------------------------------------------------------------------------------------------------------------------------------------>
@@ -166,11 +167,6 @@ void loop()
   static bool LastBraking;
   static bool LastStoppedLongTime;
 
-  // Backfire
-  static unsigned int BackfireTimerID = 0;
-  // Overtaking
-  static unsigned int OvertakeTimerID = 0;
-
   // Temp vars
   static unsigned long currentMillis;
   static boolean WhatState = true;
@@ -219,7 +215,7 @@ void loop()
 
   // USER WANTS TO RUN SETUPS
   // -------------------------------------------------------------------------------------------------------------------------------------------------->
-  if (SetupButton.pressedFor(5000))
+  if (SetupButton.pressedFor(2000))
   {
     // User has held down the input button for two seconds. We are going to enter the radio setup routine.
     RadioSetup();

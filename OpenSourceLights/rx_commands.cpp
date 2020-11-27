@@ -77,6 +77,19 @@ boolean CheckChannel3()
   }
 }
 
+boolean CheckChannel4()
+{
+  Channel4Pulse = pulseIn(Channel4_Pin, HIGH, ServoTimeout * 2);
+  if (Channel4Pulse == 0)
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
 boolean CheckSteeringChannel()
 {
   TurnPulse = pulseIn(SteeringChannel_Pin, HIGH, ServoTimeout * 2);
@@ -255,6 +268,58 @@ int GetChannel3Command()
   return Channel3Command;
 }
 
+int GetChannel4Command()
+{
+  int Channel4Command;
+  Channel4Pulse = pulseIn(Channel4_Pin, HIGH, ServoTimeout);
+
+  if (Channel4Pulse == 0)
+  { // In this case, there was no signal found
+    Channel4Command = Pos1; // If no Channel3, we always set the mode to 1
+  }
+  else
+  {
+    Channel4Present = true;
+
+    // Turn pulse into one of five possible positions
+    if (Channel4Pulse >= Channel4PulseMax - 150)
+    {
+      Channel4Command = Pos5;
+    }
+    else if ((Channel4Pulse > (Channel4PulseCenter + 100)) && (Channel4Pulse < (Channel4PulseMax - 150)))
+    {
+      Channel4Command = Pos4;
+    }
+    else if ((Channel4Pulse >= (Channel4PulseCenter - 100)) && (Channel4Pulse <= (Channel4PulseCenter + 100)))
+    {
+      Channel4Command = Pos3;
+    }
+    else if ((Channel4Pulse < (Channel4PulseCenter - 100)) && (Channel4Pulse > (Channel4PulseMin + 150)))
+    {
+      Channel4Command = Pos2;
+    }
+    else
+    {
+      Channel4Command = Pos1;
+    }
+
+    // Swap positions if Channel 3 is reversed.
+    if (Channel4Reverse)
+    {
+      if (Channel4Command == Pos1)
+        Channel4Command = Pos5;
+      else if (Channel4Command == Pos2)
+        Channel4Command = Pos4;
+      else if (Channel4Command == Pos4)
+        Channel4Command = Pos2;
+      else if (Channel4Command == Pos5)
+        Channel4Command = Pos1;
+    }
+  }
+
+  return Channel4Command;
+}
+
 void RadioSetup()
 {
   int Count;
@@ -306,7 +371,7 @@ void RadioSetup()
   Channel3PulseMin = TypicalPulseCenter;
   Channel3PulseMax = TypicalPulseCenter;
 
-  // Repeat until StartWaiting timer is up
+  int i = 0;// Repeat until StartWaiting timer is up and at least 100 cycles are elapsed
   do
   {
     // Read channel while the user moves the sticks to the extremes
@@ -341,11 +406,12 @@ void RadioSetup()
     {
       Channel3PulseMin = Channel3Pulse;
     }
-    //delay(100);
+    delay(100);
     // Refresh the timer
     timer.run();
     Serial.print(".");
-  } while (!TimeUp); // Keep looping until time's up
+    i++;
+  } while (!TimeUp || (i < 50)); // Keep looping until time's up
 
   Serial.println(F("Stopped reading"));
 
@@ -482,11 +548,11 @@ void RadioSetup()
 
   Serial.println();
   Serial.println(F("Stage 2 Results - Pulse center values"));
-  Serial.print(F("Throttle: "));
+  Serial.print(F("Throttle : "));
   Serial.println(ThrottlePulseCenter);
-  Serial.print(F("Turn: "));
+  Serial.print(F("Turn     : "));
   Serial.println(TurnPulseCenter);
-  Serial.print(F("Ch3: "));
+  Serial.print(F("Ch3      : "));
   Serial.println(Channel3PulseCenter);
 
   Serial.println();
@@ -553,16 +619,16 @@ void RadioSetup()
 
   // Get the average of our readings
   TotThrottlePulse /= Count;
-  TotTurnPulse /= Count;
+  TotTurnPulse     /= Count;
   TotChannel3Pulse /= Count;
 
   if (DEBUG)
   {
-    Serial.print(F("Throttle Avg: "));
+    Serial.print(F("Throttle Avg : "));
     Serial.println(TotThrottlePulse);
-    Serial.print(F("Turn Avg: "));
+    Serial.print(F("Turn Avg     : "));
     Serial.println(TotTurnPulse);
-    Serial.print(F("Channel3 Avg: "));
+    Serial.print(F("Channel3 Avg : "));
     Serial.println(TotChannel3Pulse);
   }
 
@@ -590,11 +656,11 @@ void RadioSetup()
 
   Serial.println();
   Serial.println(F("Stage 3 Results - Channel reversed"));
-  Serial.print(F("Throttle: "));
+  Serial.print(F("Throttle : "));
   PrintTrueFalse(ThrottleChannelReverse);
-  Serial.print(F("Turn: "));
+  Serial.print(F("Turn     : "));
   PrintTrueFalse(TurnChannelReverse);
-  Serial.print(F("Ch3: "));
+  Serial.print(F("Ch3      : "));
   PrintTrueFalse(Channel3Reverse);
 
   Serial.println();

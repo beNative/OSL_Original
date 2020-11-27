@@ -92,6 +92,13 @@
   extern int Channel3;
   extern bool Channel3Present;
   extern bool Channel3Reverse;
+  extern int Channel4Pulse;
+  extern int Channel4PulseMin;
+  extern int Channel4PulseMax;
+  extern int Channel4PulseCenter;
+  extern int Channel4;
+  extern bool Channel4Present;
+  extern bool Channel4Reverse;
   extern int CurrentScheme;
   extern const byte Pos1;
   extern const byte Pos2;

@@ -4,10 +4,12 @@
 
   void GetRxCommands();
   bool CheckChannel3();
+  bool CheckChannel4();
   bool CheckSteeringChannel();
   int GetThrottleCommand();
   int GetTurnCommand();
   int GetChannel3Command();
+  int GetChannel4Command();
   int smoothThrottleCommand(int rawVal);
   int smoothSteeringCommand(int rawVal);
   int smoothChannel3Command(int rawVal);
